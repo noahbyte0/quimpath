@@ -3,1517 +3,376 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuimPath — Ingeniería Química</title>
-: var(--text); margin-top: 8px; }
-.sb-logo .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-/* progress ring */
-.progress-ring-wrap {
-  padding: 16px 16px 8px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  border-bottom: 1px solid var(--border);
-}
-.ring-container { position: relative; width: 80px; height: 80px; }
-.ring-container svg { transform: rotate(-90deg); }
-.ring-bg { fill: none; stroke: var(--bg4); stroke-width: 6; }
-.ring-fill { fill: none; stroke: var(--exonerada); stroke-width: 6; stroke-linecap: round;
-  stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.6s ease; }
-.ring-label {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; color: var(--exonerada);
-}
-.credits-text { font-size: 11px; color: var(--text3); text-align: center; }
-.credits-text strong { color: var(--text2); }
-
-/* stats chips */
-.sb-stats {
-  padding: 10px 12px;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-  border-bottom: 1px solid var(--border);
-}
-.stat-chip {
-  background: var(--bg3); border-radius: 8px; padding: 6px 8px;
-  display: flex; flex-direction: column; align-items: center;
-}
-.stat-chip .val { font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; }
-.stat-chip .lbl { font-size: 9px; color: var(--text3); margin-top: 1px; }
-
-/* nav */
-.sb-nav { padding: 8px 0; border-bottom: 1px solid var(--border); flex: 0 0 auto; }
-.nav-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 9px 16px; cursor: pointer; font-size: 13px;
-  color: var(--text3); transition: all 0.15s;
-  border-left: 2px solid transparent;
-}
-.nav-item:hover { background: var(--bg3); color: var(--text2); }
-.nav-item.active { background: var(--bg3); color: var(--text); border-left-color: var(--accent); font-weight: 600; }
-.nav-icon { font-size: 14px; }
-
-/* areas panel */
-.sb-areas { padding: 12px; border-bottom: 1px solid var(--border); }
-.sb-areas-title { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-.area-row { margin-bottom: 6px; }
-.area-row-top { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); margin-bottom: 3px; }
-.area-row-top .val { color: var(--text2); font-weight: 600; }
-.area-bar-bg { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-.area-bar-fill { height: 100%; background: var(--exonerada); border-radius: 2px; width: 0%; transition: width 0.5s ease; }
-.area-bar-fill.complete { background: var(--exonerada); }
-.area-bar-fill.incomplete { background: var(--text3); }
-
-/* sb buttons */
-.sb-btns { padding: 12px; display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
-.sb-btn {
-  width: 100%; padding: 8px 0; border: 1px solid var(--border);
-  background: var(--bg3); color: var(--text2); border-radius: 8px;
-  font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-}
-.sb-btn:hover { background: var(--bg4); color: var(--text); }
-.sb-btn.danger { border-color: #5a2020; color: var(--red); }
-.sb-btn.danger:hover { background: #2d1515; }
-
-/* ── MAIN ── */
-#main {
-  margin-left: var(--sb-w);
-  height: 100vh;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-
-/* topbar */
-#topbar {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 16px;
-  display: flex; align-items: center; gap: 10px;
-  flex-shrink: 0;
-}
-.search-wrap {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 8px; padding: 0 12px; flex: 1; max-width: 360px;
-  transition: border-color 0.2s;
-}
-.search-wrap:focus-within { border-color: var(--accent); }
-.search-icon { color: var(--text3); font-size: 14px; }
-#search {
-  background: none; border: none; outline: none;
-  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
-  padding: 8px 0; width: 100%;
-}
-#search::placeholder { color: var(--text3); }
-
-.topbar-actions { display: flex; gap: 6px; margin-left: auto; }
-.top-btn {
-  padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--bg3); color: var(--text2); font-size: 12px;
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-  white-space: nowrap;
-}
-.top-btn:hover { background: var(--bg4); color: var(--text); }
-.top-btn.active { background: var(--bg3); border-color: var(--accent); color: var(--accent); }
-
-/* area filter bar */
-#area-bar {
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-  padding: 0 16px; display: flex; gap: 4px; align-items: center;
-  overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
-}
-#area-bar::-webkit-scrollbar { display: none; }
-.area-chip {
-  padding: 8px 12px; font-size: 11px; font-weight: 500; white-space: nowrap;
-  cursor: pointer; color: var(--text3); border-bottom: 2px solid transparent;
-  transition: all 0.15s; flex-shrink: 0;
-}
-.area-chip:hover { color: var(--text2); }
-.area-chip.active { color: var(--text); border-bottom-color: var(--accent); }
-
-/* state filter bar */
-#filter-bar {
-  background: var(--bg); border-bottom: 1px solid var(--border);
-  padding: 8px 16px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
-  flex-shrink: 0;
-}
-.filter-lbl { font-size: 11px; color: var(--text3); margin-right: 2px; }
-.filter-chip {
-  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-  cursor: pointer; border: 2px solid transparent; transition: all 0.15s;
-  opacity: 0.65;
-}
-.filter-chip:hover { opacity: 0.85; }
-.filter-chip.active { opacity: 1; border-color: rgba(255,255,255,0.3); }
-.filter-chip.bl { background: var(--bloqueada); color: #fff; }
-.filter-chip.ha { background: var(--habilitada); color: #222; }
-.filter-chip.cu { background: var(--cursando);  color: #fff; }
-.filter-chip.ap { background: var(--aprobada);  color: #fff; }
-.filter-chip.ex { background: var(--exonerada); color: #fff; }
-
-.clear-btn {
-  margin-left: 4px; font-size: 11px; color: var(--text3); cursor: pointer;
-  padding: 4px 8px; border-radius: 6px; background: none; border: none;
-  font-family: 'DM Sans', sans-serif; transition: color 0.15s;
-}
-.clear-btn:hover { color: var(--text); }
-
-/* ── CONTENT ── */
-#content {
-  flex: 1; overflow-y: auto; padding: 16px;
-  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-}
-#content::-webkit-scrollbar { width: 6px; }
-#content::-webkit-scrollbar-track { background: transparent; }
-#content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* tab panels */
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* grid */
-.mat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--btn-w), 1fr));
-  gap: 8px;
-}
-
-/* ── MATERIA CARD ── */
-.mat-card {
-  height: var(--btn-h);
-  border-radius: var(--radius);
-  cursor: pointer;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  padding: 8px 10px; text-align: center; position: relative;
-  font-size: 11px; font-weight: 500; line-height: 1.3;
-  transition: transform 0.12s, box-shadow 0.12s, filter 0.2s;
-  user-select: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-  overflow: hidden;
-}
-.mat-card::before {
-  content: ''; position: absolute; inset: 0; border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
-  pointer-events: none;
-}
-.mat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
-.mat-card:active { transform: translateY(0); }
-
-.mat-card.bloqueada  { background: var(--bloqueada); color: #9ca3af; }
-.mat-card.habilitada { background: var(--habilitada); color: #1a1a1a; }
-.mat-card.cursando   { background: var(--cursando);  color: #fff; }
-.mat-card.aprobada   { background: var(--aprobada);  color: #fff; }
-.mat-card.exonerada  { background: var(--exonerada); color: #fff; }
-
-.mat-card .name { font-size: 13px; line-height: 1.35; }
-.mat-card .meta { font-size: 11px; opacity: 0.75; margin-top: 3px; }
-.mat-icon {
-  position: absolute; bottom: 5px; right: 7px;
-  font-size: 11px; opacity: 0.6;
-}
-
-.mat-card.hidden { display: none; }
-
-/* flash animation */
-@keyframes flash {
-  0%,100% { filter: brightness(1); }
-  50%      { filter: brightness(1.6); }
-}
-.mat-card.flash { animation: flash 0.35s ease; }
-
-/* ── TOAST ── */
-#toast {
-  position: fixed; top: 56px; left: 50%; transform: translateX(-50%) translateY(-10px);
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--text); padding: 10px 20px; border-radius: 10px;
-  font-size: 13px; font-weight: 500; z-index: 9999;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-  opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none;
-  max-width: 420px; text-align: center;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; align-items: center; justify-content: center; z-index: 100;
-  opacity: 0; pointer-events: none; transition: opacity 0.2s;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
-  padding: 28px; min-width: 320px; max-width: 480px; width: 90%;
-  transform: scale(0.95); transition: transform 0.2s;
-  max-height: 80vh; overflow-y: auto;
-}
-.modal-overlay.open .modal { transform: scale(1); }
-.modal h2 { font-family: 'Space Mono', monospace; font-size: 15px; margin-bottom: 6px; color: var(--text); }
-.modal p  { font-size: 13px; color: var(--text2); margin-bottom: 16px; line-height: 1.6; }
-.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-.modal-btn {
-  padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; transition: all 0.15s;
-}
-.modal-btn.cancel { background: var(--bg4); color: var(--text2); }
-.modal-btn.cancel:hover { background: var(--bg3); color: var(--text); }
-.modal-btn.confirm { background: var(--red); color: #fff; }
-.modal-btn.confirm:hover { background: #c44; }
-
-/* previas modal */
-.previas-list { list-style: none; margin: 12px 0; }
-.previas-list li {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 10px; border-radius: 8px; font-size: 12px;
-  margin-bottom: 4px; background: var(--bg3);
-}
-.previas-list li.ok   { opacity: 0.5; text-decoration: line-through; }
-.previas-list li .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.previas-list .option-label {
-  font-size: 10px; font-weight: 700; color: var(--text3);
-  text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 4px;
-}
-
-/* dual choice */
-.dual-option {
-  border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
-  cursor: pointer; margin-bottom: 8px; transition: all 0.15s;
-  display: flex; flex-direction: column; gap: 3px;
-}
-.dual-option:hover { background: var(--bg3); border-color: var(--accent); }
-.dual-option .opt-name { font-size: 13px; font-weight: 600; }
-.dual-option .opt-sub  { font-size: 11px; color: var(--text3); }
-.dual-option .opt-cred { font-size: 11px; color: var(--exonerada); font-weight: 600; }
-
-/* config */
-.config-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-}
-.config-row:last-child { border-bottom: none; }
-.config-row label { font-size: 13px; color: var(--text2); }
-.toggle-btn {
-  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
-  border: none; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-}
-.toggle-btn.on  { background: var(--accent); color: #fff; }
-.toggle-btn.off { background: var(--bg4); color: var(--text3); }
-
-/* confetti canvas */
-#confetti-canvas {
-  position: fixed; inset: 0; pointer-events: none; z-index: 9998;
-}
-
-/* ── FRASE BOTTOM ── */
-#frase-bar {
-  background: var(--bg2); border-top: 1px solid var(--border);
-  padding: 8px 16px; text-align: center;
-  font-size: 11px; font-style: italic; color: var(--text3);
-  cursor: pointer; transition: color 0.2s; flex-shrink: 0;
-  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-}
-#frase-bar:hover { color: var(--text2); }
-
-/* responsive */
-@media (max-width: 600px) {
-  :root { --sb-w: 0px; }
-  #sidebar { display: none; }
-  #main { margin-left: 0; }
-}
-
-/* scrollbar */
-#sidebar::-webkit-scrollbar { width: 4px; }
-#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* area color dots in sidebar */
-.area-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; }
+<title>QuimPath v2.0 — Ingeniería Química</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--sf:#161b22;--sf2:#1c2128;--bd:#30363d;--tx:#e6edf3;--tm:#7d8590;--ac:#2a9d8f;--a2:#4ea8de;--a3:#e05252;--a4:#c77dff;--gn:#3fb950;--sw:260px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+#app{display:flex;min-height:100vh}
+#sb{width:var(--sw);background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;transition:transform .3s}
+#mn{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.sl{padding:18px 18px 14px;border-bottom:1px solid var(--bd)}
+.sl h1{font-size:1.45rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sl p{font-size:.65rem;color:var(--tm);font-family:'Space Mono',monospace;margin-top:2px}
+.cb{margin:12px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.cb .lb{font-size:.6rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;font-family:'Space Mono',monospace}
+.cm{display:flex;align-items:baseline;gap:4px;margin:4px 0}
+.cm .nm{font-size:1.9rem;font-weight:800;color:var(--ac);line-height:1}
+.cm .tt{font-size:.75rem;color:var(--tm);font-family:'Space Mono',monospace}
+.pb{background:var(--bd);border-radius:100px;height:5px;overflow:hidden;margin-top:6px}
+.pbi{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--ac),var(--a2));transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+.cd{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}
+.cs{background:var(--bg);border-radius:6px;padding:5px 7px;font-size:.6rem;color:var(--tm);font-family:'Space Mono',monospace}
+.cs span{display:block;font-size:.95rem;font-weight:700;color:var(--tx);font-family:'Syne',sans-serif}
+.sn{padding:8px 10px;flex:1}
+.nl{font-size:.58rem;color:var(--tm);text-transform:uppercase;letter-spacing:1.5px;font-family:'Space Mono',monospace;padding:6px 6px 3px}
+.nb{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:var(--tm);font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;width:100%;text-align:left;transition:all .15s}
+.nb:hover{background:var(--sf2);color:var(--tx)}.nb.on{background:var(--sf2);color:var(--ac)}
+.nb .ic{font-size:.95rem;width:18px;text-align:center}
+.fs{padding:6px 10px;border-top:1px solid var(--bd)}
+.fc{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.ch{padding:2px 9px;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Space Mono',monospace;font-size:.58rem;cursor:pointer;transition:all .15s}
+.ch:hover{border-color:var(--ac);color:var(--ac)}.ch.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)}
+.ch[data-s="cursando"].on{border-color:var(--a3);background:color-mix(in srgb,var(--a3) 15%,transparent);color:var(--a3)}
+.ch[data-s="aprobada"].on{border-color:var(--a2);background:color-mix(in srgb,var(--a2) 15%,transparent);color:var(--a2)}
+.ch[data-s="bloqueada"].on{border-color:#7d8590;background:rgba(125,133,144,.15);color:#7d8590}
+.ch[data-s="habilitada"].on{border-color:#5d7290;background:rgba(93,114,144,.15);color:#9ea7b5}
+.sbot{padding:10px;border-top:1px solid var(--bd)}
+.rbtn{width:100%;padding:8px;border-radius:7px;border:1px solid #3d1f1f;background:transparent;color:var(--a3);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s}
+.rbtn:hover{background:#2a1515}
+#tb{position:sticky;top:0;z-index:50;height:52px;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:14px}
+#sw{flex:1;position:relative}
+#sw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);width:15px;height:15px}
+#sq{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px 7px 32px;color:var(--tx);font-family:'Space Mono',monospace;font-size:.75rem;outline:none;transition:border-color .15s}
+#sq:focus{border-color:var(--ac)}#sq::placeholder{color:var(--tm)}
+.bg{display:none;background:none;border:none;color:var(--tx);cursor:pointer;padding:4px}
+#ct{padding:20px;flex:1}
+.tp{display:none}.tp.on{display:block}
+.ab{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:20px;padding:14px;background:var(--sf);border:1px solid var(--bd);border-radius:10px}
+.abh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.abn{font-size:.65rem;font-weight:700;letter-spacing:.5px}
+.abc{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--tm)}
+.abt{background:var(--bd);border-radius:100px;height:4px;overflow:hidden}
+.abf{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.st{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--tm);font-family:'Space Mono',monospace;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.st:first-child{margin-top:0}
+.gd{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.card{border-radius:9px;border:1px solid var(--bd);padding:12px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);user-select:none}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}.card:active{transform:translateY(0)}
+.card[data-st="bloqueada"]{background:#1a1f27}
+.card[data-st="habilitada"]{background:#19253a;border-color:#2d3d55}
+.card[data-st="cursando"]{background:#241010;border-color:#4a2020}
+.card[data-st="aprobada"]{background:#0c1a2b;border-color:#143450}
+.card[data-st="exonerada"]{background:#091d1b;border-color:#123835}
+.card[data-st="habilitada"]:hover{border-color:var(--a2);box-shadow:0 6px 20px color-mix(in srgb,var(--a2) 15%,transparent)}
+.ci{font-size:1rem;margin-bottom:6px;display:block;line-height:1}
+.cn{font-size:.77rem;font-weight:700;line-height:1.3;margin-bottom:7px}
+.card[data-st="bloqueada"] .cn{color:#6e7681}.card[data-st="habilitada"] .cn{color:#9ea7b5}
+.card[data-st="cursando"] .cn{color:var(--a3)}.card[data-st="aprobada"] .cn{color:var(--a2)}.card[data-st="exonerada"] .cn{color:var(--ac)}
+.cm2{display:flex;justify-content:space-between;align-items:center}
+.cc{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--tm)}
+.cbg{font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:100px;font-family:'Space Mono',monospace;text-transform:uppercase}
+.card[data-st="bloqueada"] .cbg{background:#22272f;color:#6e7681}.card[data-st="habilitada"] .cbg{background:#18263a;color:#9ea7b5}
+.card[data-st="cursando"] .cbg{background:#1e0d0d;color:var(--a3)}.card[data-st="aprobada"] .cbg{background:#08131f;color:var(--a2)}.card[data-st="exonerada"] .cbg{background:#061211;color:var(--ac)}
+.cf{font-size:.55rem;font-family:'Space Mono',monospace;color:var(--tm);margin-top:3px}
+.card.hd{display:none}
+.pp{display:none;position:fixed;z-index:500;background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:10px 14px;min-width:210px;max-width:290px;box-shadow:0 12px 40px rgba(0,0,0,.6);pointer-events:none}
+.pp.v{display:block}.pp h3{font-size:.7rem;font-weight:700;margin-bottom:7px;color:var(--tx)}
+.pi{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--bd);font-size:.65rem}
+.pi:last-child{border-bottom:none}.pi .pn{color:var(--tm)}
+.pi .pr{font-family:'Space Mono',monospace;font-size:.56rem;padding:1px 5px;border-radius:3px}
+.pi .pr.ap{background:#0c1a2b;color:var(--a2)}.pi .pr.ex{background:#091d1b;color:var(--ac)}.pi .pr.ok{color:var(--gn);font-weight:700}
+#tc{position:fixed;bottom:20px;right:20px;z-index:1000;display:flex;flex-direction:column-reverse;gap:7px}
+.toast{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-size:.78rem;font-weight:600;max-width:270px;animation:si .3s cubic-bezier(.4,0,.2,1);box-shadow:0 6px 20px rgba(0,0,0,.4);border-left:3px solid var(--ac)}
+.toast.cursando{border-left-color:var(--a3)}.toast.aprobada{border-left-color:var(--a2)}
+@keyframes si{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.ov.op{display:flex}
+.md{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.md h2{font-size:1rem;margin-bottom:7px}.md p{color:var(--tm);font-size:.82rem;margin-bottom:18px}
+.ma{display:flex;gap:8px;justify-content:flex-end}
+.bsc{padding:7px 18px;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .15s}
+.bsc:hover{border-color:var(--tm);color:var(--tx)}
+.bdn{padding:7px 18px;border-radius:7px;border:none;background:var(--a3);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .15s}
+.bdn:hover{background:#c04040}
+.bpr{padding:7px 22px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .15s}
+.bpr:hover{transform:scale(1.03)}
+.rg{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+.ro{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:7px;border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.ro:hover{border-color:var(--ac)}.ro input{accent-color:var(--ac)}
+.ro .rl{font-size:.82rem;font-weight:600}.ro .rc{font-size:.67rem;color:var(--tm);font-family:'Space Mono',monospace}
+#tk{background:var(--sf);border-top:1px solid var(--bd);padding:7px 20px;font-size:.65rem;font-family:'Space Mono',monospace;color:var(--tm);overflow:hidden;white-space:nowrap}
+#tk span{animation:tick 55s linear infinite;display:inline-block}
+@keyframes tick{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+#cel{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.85);align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+#cel.on{display:flex}
+.celi{text-align:center;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.celi h1{font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--a2),var(--a4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.celi p{color:var(--tm);font-size:.95rem;margin-bottom:22px}
+#sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+@media(max-width:768px){#sb{transform:translateX(-100%)}#sb.op{transform:translateX(0)}#sbov.op{display:block}#mn{margin-left:0}.bg{display:flex}#ct{padding:14px}.ab{grid-template-columns:1fr 1fr}.gd{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
+@media(max-width:400px){.gd{grid-template-columns:1fr}.ab{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<!-- SIDEBAR -->
-<aside id="sidebar">
-  <div class="sb-logo">
-    <img src="quimpath_icono.png" alt="QuimPath" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'">
-    <div id="logo-fallback" style="display:none;font-size:36px">⚗️</div>
-    <div class="title">QuimPath</div>
-    <div class="sub">v1.0 · Ing. Química · FQ</div>
-  </div>
-
-  <div class="progress-ring-wrap">
-    <div class="ring-container">
-      <svg width="80" height="80" viewBox="0 0 80 80">
-        <circle class="ring-bg"   cx="40" cy="40" r="34"/>
-        <circle class="ring-fill" cx="40" cy="40" r="34" id="ring-fill"/>
-      </svg>
-      <div class="ring-label" id="ring-pct">0%</div>
-    </div>
-    <div class="credits-text"><strong id="cred-exon">0</strong> / 450 créditos</div>
-  </div>
-
-  <div class="sb-stats">
-    <div class="stat-chip">
-      <div class="val" id="stat-cursando"  style="color:var(--cursando)">0</div>
-      <div class="lbl">Cursando</div>
-    </div>
-    <div class="stat-chip">
-      <div class="val" id="stat-aprobadas" style="color:var(--aprobada)">0</div>
-      <div class="lbl">Aprobadas</div>
-    </div>
-    <div class="stat-chip">
-      <div class="val" id="stat-exoneradas" style="color:var(--exonerada)">0</div>
-      <div class="lbl">Exoneradas</div>
-    </div>
-    <div class="stat-chip">
-      <div class="val" id="stat-habilitadas" style="color:var(--habilitada)">0</div>
-      <div class="lbl">Habilitadas</div>
+<div id="sbov"></div>
+<div id="app">
+<aside id="sb">
+  <div class="sl"><h1>⚗️ QuimPath</h1><p>Ing. Química · v2.0 Web</p></div>
+  <div class="cb">
+    <div class="lb">Créditos obtenidos</div>
+    <div class="cm"><span class="nm" id="cn">0</span><span class="tt">/ 450</span></div>
+    <div class="pb"><div class="pbi" id="pbi"></div></div>
+    <div class="cd">
+      <div class="cs"><span id="se">0</span>Exoneradas</div>
+      <div class="cs"><span id="sa">0</span>Aprobadas</div>
+      <div class="cs"><span id="sc">0</span>Cursando</div>
+      <div class="cs"><span id="sh">0</span>Disponibles</div>
     </div>
   </div>
-
-  <nav class="sb-nav">
-    <div class="nav-item active" data-tab="todas"><span class="nav-icon">🗂️</span> Todas</div>
-    <div class="nav-item" data-tab="principales"><span class="nav-icon">📚</span> Obligatorias</div>
-    <div class="nav-item" data-tab="opt1"><span class="nav-icon">🧩</span> Optativas I</div>
-    <div class="nav-item" data-tab="opt2"><span class="nav-icon">🧩</span> Optativas II</div>
+  <nav class="sn">
+    <div class="nl">Vistas</div>
+    <button class="nb on" data-tab="todas" onclick="switchTab('todas')"><span class="ic">🗂️</span>Todas</button>
+    <button class="nb" data-tab="princ" onclick="switchTab('princ')"><span class="ic">📚</span>Obligatorias</button>
+    <button class="nb" data-tab="opt1" onclick="switchTab('opt1')"><span class="ic">🧩</span>Optativas S1</button>
+    <button class="nb" data-tab="opt2" onclick="switchTab('opt2')"><span class="ic">🧩</span>Optativas S2</button>
   </nav>
-
-  <div class="sb-areas">
-    <div class="sb-areas-title">Áreas (créditos exonerados)</div>
-    <div id="areas-panel"></div>
+  <div class="fs">
+    <div class="nl">Filtrar estado</div>
+    <div class="fc">
+      <button class="ch" data-s="bloqueada" onclick="toggleF('bloqueada')">🔒 Bloqueada</button>
+      <button class="ch" data-s="habilitada" onclick="toggleF('habilitada')">🔓 Habilitada</button>
+      <button class="ch" data-s="cursando" onclick="toggleF('cursando')">📖 Cursando</button>
+      <button class="ch" data-s="aprobada" onclick="toggleF('aprobada')">✅ Aprobada</button>
+      <button class="ch" data-s="exonerada" onclick="toggleF('exonerada')">🏆 Exonerada</button>
+    </div>
   </div>
-
-  <div class="sb-btns">
-    <button class="sb-btn" onclick="openConfig()">⚙️ Configuración</button>
-    <button class="sb-btn danger" onclick="openReset()">↺ Reiniciar todo</button>
-  </div>
+  <div class="sbot"><button class="rbtn" onclick="openReset()">🗑️ Reiniciar progreso</button></div>
 </aside>
-
-<!-- MAIN -->
-<div id="main">
-  <div id="topbar">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search" placeholder="Buscar materia..." autocomplete="off">
-    </div>
-    <div class="topbar-actions">
-      <button class="top-btn" id="btn-tema" onclick="toggleTema()">☀️ Claro</button>
-    </div>
+<div id="mn">
+  <div id="tb">
+    <button class="bg" onclick="toggleSB()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div id="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="sq" placeholder="Buscar materia..." oninput="applyS()"></div>
   </div>
-
-  <div id="area-bar"></div>
-
-  <div id="filter-bar">
-    <span class="filter-lbl">Filtrar:</span>
-    <div class="filter-chip bl" data-estado="bloqueada">Bloqueada</div>
-    <div class="filter-chip ha" data-estado="habilitada">Habilitada</div>
-    <div class="filter-chip cu" data-estado="cursando">Cursando</div>
-    <div class="filter-chip ap" data-estado="aprobada">Aprobada</div>
-    <div class="filter-chip ex" data-estado="exonerada">Exonerada</div>
-    <button class="clear-btn" onclick="clearFiltros()">✕ Limpiar</button>
+  <div id="ct">
+    <div class="tp on" id="tp-todas">
+      <div class="ab" id="ab-todas"></div>
+      <div class="st">Obligatorias</div><div class="gd" id="g-to"></div>
+      <div class="st">Optativas Semestre 1</div><div class="gd" id="g-t1"></div>
+      <div class="st">Optativas Semestre 2</div><div class="gd" id="g-t2"></div>
+    </div>
+    <div class="tp" id="tp-princ"><div class="ab" id="ab-princ"></div><div class="gd" id="g-pr"></div></div>
+    <div class="tp" id="tp-opt1"><div class="gd" id="g-o1"></div></div>
+    <div class="tp" id="tp-opt2"><div class="gd" id="g-o2"></div></div>
   </div>
-
-  <div id="content">
-    <div class="tab-panel active" id="tab-todas">
-      <div class="mat-grid" id="grid-todas"></div>
-    </div>
-    <div class="tab-panel" id="tab-principales">
-      <div class="mat-grid" id="grid-principales"></div>
-    </div>
-    <div class="tab-panel" id="tab-opt1">
-      <div class="mat-grid" id="grid-opt1"></div>
-    </div>
-    <div class="tab-panel" id="tab-opt2">
-      <div class="mat-grid" id="grid-opt2"></div>
-    </div>
-  </div>
-
-  <div id="frase-bar" onclick="rotarFrase()"></div>
+  <div id="tk"><span id="tkt"></span></div>
 </div>
-
-<!-- TOAST -->
-<div id="toast"></div>
-<canvas id="confetti-canvas"></canvas>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="modal-previas">
-  <div class="modal">
-    <h2 id="previas-titulo">Previas requeridas</h2>
-    <div id="previas-body"></div>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeModal('modal-previas')">Cerrar</button>
-    </div>
-  </div>
 </div>
-
-<div class="modal-overlay" id="modal-dual">
-  <div class="modal">
-    <h2>🔀 ¿Cuál vas a cursar?</h2>
-    <p>Esta materia tiene dos variantes independientes. Solo podés cursar una de las dos.</p>
-    <div id="dual-body"></div>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeModal('modal-dual')">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-reset">
-  <div class="modal">
-    <h2>↺ Reiniciar todo</h2>
-    <p>¿Estás seguro? Se borrarán todos los estados guardados y se volverá al inicio.</p>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeModal('modal-reset')">Cancelar</button>
-      <button class="modal-btn confirm" onclick="ejecutarReset()">Sí, reiniciar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-config">
-  <div class="modal">
-    <h2>⚙️ Configuración</h2>
-    <div id="config-body" style="margin: 16px 0;">
-      <div class="config-row">
-        <label>💬 Mensajes flotantes</label>
-        <button class="toggle-btn on" id="toggle-toasts" onclick="toggleToasts()">On</button>
-      </div>
-    </div>
-    <div style="margin-top:12px;font-size:11px;color:var(--text3);text-align:center;padding-top:12px;border-top:1px solid var(--border)">
-      QuimPath v1.0 — Cristopher Moreira<br>Ingeniería Química · UdelaR
-    </div>
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="modal-btn cancel" onclick="closeModal('modal-config')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-welcome">
-  <div class="modal" style="text-align:center">
-    <div style="font-size:48px;margin-bottom:12px">⚗️</div>
-    <h2 style="font-size:18px;margin-bottom:8px">Bienvenido/a a QuimPath</h2>
-    <p>Tu organizador de carrera de Ingeniería Química (UdelaR)</p>
-    <div style="text-align:left;background:var(--bg3);border-radius:10px;padding:14px;margin:16px 0;font-size:12px;line-height:1.8">
-      <b>🖱️ Clic izquierdo</b> — Avanzar estado<br>
-      <b>🖱️ Clic derecho</b> — Retroceder estado<br>
-      <b>🔒 Materia bloqueada</b> — Clic para ver previas<br>
-      <b>💾 Guardado automático</b> — Tu progreso se guarda en el navegador
-    </div>
-    <button class="modal-btn confirm" style="width:100%;padding:12px;font-size:14px" onclick="closeModal('modal-welcome')">Entendido, empezar →</button>
-  </div>
-</div>
-
+<div class="pp" id="pp"></div>
+<div id="tc"></div>
+<div class="ov" id="ov-r"><div class="md"><h2>⚠️ Reiniciar progreso</h2><p>¿Estás seguro? Se borrará todo tu progreso. Esta acción no se puede deshacer.</p><div class="ma"><button class="bsc" onclick="closeReset()">Cancelar</button><button class="bdn" onclick="doReset()">Reiniciar</button></div></div></div>
+<div class="ov" id="ov-b"><div class="md"><h2>🧬 Elegí una opción</h2><p>Esta materia tiene dos orientaciones. Seleccioná cuál cursás:</p><div class="rg"><label class="ro"><input type="radio" name="bio" value="bio"><div><div class="rl">Ing. Bioquímica</div><div class="rc">10 créditos</div></div></label><label class="ro"><input type="radio" name="bio" value="trat"><div><div class="rl">Trat. Efluentes y Res. Sól.</div><div class="rc">9 créditos</div></div></label></div><div class="ma"><button class="bsc" onclick="closeBio()">Cancelar</button><button class="bpr" onclick="confirmBio()">Confirmar</button></div></div></div>
+<div id="cel"><div class="celi"><div style="font-size:3.2rem;margin-bottom:14px">🎓</div><h1>¡450 CRÉDITOS!</h1><p>¡Sos Ingeniero/a Químico/a! 🏆<br>¡Lo lograste, campeón/a!</p><button class="bpr" onclick="document.getElementById('cel').classList.remove('on')" style="margin-top:6px">¡Vamos! 🚀</button></div></div>
 <script>
-// ═══════════════════════════════════════════════════════
-// CONSTANTES
-// ═══════════════════════════════════════════════════════
-const CREDITOS_META = 450;
-const ESTADOS = { BLOQUEADA:0, HABILITADA:1, CURSANDO:2, APROBADA:3, EXONERADA:4 };
-const A = ESTADOS.APROBADA, E = ESTADOS.EXONERADA;
-const NOMBRE_ESTADO = ['Bloqueada','Habilitada','Cursando','Aprobada','Exonerada'];
-const ICONO_ESTADO  = ['🔒','🔓','','',''];
-const CLASE_ESTADO  = ['bloqueada','habilitada','cursando','aprobada','exonerada'];
-
-const INGBIOTRAE_NOMBRE = 'Ing. Bioquímica / Trat. Efluentes y Res. Sól.';
-const PAS_NOMBRE = 'Pasantía';
-const CRED_OBLIG_MIN_PAS = 190;
-
-// ═══════════════════════════════════════════════════════
-// DATOS — MATERIAS
-// ═══════════════════════════════════════════════════════
-const MATERIAS_OBLIG = [
-  ['Matemática 01',14,'FQ'],['Matemática 03',7,'FQ'],['Química General 1',7,'FQ'],
-  ['Prevención de riesgos en el laboratorio',4,'FQ'],['Matemática 04',17,'FQ'],
-  ['Física 101',7,'FQ'],['Química General 2',8,'FQ'],
-  ['Introducción a la Ingeniería Química',2,'FING/IIQ'],
-  ['Matemática 05',11,'FQ'],['Matemática 06',7,'FQ'],['Física 102',7,'FQ'],
-  ['Química Orgánica 101',11,'FQ'],['Química Analítica 1',10,'FQ'],
-  ['Matemática 07',8,'FQ'],['Matemática 08',4,'FQ'],['Física 103 (Lab)',8,'FQ'],
-  ['Fisicoquímica 101',13,'FQ'],['Química Analítica 2',10,'FQ'],
-  ['Química Orgánica 102',5,'FQ'],['Introducción a la Ingeniería de Procesos',5,'FING/IIQ'],
-  ['Química Inorgánica (T + Lab)',6,'FQ'],['Fisicoquímica 103',12,'FQ'],
-  ['Química Orgánica 103 (Lab)',5,'FQ'],['Fenómenos de Transporte',14,'FING/IIQ'],
-  ['Termodinámica Aplicada',9,'FING/IIQ'],['Matemática 09',4,'FQ'],
-  ['Fisicoquímica 104',7,'FQ'],['Fluidodinámica',14,'FING/IIQ'],
-  ['Transferencia de Calor y Masa 1',14,'FING/IIQ'],['Computación 1',10,'FING/INCO'],
-  ['Ingeniería de las Reacciones Químicas 1',14,'FING/IIQ'],
-  ['Tecnología y Servicios Industriales 1',10,'FING/IIQ'],
-  ['Transferencia de Calor y Masa 2',14,'FING/IIQ'],['Electrotécnica 1',9,'FING/IIE'],
-  ['Ingeniería de las Reacciones Químicas 2',10,'FING/IIQ'],
-  ['Ingeniería Ambiental',6,'FING/IIQ'],['Dinámica y Control de Procesos',10,'FING/IIQ'],
-  ['Introducción a la Ingeniería Bioquímica',7,'FING/IIQ'],
-  ['Mecánica Aplicada',8,'FING/DISI'],
-  [INGBIOTRAE_NOMBRE,null,'FING/IIQ'],
-  ['Proyecto Industrial 1',8,'FING/IIQ'],['Diseño de Procesos Químicos',6,'FING/IIQ'],
-  ['Proyecto Industrial 2',20,'FING/IIQ'],[PAS_NOMBRE,12,'FING/IIQ'],
+const S={B:0,H:1,C:2,A:3,E:4};
+const SN=['bloqueada','habilitada','cursando','aprobada','exonerada'];
+const SI=['🔒','🔓','📖','✅','🏆'];
+const SL=['Bloqueada','Habilitada','Cursando','Aprobada','Exonerada'];
+const A=S.A,E=S.E,META=450;
+const OB=[
+  {id:'MAT01',name:'Matemática 01',cr:14,fac:'FQ'},
+  {id:'MAT03',name:'Matemática 03',cr:7,fac:'FQ'},
+  {id:'QUIGEN1',name:'Química General 1',cr:7,fac:'FQ'},
+  {id:'PRERIELAB',name:'Prevención de riesgos en el lab.',cr:4,fac:'FQ'},
+  {id:'MAT04',name:'Matemática 04',cr:17,fac:'FQ'},
+  {id:'FIS101',name:'Física 101',cr:7,fac:'FQ'},
+  {id:'QUIGEN2',name:'Química General 2',cr:8,fac:'FQ'},
+  {id:'INTINGQUI',name:'Introducción a la Ing. Química',cr:2,fac:'FING/IIQ'},
+  {id:'MAT05',name:'Matemática 05',cr:11,fac:'FQ'},
+  {id:'MAT06',name:'Matemática 06',cr:7,fac:'FQ'},
+  {id:'FIS102',name:'Física 102',cr:7,fac:'FQ'},
+  {id:'QUIORGT101',name:'Química Orgánica 101',cr:11,fac:'FQ'},
+  {id:'QUIANA1',name:'Química Analítica 1',cr:10,fac:'FQ'},
+  {id:'MAT07',name:'Matemática 07',cr:8,fac:'FQ'},
+  {id:'MAT08',name:'Matemática 08',cr:4,fac:'FQ'},
+  {id:'FIS103LAB',name:'Física 103 (Lab)',cr:8,fac:'FQ'},
+  {id:'FISQUI101',name:'Fisicoquímica 101',cr:13,fac:'FQ'},
+  {id:'QUIANA2',name:'Química Analítica 2',cr:10,fac:'FQ'},
+  {id:'QUIORG102I',name:'Química Orgánica 102',cr:5,fac:'FQ'},
+  {id:'INTINGPRO',name:'Intro a la Ing. de Procesos',cr:5,fac:'FING/IIQ'},
+  {id:'QUIINO1',name:'Química Inorgánica (T + Lab)',cr:6,fac:'FQ'},
+  {id:'FISQUI103',name:'Fisicoquímica 103',cr:12,fac:'FQ'},
+  {id:'QUIORG103L',name:'Química Orgánica 103 (Lab)',cr:5,fac:'FQ'},
+  {id:'FENTRA',name:'Fenómenos de Transporte',cr:14,fac:'FING/IIQ'},
+  {id:'TERAPL',name:'Termodinámica Aplicada',cr:9,fac:'FING/IIQ'},
+  {id:'MAT09',name:'Matemática 09',cr:4,fac:'FQ'},
+  {id:'FISQUI104',name:'Fisicoquímica 104',cr:7,fac:'FQ'},
+  {id:'FLU',name:'Fluidodinámica',cr:14,fac:'FING/IIQ'},
+  {id:'TRACALMA1',name:'Transferencia de Calor y Masa 1',cr:14,fac:'FING/IIQ'},
+  {id:'COM1',name:'Computación 1',cr:10,fac:'FING/INCO'},
+  {id:'IRREAQUI1',name:'Ing. de las Reacciones Químicas 1',cr:14,fac:'FING/IIQ'},
+  {id:'TECSERIND1',name:'Tecnología y Servicios Industriales 1',cr:10,fac:'FING/IIQ'},
+  {id:'TRACALMA2',name:'Transferencia de Calor y Masa 2',cr:14,fac:'FING/IIQ'},
+  {id:'ELE1',name:'Electrotécnica 1',cr:9,fac:'FING/IIE'},
+  {id:'IRREAQUI2',name:'Ing. de las Reacciones Químicas 2',cr:10,fac:'FING/IIQ'},
+  {id:'INGAMB',name:'Ingeniería Ambiental',cr:6,fac:'FING/IIQ'},
+  {id:'DINCONPRO',name:'Dinámica y Control de Procesos',cr:10,fac:'FING/IIQ'},
+  {id:'INTINGBIO',name:'Intro a la Ing. Bioquímica',cr:7,fac:'FING/IIQ'},
+  {id:'MECAPL',name:'Mecánica Aplicada',cr:8,fac:'FING/DISI'},
+  {id:'INGBIOTRAE',name:'Ing. Bioquímica / Trat. Efluentes',cr:null,fac:'FING/IIQ',dual:true},
+  {id:'PROIND1',name:'Proyecto Industrial 1',cr:8,fac:'FING/IIQ'},
+  {id:'DISPROQUI',name:'Diseño de Procesos Químicos',cr:6,fac:'FING/IIQ'},
+  {id:'PROIND2',name:'Proyecto Industrial 2',cr:20,fac:'FING/IIQ'},
+  {id:'PAS',name:'Pasantía',cr:12,fac:'FING/IIQ'}
 ];
-
-const MATERIAS_OPT1 = [
-  ['Fundamentos de Optimización',6,'FING/IMERL'],['Intro a las Ciencias Biológicas 1',5,'FQ'],
-  ['Química Analítica 3',10,'FQ'],['Catalizadores y Adsorbentes',9,'FQ'],
-  ['Lab. de Qca Inorgánica',5,'FQ'],['Herramientas de Electroquímica',6,'FQ'],
-  ['Enología y Biotec. Fermentación',6,'FQ'],['Instrumentación Industrial',8,'FING/IIMPI'],
-  ['Proc. Termoquímicos Biomasa',5,'FQ'],['Energía Aplicada a la Industria',8,'FING/IIQ'],
-  ['Industria Cárnica',6,'FING/IIQ'],['Qca y Tec. de Grasas y Aceites',11,'FQ'],
-  ['Tecnología de Polímeros',5,'FQ'],['Gestión de Procesos en la Ind.',8,'FING/IIQ'],
-  ['Intro Prevención Riesgos Lab.',6,'FING/IIQ'],['Administración Gral. para Ing.',5,'FING/DISI'],
-  ['Elementos de Gestión Logística',8,'FING/DISI'],['Sist. de Gestión de Calidad Lab.',10,'FQ'],
-  ['Gestión de Calidad',6,'FING/DISI'],['Inglés Científico',4,'FQ'],
-  ['Tutorías entre Pares',8,'UdelaR'],['Tutorías entre Pares (FQ)',4,'FQ'],
-  ['Epistemología',3,'FQ'],['Ciencia Tecnología y Sociedad',8,'FING/DISI'],
-  ['Rep. Gráfica Ind. de Procesos',4,'FING/DISI'],['Intro Evaluación Gestión Amb.',8,'FING/IMFIA'],
+const O1=[
+  {id:'FUNOPT',name:'Fundamentos de Optimización',cr:6,fac:'FING/IMERL'},
+  {id:'INTCIEBIO1',name:'Intro a las Ciencias Biológicas 1',cr:5,fac:'FQ'},
+  {id:'QUIANA3',name:'Química Analítica 3',cr:10,fac:'FQ'},
+  {id:'CATADS',name:'Catalizadores y Adsorbentes',cr:9,fac:'FQ'},
+  {id:'LABQCAINO',name:'Lab. de Qca Inorgánica',cr:5,fac:'FQ'},
+  {id:'HERELE',name:'Herramientas de Electroquímica',cr:6,fac:'FQ'},
+  {id:'ENOBIOFER',name:'Enología y Biotec. Fermentación',cr:6,fac:'FQ'},
+  {id:'INSIND',name:'Instrumentación Industrial',cr:8,fac:'FING/IIMPI'},
+  {id:'PROTERBIO',name:'Proc. Termoquímicos Biomasa',cr:5,fac:'FQ'},
+  {id:'ENEAPLIND',name:'Energía Aplicada a la Industria',cr:8,fac:'FING/IIQ'},
+  {id:'INDCAR',name:'Industria Cárnica',cr:6,fac:'FING/IIQ'},
+  {id:'QCATECGRA',name:'Qca y Tec. de Grasas y Aceites',cr:11,fac:'FQ'},
+  {id:'TECPOL',name:'Tecnología de Polímeros',cr:5,fac:'FQ'},
+  {id:'GESPROIND',name:'Gestión de Procesos en la Ind.',cr:8,fac:'FING/IIQ'},
+  {id:'INTPRERIEL',name:'Intro Prevención Riesgos Lab.',cr:6,fac:'FING/IIQ'},
+  {id:'ADMGRAING',name:'Administración Gral. para Ing.',cr:5,fac:'FING/DISI'},
+  {id:'ELEGESLOG',name:'Elementos de Gestión Logística',cr:8,fac:'FING/DISI'},
+  {id:'SISGESCAL',name:'Sist. de Gestión de Calidad Lab.',cr:10,fac:'FQ'},
+  {id:'GESCAL',name:'Gestión de Calidad',cr:6,fac:'FING/DISI'},
+  {id:'INGCIE',name:'Inglés Científico',cr:4,fac:'FQ'},
+  {id:'TUTPAR',name:'Tutorías entre Pares',cr:8,fac:'UdelaR'},
+  {id:'TUTPARFQ',name:'Tutorías entre Pares (FQ)',cr:4,fac:'FQ'},
+  {id:'EPI',name:'Epistemología',cr:3,fac:'FQ'},
+  {id:'CIETECSOC',name:'Ciencia Tecnología y Sociedad',cr:8,fac:'FING/DISI'},
+  {id:'REPGRAIND',name:'Rep. Gráfica Ind. de Procesos',cr:4,fac:'FING/DISI'},
+  {id:'INTEVAGESA',name:'Intro Evaluación Gestión Amb.',cr:8,fac:'FING/IMFIA'}
 ];
-
-const MATERIAS_OPT2 = [
-  ['Métodos Numéricos',8,'FING/IMERL'],['Aplicaciones del Álgebra Lineal',9,'FING/IMERL'],
-  ['Métodos Estadísticos Reg. y Clas.',6,'FING/IMERL'],['Biocatálisis 1',4,'FQ'],
-  ['Óptica',10,'FING/IF'],['Química Bioinorgánica (T)',6,'FQ'],
-  ['Química Bioinorgánica (P)',8,'FQ'],['Química Ambiental',8,'FQ'],
-  ['Sint. Org. Transf. Enzimática',4,'FQ'],['Diseño de Proc. Electroquímicos',6,'FING/IIQ'],
-  ['Análisis de Fallas',6,'FING/IIQ'],['Control de la Corrosión',10,'FING/IIQ'],
-  ['H2: Fuente de Energía',6,'FQ'],['Hidrógeno Verde: Prod. y Usos',4,'FING/IIQ'],
-  ['Baterías Aplic. Movilidad Eléctrica',4,'FING/IIQ'],
-  ['Tec. y Servicios Industriales 2',6,'FING/IIQ'],
-  ['Fund. de Prod. de Celulosa y Papel',8,'FING/IIQ'],
-  ['Envases Poliméricos Ind. Alim.',6,'FING/IIQ'],['Taller Encararé: Crear',8,'FING'],
-  ['Biodiesel (T)',4,'FQ'],['Medidas Eléctricas en Ing. Proc.',4,'FING/IIQ'],
-  ['Costos para Ingeniería',8,'FING/DISI'],['Control de Calidad',8,'FING/DISI'],
-  ['Intro a los Sistemas de Gestión',4,'FQ'],['Práctica de Administración para Ing.',5,'FING/DISI'],
-  ['Teoría de Restricciones',6,'FING/DISI'],['Economía',7,'FING/DISI'],
-  ['Int. Diseño y Montaje de Procesos',5,'FING/DISI'],['Tutorías entre Pares (TEP)',4,'FQ'],
-  ['Sensibilización e Intercambio',2,'FQ'],['Iniciación a R para Ingeniería',3,'FING/UEFI'],
+const O2=[
+  {id:'METNUM',name:'Métodos Numéricos',cr:8,fac:'FING/IMERL'},
+  {id:'APLALGLIN',name:'Aplicaciones del Álgebra Lineal',cr:9,fac:'FING/IMERL'},
+  {id:'METESTREG',name:'Métodos Estadísticos Reg. y Clas.',cr:6,fac:'FING/IMERL'},
+  {id:'BIO1',name:'Biocatálisis 1',cr:4,fac:'FQ'},
+  {id:'OPTICA',name:'Óptica',cr:10,fac:'FING/IF'},
+  {id:'QUIBIOINT',name:'Química Bioinorgánica (T)',cr:6,fac:'FQ'},
+  {id:'QUIBIOINP',name:'Química Bioinorgánica (P)',cr:8,fac:'FQ'},
+  {id:'QUIAMB',name:'Química Ambiental',cr:8,fac:'FQ'},
+  {id:'SINORGTRE',name:'Sint. Org. Transf. Enzimática',cr:4,fac:'FQ'},
+  {id:'DISPROELE',name:'Diseño de Proc. Electroquímicos',cr:6,fac:'FING/IIQ'},
+  {id:'ANAFAL',name:'Análisis de Fallas',cr:6,fac:'FING/IIQ'},
+  {id:'CONCOR',name:'Control de la Corrosión',cr:10,fac:'FING/IIQ'},
+  {id:'H2FUEENE',name:'H2: Fuente de Energía',cr:6,fac:'FQ'},
+  {id:'HIDVERPRO',name:'Hidrógeno Verde: Prod. y Usos',cr:4,fac:'FING/IIQ'},
+  {id:'BATAPLMOV',name:'Baterías Aplic. Movilidad Eléctrica',cr:4,fac:'FING/IIQ'},
+  {id:'TECSERIND2',name:'Tec. y Servicios Industriales 2',cr:6,fac:'FING/IIQ'},
+  {id:'FUNPROCEL',name:'Fund. de Prod. de Celulosa y Papel',cr:8,fac:'FING/IIQ'},
+  {id:'ENVPOLIND',name:'Envases Poliméricos Ind. Alim.',cr:6,fac:'FING/IIQ'},
+  {id:'TALENCCRE',name:'Taller Encararé: Crear',cr:8,fac:'FING'},
+  {id:'BIODIEST',name:'Biodiesel (T)',cr:4,fac:'FQ'},
+  {id:'MEDELEINGP',name:'Medidas Eléctricas en Ing. Proc.',cr:4,fac:'FING/IIQ'},
+  {id:'COSING',name:'Costos para Ingeniería',cr:8,fac:'FING/DISI'},
+  {id:'CONCAL',name:'Control de Calidad',cr:8,fac:'FING/DISI'},
+  {id:'INTSISGES',name:'Intro a los Sistemas de Gestión',cr:4,fac:'FQ'},
+  {id:'PRAADING',name:'Práctica de Administración para Ing.',cr:5,fac:'FING/DISI'},
+  {id:'TEORES',name:'Teoría de Restricciones',cr:6,fac:'FING/DISI'},
+  {id:'ECO',name:'Economía',cr:7,fac:'FING/DISI'},
+  {id:'INTDISMON',name:'Int. Diseño y Montaje de Procesos',cr:5,fac:'FING/DISI'},
+  {id:'TUTPARTEP',name:'Tutorías entre Pares (TEP)',cr:4,fac:'FQ'},
+  {id:'SENEINT',name:'Sensibilización e Intercambio',cr:2,fac:'FQ'},
+  {id:'INIRINGR',name:'Iniciación a R para Ingeniería',cr:3,fac:'FING/UEFI'}
 ];
-
-const INICIALES = new Set([
-  'Matemática 01','Matemática 03','Química General 1',
-  'Prevención de riesgos en el laboratorio','Introducción a la Ingeniería Química'
-]);
-
-// ═══════════════════════════════════════════════════════
-// ÁREA POR MATERIA
-// ═══════════════════════════════════════════════════════
-const AREA_MATERIA = {
-  'Matemática 01':'Matemática','Matemática 03':'Matemática','Matemática 04':'Matemática',
-  'Matemática 05':'Matemática','Matemática 06':'Matemática','Matemática 07':'Matemática',
-  'Matemática 08':'Matemática','Matemática 09':'Matemática',
-  'Fundamentos de Optimización':'Matemática','Métodos Numéricos':'Matemática',
-  'Aplicaciones del Álgebra Lineal':'Matemática','Métodos Estadísticos Reg. y Clas.':'Matemática',
-  'Iniciación a R para Ingeniería':'Matemática',
-  'Física 101':'Física','Física 102':'Física','Física 103 (Lab)':'Física','Óptica':'Física',
-  'Química General 1':'Química','Prevención de riesgos en el laboratorio':'Química',
-  'Química General 2':'Química','Química Orgánica 101':'Química',
-  'Química Analítica 1':'Química','Química Analítica 2':'Química',
-  'Química Orgánica 102':'Química','Química Inorgánica (T + Lab)':'Química',
-  'Química Orgánica 103 (Lab)':'Química','Fisicoquímica 101':'Química',
-  'Fisicoquímica 103':'Química','Fisicoquímica 104':'Química',
-  'Química Analítica 3':'Química','Catalizadores y Adsorbentes':'Química',
-  'Lab. de Qca Inorgánica':'Química','Herramientas de Electroquímica':'Química',
-  'Enología y Biotec. Fermentación':'Química','Proc. Termoquímicos Biomasa':'Química',
-  'Qca y Tec. de Grasas y Aceites':'Química','Tecnología de Polímeros':'Química',
-  'Química Bioinorgánica (T)':'Química','Química Bioinorgánica (P)':'Química',
-  'Química Ambiental':'Química','Sint. Org. Transf. Enzimática':'Química',
-  'H2: Fuente de Energía':'Química','Biodiesel (T)':'Química',
-  'Introducción a la Ingeniería Bioquímica':'Biología',
-  'Intro a las Ciencias Biológicas 1':'Biología','Biocatálisis 1':'Biología',
-  'Introducción a la Ingeniería Química':'Troncales',
-  'Introducción a la Ingeniería de Procesos':'Troncales',
-  'Fenómenos de Transporte':'Troncales','Termodinámica Aplicada':'Troncales',
-  'Fluidodinámica':'Troncales','Transferencia de Calor y Masa 1':'Troncales',
-  'Ingeniería de las Reacciones Químicas 1':'Troncales',
-  'Transferencia de Calor y Masa 2':'Troncales',
-  'Proyecto Industrial 1':'Troncales','Proyecto Industrial 2':'Troncales',
-  'Pasantía':'Troncales',
-  'Tecnología y Servicios Industriales 1':'Avanzadas',
-  'Ingeniería de las Reacciones Químicas 2':'Avanzadas',
-  'Ingeniería Ambiental':'Avanzadas','Dinámica y Control de Procesos':'Avanzadas',
-  [INGBIOTRAE_NOMBRE]:'Avanzadas','Diseño de Procesos Químicos':'Avanzadas',
-  'Energía Aplicada a la Industria':'Avanzadas','Industria Cárnica':'Avanzadas',
-  'Gestión de Procesos en la Ind.':'Avanzadas',
-  'Diseño de Proc. Electroquímicos':'Avanzadas','Análisis de Fallas':'Avanzadas',
-  'Control de la Corrosión':'Avanzadas','Hidrógeno Verde: Prod. y Usos':'Avanzadas',
-  'Baterías Aplic. Movilidad Eléctrica':'Avanzadas',
-  'Tec. y Servicios Industriales 2':'Avanzadas',
-  'Fund. de Prod. de Celulosa y Papel':'Avanzadas',
-  'Envases Poliméricos Ind. Alim.':'Avanzadas',
-  'Electrotécnica 1':'Técnicas','Mecánica Aplicada':'Técnicas','Computación 1':'Técnicas',
-  'Instrumentación Industrial':'Técnicas','Medidas Eléctricas en Ing. Proc.':'Técnicas',
-  'Rep. Gráfica Ind. de Procesos':'Técnicas','Int. Diseño y Montaje de Procesos':'Técnicas',
-  'Intro Prevención Riesgos Lab.':'Técnicas','Administración Gral. para Ing.':'Técnicas',
-  'Elementos de Gestión Logística':'Técnicas','Sist. de Gestión de Calidad Lab.':'Técnicas',
-  'Gestión de Calidad':'Técnicas','Costos para Ingeniería':'Técnicas',
-  'Control de Calidad':'Técnicas','Intro a los Sistemas de Gestión':'Técnicas',
-  'Práctica de Administración para Ing.':'Técnicas','Teoría de Restricciones':'Técnicas',
-  'Economía':'Técnicas',
-  'Inglés Científico':'Complementarias','Tutorías entre Pares':'Complementarias',
-  'Tutorías entre Pares (FQ)':'Complementarias','Epistemología':'Complementarias',
-  'Ciencia Tecnología y Sociedad':'Complementarias',
-  'Intro Evaluación Gestión Amb.':'Complementarias',
-  'Taller Encararé: Crear':'Complementarias','Tutorías entre Pares (TEP)':'Complementarias',
-  'Sensibilización e Intercambio':'Complementarias',
+const ALL=[...OB,...O1,...O2];
+const BI=Object.fromEntries(ALL.map(s=>[s.id,s]));
+const INIC=new Set(['MAT01','MAT03','QUIGEN1','PRERIELAB','INTINGQUI']);
+const PV={
+  'MAT04':{'MAT01':A,'MAT03':A},'MAT05':{'MAT01':A,'MAT03':A,'MAT04':A},'MAT06':{'MAT01':A,'MAT03':A},
+  'MAT07':{'MAT04':A},'MAT08':{'MAT04':A},'MAT09':{'MAT04':A},'FIS101':{'MAT01':A},'FIS102':{'FIS101':A},
+  'FIS103LAB':{'FIS102':A},'ELE1':{'MAT04':A,'FIS103LAB':A,'FIS102':E},'MECAPL':{'MAT04':A,'FIS102':E,'FIS103LAB':A},
+  'QUIGEN2':{'PRERIELAB':A,'QUIGEN1':A},'QUIORGT101':{'QUIGEN2':A},'QUIORG102I':{'QUIORGT101':A},
+  'QUIORG103L':{'QUIANA1':A,'QUIORGT101':A},'QUIANA1':{'QUIGEN2':A},'QUIANA2':{'QUIANA1':A},'QUIINO1':{'QUIGEN2':A},
+  'FISQUI101':{'MAT04':A,'QUIANA1':A},'FISQUI103':{'FISQUI101':A},'FISQUI104':{'FISQUI103':A},
+  'INTINGPRO':{'MAT01':A,'FIS101':A,'QUIGEN2':A},'COM1':{'MAT01':A,'MAT03':E,'MAT04':A},
+  'FENTRA':[{'MAT01':E,'MAT03':E,'MAT04':E,'MAT07':A,'MAT08':A,'FIS101':E,'QUIGEN1':E,'QUIGEN2':E,'FISQUI101':A}],
+  'TERAPL':[{'MAT01':E,'MAT03':E,'MAT04':E,'MAT07':A,'MAT08':A,'FIS101':E,'QUIGEN1':E,'QUIGEN2':E,'FISQUI101':A}],
+  'FLU':[{'FIS102':E,'FISQUI101':E,'QUIANA1':A,'QUIORGT101':A,'FENTRA':A,'TERAPL':A,'INTINGPRO':E}],
+  'TRACALMA1':[{'FIS102':E,'FISQUI101':E,'QUIANA1':A,'QUIINO1':A,'QUIORGT101':A,'FENTRA':A,'TERAPL':A,'INTINGPRO':E}],
+  'IRREAQUI1':[{'FISQUI103':E,'TERAPL':E,'MAT05':E,'FENTRA':E,'FLU':A,'MAT07':E,'MAT08':E,'QUIANA1':E,'QUIANA2':E}],
+  'TRACALMA2':[{'QUIANA2':E,'QUIANA1':E,'FISQUI103':E,'TRACALMA1':E,'MAT05':E,'FENTRA':E,'MAT07':E,'MAT08':E}],
+  'TECSERIND1':[{'TRACALMA1':A,'QUIANA1':E,'QUIANA2':E,'TERAPL':E,'FENTRA':E,'FISQUI104':A,'FISQUI103':E,'FLU':A,'QUIINO1':A}],
+  'IRREAQUI2':{'IRREAQUI1':A},'INGAMB':{'IRREAQUI1':A,'FENTRA':E,'FLU':A},
+  'DINCONPRO':[{'TRACALMA1':E,'COM1':A,'IRREAQUI1':A},{'TRACALMA1':E,'MAT06':A,'IRREAQUI1':A}],
+  'INTINGBIO':{'QUIORG102I':E,'QUIORGT101':A,'FISQUI103':A},
+  'INGBIOTRAE':[{'INTINGBIO':A,'IRREAQUI1':A,'TRACALMA2':A},{'INTINGBIO':A,'IRREAQUI1':A}],
+  'PROIND1':[{'TRACALMA1':E,'TRACALMA2':E,'TECSERIND1':E,'FLU':E,'MECAPL':A,'INTINGBIO':A,'IRREAQUI2':A,'ELE1':A,'IRREAQUI1':E}],
+  'DISPROQUI':{'IRREAQUI1':A,'TRACALMA1':A},'PROIND2':{'PROIND1':A},
+  'PAS':{'TECSERIND1':A,'IRREAQUI1':A,'TRACALMA1':A,'TRACALMA2':A,'FLU':A,'TERAPL':A,'FENTRA':A,'IRREAQUI2':A}
 };
+const BO={bio:{name:'Ing. Bioquímica',cr:10},trat:{name:'Trat. Efluentes',cr:9}};
+const AM={'MAT01':'Matemática','MAT03':'Matemática','MAT04':'Matemática','MAT05':'Matemática','MAT06':'Matemática','MAT07':'Matemática','MAT08':'Matemática','MAT09':'Matemática','FUNOPT':'Matemática','METNUM':'Matemática','APLALGLIN':'Matemática','METESTREG':'Matemática','INIRINGR':'Matemática','FIS101':'Física','FIS102':'Física','FIS103LAB':'Física','OPTICA':'Física','QUIGEN1':'Química','PRERIELAB':'Química','QUIGEN2':'Química','QUIORGT101':'Química','QUIANA1':'Química','QUIANA2':'Química','QUIORG102I':'Química','QUIINO1':'Química','QUIORG103L':'Química','FISQUI101':'Química','FISQUI103':'Química','FISQUI104':'Química','QUIANA3':'Química','CATADS':'Química','LABQCAINO':'Química','HERELE':'Química','ENOBIOFER':'Química','PROTERBIO':'Química','QCATECGRA':'Química','TECPOL':'Química','QUIBIOINT':'Química','QUIBIOINP':'Química','QUIAMB':'Química','SINORGTRE':'Química','H2FUEENE':'Química','BIODIEST':'Química','INTINGBIO':'Biología','INTCIEBIO1':'Biología','BIO1':'Biología','INTINGQUI':'Troncales','INTINGPRO':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales','FLU':'Troncales','TRACALMA1':'Troncales','IRREAQUI1':'Troncales','TRACALMA2':'Troncales','PROIND1':'Troncales','PROIND2':'Troncales','PAS':'Troncales','TECSERIND1':'Avanzadas','IRREAQUI2':'Avanzadas','INGAMB':'Avanzadas','DINCONPRO':'Avanzadas','INGBIOTRAE':'Avanzadas','DISPROQUI':'Avanzadas','ENEAPLIND':'Avanzadas','INDCAR':'Avanzadas','GESPROIND':'Avanzadas','DISPROELE':'Avanzadas','ANAFAL':'Avanzadas','CONCOR':'Avanzadas','HIDVERPRO':'Avanzadas','BATAPLMOV':'Avanzadas','TECSERIND2':'Avanzadas','FUNPROCEL':'Avanzadas','ENVPOLIND':'Avanzadas','ELE1':'Técnicas','MECAPL':'Técnicas','COM1':'Técnicas','INSIND':'Técnicas','MEDELEINGP':'Técnicas','REPGRAIND':'Técnicas','INTDISMON':'Técnicas','INTPRERIEL':'Técnicas','ADMGRAING':'Técnicas','ELEGESLOG':'Técnicas','SISGESCAL':'Técnicas','GESCAL':'Técnicas','COSING':'Técnicas','CONCAL':'Técnicas','INTSISGES':'Técnicas','PRAADING':'Técnicas','TEORES':'Técnicas','ECO':'Técnicas','INGCIE':'Complementarias','TUTPAR':'Complementarias','TUTPARFQ':'Complementarias','EPI':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias','TALENCCRE':'Complementarias','TUTPARTEP':'Complementarias','SENEINT':'Complementarias'};
+const AMIN={'Matemática':70,'Física':30,'Química':80,'Biología':5,'Troncales':75,'Avanzadas':80,'Técnicas':30,'Complementarias':5};
+const AC={'Matemática':'#4e9af1','Física':'#e0a040','Química':'#2a9d8f','Biología':'#57cc99','Troncales':'#e05252','Avanzadas':'#c77dff','Técnicas':'#aaaaaa','Complementarias':'#f4a261'};
+const FR={exonerada:['¡Exonerada! Una menos para el título 🎓','¡Crack! Otro crédito conquistado ⚗️','¡Exonerada! Merecés un café ☕','¡Bien jugado! El título se acerca 🏆'],aprobada:['¡Aprobada! No era fácil, pero acá estás 👊','Aprobada. El esfuerzo valió 💯','¡Pasaste! A buscar la exoneración 🎯'],cursando:['¡En carrera! A darle duro 📚','¡Dale! Esta también cae 💥','Cursando... el desafío empieza 🧪']};
+const TKF=['💧 El agua existe en los 3 estados de la materia.',' ⚗️ El polietileno fue descubierto accidentalmente en 1933.',' ⚡ El proceso Haber-Bosch alimenta a casi la mitad de la humanidad.',' 🏭 Una refinería puede procesar hasta 800.000 barriles por día.',' "La ciencia no conoce fronteras." — Louis Pasteur',' "Nada en la vida debe ser temido, solo comprendido." — Marie Curie',' ☕ El café: balance energético entre entalpía y entropía personal.',' 🏆 Proyecto Industrial 2 es el jefe final de la carrera. ¡Vos podés!',' 🎓 Ing. Química: porque la medicina era muy fácil.'];
 
-const AREAS_MIN = {
-  'Matemática':70,'Física':30,'Química':80,'Biología':5,
-  'Troncales':75,'Avanzadas':80,'Técnicas':30,'Complementarias':5,
-};
-const AREA_COLOR = {
-  'Matemática':'#4e9af1','Física':'#e0a040','Química':'#2a9d8f','Biología':'#57cc99',
-  'Troncales':'#e05252','Avanzadas':'#c77dff','Técnicas':'#aaaaaa','Complementarias':'#f4a261',
-};
-
-// ═══════════════════════════════════════════════════════
-// PREVIAS
-// ═══════════════════════════════════════════════════════
-const n = s => s; // identity — nombres ya son strings
-const PREVIAS = {
-  'Matemática 04': {'Matemática 01':A,'Matemática 03':A},
-  'Matemática 05': {'Matemática 01':A,'Matemática 03':A,'Matemática 04':A},
-  'Matemática 06': {'Matemática 01':A,'Matemática 03':A},
-  'Matemática 07': {'Matemática 04':A},
-  'Matemática 08': {'Matemática 04':A},
-  'Matemática 09': {'Matemática 04':A},
-  'Física 101':    {'Matemática 01':A},
-  'Física 102':    {'Física 101':A},
-  'Física 103 (Lab)':{'Física 102':A},
-  'Electrotécnica 1':{'Matemática 04':A,'Física 103 (Lab)':A,'Física 102':E},
-  'Mecánica Aplicada':{'Matemática 04':A,'Física 102':E,'Física 103 (Lab)':A},
-  'Química General 2':{'Prevención de riesgos en el laboratorio':A,'Química General 1':A},
-  'Química Orgánica 101':{'Química General 2':A},
-  'Química Orgánica 102':{'Química Orgánica 101':A},
-  'Química Orgánica 103 (Lab)':{'Química Analítica 1':A,'Química Orgánica 101':A},
-  'Química Analítica 1':{'Química General 2':A},
-  'Química Analítica 2':{'Química Analítica 1':A},
-  'Química Inorgánica (T + Lab)':{'Química General 2':A},
-  'Fisicoquímica 101':{'Matemática 04':A,'Química Analítica 1':A},
-  'Fisicoquímica 103':{'Fisicoquímica 101':A},
-  'Fisicoquímica 104':{'Fisicoquímica 103':A},
-  'Introducción a la Ingeniería de Procesos':{'Matemática 01':A,'Física 101':A,'Química General 2':A},
-  'Computación 1':{'Matemática 01':A,'Matemática 03':E,'Matemática 04':A},
-  'Fenómenos de Transporte':[
-    {'Matemática 01':E,'Matemática 03':E,'Matemática 04':E,'Matemática 07':A,'Matemática 08':A,
-     'Física 101':E,'Química General 1':E,'Química General 2':E,'Fisicoquímica 101':A}
-  ],
-  'Termodinámica Aplicada':[
-    {'Matemática 01':E,'Matemática 03':E,'Matemática 04':E,'Matemática 07':A,'Matemática 08':A,
-     'Física 101':E,'Química General 1':E,'Química General 2':E,'Fisicoquímica 101':A}
-  ],
-  'Fluidodinámica':[
-    {'Física 102':E,'Fisicoquímica 101':E,'Química Analítica 1':A,'Química Orgánica 101':A,
-     'Fenómenos de Transporte':A,'Termodinámica Aplicada':A,'Introducción a la Ingeniería de Procesos':E}
-  ],
-  'Transferencia de Calor y Masa 1':[
-    {'Física 102':E,'Fisicoquímica 101':E,'Química Analítica 1':A,'Química Inorgánica (T + Lab)':A,
-     'Química Orgánica 101':A,'Fenómenos de Transporte':A,'Termodinámica Aplicada':A,
-     'Introducción a la Ingeniería de Procesos':E}
-  ],
-  'Ingeniería de las Reacciones Químicas 1':[
-    {'Fisicoquímica 103':E,'Termodinámica Aplicada':E,'Matemática 05':E,'Fenómenos de Transporte':E,
-     'Fluidodinámica':A,'Matemática 07':E,'Matemática 08':E,'Química Analítica 1':E,'Química Analítica 2':E}
-  ],
-  'Transferencia de Calor y Masa 2':[
-    {'Química Analítica 2':E,'Química Analítica 1':E,'Fisicoquímica 103':E,
-     'Transferencia de Calor y Masa 1':E,'Matemática 05':E,'Fenómenos de Transporte':E,
-     'Matemática 07':E,'Matemática 08':E}
-  ],
-  'Tecnología y Servicios Industriales 1':[
-    {'Transferencia de Calor y Masa 1':A,'Química Analítica 1':E,'Química Analítica 2':E,
-     'Termodinámica Aplicada':E,'Fenómenos de Transporte':E,'Fisicoquímica 104':A,
-     'Fisicoquímica 103':E,'Fluidodinámica':A,'Química Inorgánica (T + Lab)':A}
-  ],
-  'Ingeniería de las Reacciones Químicas 2':{'Ingeniería de las Reacciones Químicas 1':A},
-  'Ingeniería Ambiental':{'Ingeniería de las Reacciones Químicas 1':A,'Fenómenos de Transporte':E,'Fluidodinámica':A},
-  'Dinámica y Control de Procesos':[
-    {'Transferencia de Calor y Masa 1':E,'Computación 1':A,'Ingeniería de las Reacciones Químicas 1':A},
-    {'Transferencia de Calor y Masa 1':E,'Matemática 06':A,'Ingeniería de las Reacciones Químicas 1':A},
-  ],
-  'Introducción a la Ingeniería Bioquímica':{'Química Orgánica 102':E,'Química Orgánica 101':A,'Fisicoquímica 103':A},
-  [INGBIOTRAE_NOMBRE]:[
-    {'Introducción a la Ingeniería Bioquímica':A,'Ingeniería de las Reacciones Químicas 1':A,'Transferencia de Calor y Masa 2':A},
-    {'Introducción a la Ingeniería Bioquímica':A,'Ingeniería de las Reacciones Químicas 1':A},
-  ],
-  'Proyecto Industrial 1':{
-    'Transferencia de Calor y Masa 1':E,'Transferencia de Calor y Masa 2':E,
-    'Tecnología y Servicios Industriales 1':E,'Fluidodinámica':E,'Mecánica Aplicada':A,
-    'Introducción a la Ingeniería Bioquímica':A,'Ingeniería de las Reacciones Químicas 2':A,
-    'Electrotécnica 1':A,'Ingeniería de las Reacciones Químicas 1':E,
-  },
-  'Diseño de Procesos Químicos':{'Ingeniería de las Reacciones Químicas 1':A,'Transferencia de Calor y Masa 1':A},
-  'Proyecto Industrial 2':{'Proyecto Industrial 1':A},
-  [PAS_NOMBRE]:{
-    'Tecnología y Servicios Industriales 1':A,'Ingeniería de las Reacciones Químicas 1':A,
-    'Transferencia de Calor y Masa 1':A,'Transferencia de Calor y Masa 2':A,
-    'Fluidodinámica':A,'Termodinámica Aplicada':A,'Fenómenos de Transporte':A,
-    'Ingeniería de las Reacciones Químicas 2':A,
-  },
-};
-
-const INGBIOTRAE_OPCIONES = {
-  bio:  {nombre:'Ing. Bioquímica',              creditos:10, desc:'Biotransformaciones y procesos fermentativos'},
-  trat: {nombre:'Trat. Efluentes y Res. Sól.',   creditos:9,  desc:'Tratamiento de efluentes y residuos sólidos'},
-};
-
-// ═══════════════════════════════════════════════════════
-// FRASES
-// ═══════════════════════════════════════════════════════
-const FRASES_ESTADO = {
-  4: ["¡Exonerada! Una menos para el título 🎓","¡Eso es! Seguí así, ingeniero/a 💪","¡Crack! Otro crédito conquistado ⚗️","La facultad no sabe lo que le viene 🔥","Otro escalón subido 🧗","¡Bien jugado! El título se acerca 🏆"],
-  3: ["¡Aprobada! No era fácil, pero acá estás 👊","Aprobada. El esfuerzo valió 💯","¡Pasaste! A buscar la exoneración 🎯"],
-  2: ["¡En carrera! A darle duro 📚","Cursando... el desafío empieza 🧪","¡Dale! Esta también cae 💥"],
-};
-const FRASES_CARRERA = [
-  "🎉 ¡¡¡450 CRÉDITOS!!! ¡SOS INGENIERO/A QUÍMICO/A!\n¡Siempre supe que podías! 🎓🏆",
-  "🥳 ¡¡LO LOGRASTE!! ¡Toda la carrera exonerada!\n¡Ve por tu título! 🎊✨",
-];
-const FRASES_TOP = [
-  "💧 El agua existe naturalmente en los 3 estados de la materia en la Tierra.",
-  "🌡️ El nitrógeno líquido hierve a -196°C. ¡Más frío que tus chances de aprobar sin estudiar!",
-  "⚗️ La destilación fraccionada del petróleo puede producir más de 500 subproductos.",
-  "🔥 La llama oxiacetilénica alcanza los 3500°C. Casi tanto como un parcial difícil.",
-  "⚡ El proceso Haber-Bosch alimenta a casi la mitad de la humanidad.",
-  "🏭 Una refinería puede procesar hasta 800.000 barriles por día.",
-  "💊 El 90% de los medicamentos modernos usan procesos de ingeniería química.",
-  '\"La ciencia no conoce fronteras.\" — Louis Pasteur',
-  '\"Nada en la vida debe ser temido, solo comprendido.\" — Marie Curie',
-  "🎓 Ing. Química: porque la medicina era muy fácil.",
-  "☕ El café: balance energético entre entalpía y entropía personal.",
-  "📊 Balance de masa: lo que entra tiene que salir. Incluyendo el conocimiento en los exámenes.",
-  "🔄 La vida es un proceso en estado estacionario: siempre entra y sale algo.",
-  "💡 Pro tip: en Fenómenos de Transporte, todo es una analogía de todo. Todo.",
-  "⚖️ La energía que ponés estudiando se convierte en créditos. Ley de conservación.",
-  "🎯 Cada materia exonerada es una reacción irreversible hacia tu título.",
-];
-
-let _fraseIdx = {2:0,3:0,4:0};
-function getFrase(estado) {
-  const pool = FRASES_ESTADO[estado];
-  if (!pool) return null;
-  const f = pool[_fraseIdx[estado] % pool.length];
-  _fraseIdx[estado]++;
-  return f;
+let est={},bOp=null,aF=new Set(),qr='',pB=null,cel=false;
+const SK='qp_v2';
+function sv(){try{localStorage.setItem(SK,JSON.stringify({est,bOp,cel}))}catch(e){}}
+function ld(){try{const d=JSON.parse(localStorage.getItem(SK));if(d){est=d.est||{};bOp=d.bOp||null;cel=d.cel||false}}catch(e){}}
+function gs(id){return est[id]??S.B}
+function cp(id){
+  if(INIC.has(id))return S.H;
+  const p=PV[id];if(!p)return S.H;
+  const gs2=Array.isArray(p)?p:[p];
+  for(const g of gs2){let ok=true;for(const[pid,ms]of Object.entries(g))if(gs(pid)<ms){ok=false;break}if(ok)return S.H;}
+  return S.B;
 }
-
-// ═══════════════════════════════════════════════════════
-// ESTADO GLOBAL
-// ═══════════════════════════════════════════════════════
-const reg = {}; // nombre -> {nombre, creditos, facultad, esOpt, estado, opcion, el}
-const todas = [];
-const todasOpt1 = [], todasOpt2 = [];
-const _dep = {}; // grafo de dependencias inversas
-
-let toastsOn = true;
-let temaOscuro = true;
-let celebrado = false;
-let estadosFiltro = new Set();
-let areaFiltro = null;
-let searchTimer = null;
-
-// ═══════════════════════════════════════════════════════
-// PERSISTENCIA
-// ═══════════════════════════════════════════════════════
-function guardar() {
-  const estados = {};
-  for (const [nom, m] of Object.entries(reg)) {
-    estados[nom] = { e: m.estado, op: m.opcion };
-  }
-  localStorage.setItem('quimpath_v1', JSON.stringify({
-    estados, toastsOn, temaOscuro,
-  }));
+function rc(){for(const s of ALL){const c=gs(s.id);if(c===S.B||c===S.H){const sh=cp(s.id);if(sh!==c)est[s.id]=sh;}}}
+function gcr(id,st){if(st<S.A)return 0;if(id==='INGBIOTRAE')return bOp?BO[bOp].cr:0;return BI[id]?.cr??0;}
+function cst(){let t=0,ex=0,ap=0,cu=0,ha=0;for(const s of ALL){const st=gs(s.id);t+=gcr(s.id,st);if(st===S.E)ex++;else if(st===S.A)ap++;else if(st===S.C)cu++;else if(st===S.H)ha++;}return{t,ex,ap,cu,ha};}
+function acr(){const r={};for(const s of ALL){const st=gs(s.id);const c=gcr(s.id,st);const ar=AM[s.id];if(ar&&c>0)r[ar]=(r[ar]||0)+c;}return r;}
+function cy(id){const c=gs(id),nx=(c+1)%5;if(id==='INGBIOTRAE'&&nx>=S.C&&!bOp){pB=nx;openBio();return;}setSt(id,nx);}
+function setSt(id,ns){const old=gs(id);est[id]=ns;rc();rAll();upCr();if(ns>=S.C&&ns!==old)toast(id,ns);chkCel();sv();}
+const CE={};
+function mkCard(s){const d=document.createElement('div');d.className='card';d.dataset.id=s.id;d.innerHTML=`<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;d.onclick=()=>cy(s.id);d.onmouseenter=e=>showPP(s.id,e);d.onmouseleave=()=>document.getElementById('pp').classList.remove('v');if(!CE[s.id])CE[s.id]=[];CE[s.id].push(d);return d;}
+function upCard(el,id){const st=gs(id);el.dataset.st=SN[st];el.querySelector('.ci').textContent=SI[st];el.querySelector('.cbg').textContent=SL[st];let cr;if(id==='INGBIOTRAE'&&bOp)cr=BO[bOp].cr+' cr';else cr=BI[id]?.cr!=null?BI[id].cr+' cr':'—';el.querySelector('.cc').textContent=cr;}
+function rAll(){const q=qr.toLowerCase();for(const[id,els]of Object.entries(CE)){const sn=SN[gs(id)];const nm=BI[id]?.name?.toLowerCase()||'';const sh=(!q||nm.includes(q))&&(aF.size===0||aF.has(sn));for(const el of els){upCard(el,id);el.classList.toggle('hd',!sh);}}}
+function bAB(cid,subs){const c=document.getElementById(cid);if(!c)return;c.innerHTML='';const ac=acr();for(const[ar,mn]of Object.entries(AMIN)){const hs=subs.some(s=>AM[s.id]===ar);if(!hs)continue;const ea=ac[ar]||0;const pt=Math.min(100,Math.round((ea/mn)*100));const d=document.createElement('div');d.dataset.area=ar;d.innerHTML=`<div class="abh"><span class="abn" style="color:${AC[ar]}">${ar}</span><span class="abc">${ea}/${mn}</span></div><div class="abt"><div class="abf" style="background:${AC[ar]};width:${pt}%"></div></div>`;c.appendChild(d);}}
+function updABs(){const ac=acr();document.querySelectorAll('[data-area]').forEach(el=>{const ar=el.dataset.area;const mn=AMIN[ar];const ea=ac[ar]||0;const pt=Math.min(100,Math.round((ea/mn)*100));const nc=el.querySelector('.abc');const fi=el.querySelector('.abf');if(nc)nc.textContent=`${ea}/${mn}`;if(fi)fi.style.width=pt+'%';});}
+function upCr(){const{t,ex,ap,cu,ha}=cst();document.getElementById('cn').textContent=t;document.getElementById('pbi').style.width=Math.min(100,(t/META)*100)+'%';document.getElementById('se').textContent=ex;document.getElementById('sa').textContent=ap;document.getElementById('sc').textContent=cu;document.getElementById('sh').textContent=ha;updABs();}
+let blt={};
+function bldGrds(){
+  if(!blt.t){OB.forEach(s=>document.getElementById('g-to').appendChild(mkCard(s)));O1.forEach(s=>document.getElementById('g-t1').appendChild(mkCard(s)));O2.forEach(s=>document.getElementById('g-t2').appendChild(mkCard(s)));bAB('ab-todas',ALL);blt.t=true;}
+  if(!blt.p){OB.forEach(s=>document.getElementById('g-pr').appendChild(mkCard(s)));bAB('ab-princ',OB);blt.p=true;}
+  if(!blt.o1){O1.forEach(s=>document.getElementById('g-o1').appendChild(mkCard(s)));blt.o1=true;}
+  if(!blt.o2){O2.forEach(s=>document.getElementById('g-o2').appendChild(mkCard(s)));blt.o2=true;}
 }
-
-function cargar() {
-  try {
-    const d = JSON.parse(localStorage.getItem('quimpath_v1') || '{}');
-    return d;
-  } catch { return {}; }
-}
-
-// ═══════════════════════════════════════════════════════
-// LÓGICA DE PREVIAS
-// ═══════════════════════════════════════════════════════
-function getBloques(nombre) {
-  const p = PREVIAS[nombre];
-  if (!p) return [];
-  return Array.isArray(p) ? p : [p];
-}
-
-function construirGrafo() {
-  for (const nom of Object.keys(reg)) _dep[nom] = new Set();
-  for (const [nombre, bloques] of Object.entries(PREVIAS)) {
-    const bArr = Array.isArray(bloques) ? bloques : [bloques];
-    for (const blq of bArr) {
-      for (const pre of Object.keys(blq)) {
-        if (!_dep[pre]) _dep[pre] = new Set();
-        _dep[pre].add(nombre);
-      }
-    }
-  }
-}
-
-function credObligAprobados() {
-  let total = 0;
-  for (const m of todas) {
-    if (!m.esOpt && (m.estado === ESTADOS.APROBADA || m.estado === ESTADOS.EXONERADA)) {
-      total += m.creditos;
-    }
-  }
-  return total;
-}
-
-function cumple(nombre) {
-  const bloques = getBloques(nombre);
-  if (!bloques.length) return true;
-  let bArr = bloques;
-  const m = reg[nombre];
-  if (nombre === INGBIOTRAE_NOMBRE && m && m.opcion) {
-    bArr = m.opcion === 'bio' ? [bloques[0]] : [bloques[1]];
-  }
-  const cumplePrevias = bArr.some(blq =>
-    Object.entries(blq).every(([pre, req]) => {
-      const est = reg[pre] ? (reg[pre].estado === ESTADOS.CURSANDO ? ESTADOS.HABILITADA : reg[pre].estado) : 0;
-      return est >= req;
-    })
-  );
-  if (!cumplePrevias) return false;
-  if (nombre === PAS_NOMBRE) return credObligAprobados() >= CRED_OBLIG_MIN_PAS;
-  return true;
-}
-
-function faltantesTooltip(nombre) {
-  const bloques = getBloques(nombre);
-  if (!bloques.length) return null;
-  let bArr = bloques;
-  const m = reg[nombre];
-  if (nombre === INGBIOTRAE_NOMBRE && m && m.opcion) {
-    bArr = m.opcion === 'bio' ? [bloques[0]] : [bloques[1]];
-  }
-  const opciones = bArr.map(blq =>
-    Object.entries(blq).map(([pre, req]) => {
-      const est = reg[pre] ? (reg[pre].estado === ESTADOS.CURSANDO ? ESTADOS.HABILITADA : reg[pre].estado) : 0;
-      return { materia: pre, req, ok: est >= req };
-    })
-  );
-  if (nombre === PAS_NOMBRE) {
-    const cr = credObligAprobados();
-    opciones[0].push({ materia: `190 créditos de obligatorias (${cr}/190)`, req: A, ok: cr >= CRED_OBLIG_MIN_PAS });
-  }
-  if (opciones.every(blq => blq.every(i => i.ok))) return null;
-  return opciones;
-}
-
-function revisar(nombres) {
-  const visitados = new Set();
-  const cola = [...nombres];
-  while (cola.length) {
-    const c = cola.pop();
-    if (visitados.has(c)) continue;
-    visitados.add(c);
-    const m = reg[c];
-    if (!m || m.esOpt || !getBloques(c).length) continue;
-    const est = m.estado;
-    if (cumple(c)) {
-      if (est === ESTADOS.BLOQUEADA) setEstado(m, ESTADOS.HABILITADA, false);
-    } else if (est !== ESTADOS.APROBADA && est !== ESTADOS.EXONERADA && est !== ESTADOS.CURSANDO) {
-      setEstado(m, ESTADOS.BLOQUEADA, false);
-    }
-    for (const dep of (_dep[c] || [])) cola.push(dep);
-  }
-}
-
-function revisarTodas() {
-  for (const [nom, m] of Object.entries(reg)) {
-    if (INICIALES.has(nom)) { if (m.estado === ESTADOS.BLOQUEADA) setEstado(m, ESTADOS.HABILITADA, false); }
-    else if (!m.esOpt) {}
-  }
-  revisar(new Set(Object.keys(reg).filter(n => !reg[n].esOpt)));
-}
-
-// ═══════════════════════════════════════════════════════
-// ESTADO DE MATERIA
-// ═══════════════════════════════════════════════════════
-function setEstado(m, nuevo, flash=true) {
-  const prev = m.estado;
-  m.estado = nuevo;
-  const el = m.el;
-  if (!el) return;
-  el.className = `mat-card ${CLASE_ESTADO[nuevo]}`;
-  el.querySelector('.mat-icon').textContent = ICONO_ESTADO[nuevo];
-  if (flash && prev === ESTADOS.BLOQUEADA && nuevo === ESTADOS.HABILITADA) {
-    el.classList.add('flash');
-    setTimeout(() => el.classList.remove('flash'), 400);
-  }
-  // sync espejos
-  for (const sp of (m.espejos || [])) {
-    sp.className = `mat-card ${CLASE_ESTADO[nuevo]}`;
-    sp.querySelector('.mat-icon').textContent = ICONO_ESTADO[nuevo];
-  }
-}
-
-function ciclar(nombre) {
-  const m = reg[nombre];
-  if (!m) return;
-  if (m.estado === ESTADOS.EXONERADA) return;
-  if (m.estado === ESTADOS.BLOQUEADA) {
-    if (nombre === INGBIOTRAE_NOMBRE && !m.opcion) { abrirDualModal(nombre); return; }
-    const falt = faltantesTooltip(nombre);
-    if (falt) mostrarPrevias(nombre, falt);
-    return;
-  }
-  if (nombre === INGBIOTRAE_NOMBRE && !m.opcion) { abrirDualModal(nombre); return; }
-  const nuevo = m.estado + 1;
-  setEstado(m, nuevo);
-  if (nuevo === ESTADOS.EXONERADA) playExon(); else playAvance();
-  const f = getFrase(nuevo);
-  if (f) showToast(f, nuevo);
-  actualizarCreditos();
-  revisar(_dep[nombre] || new Set());
-  guardar();
-}
-
-function retroceder(nombre) {
-  const m = reg[nombre];
-  if (!m) return;
-  if (m.estado === ESTADOS.BLOQUEADA || m.estado === ESTADOS.HABILITADA) {
-    if (nombre === INGBIOTRAE_NOMBRE && m.opcion) {
-      m.opcion = null;
-      m.creditos = 0;
-      actualizarTextoCard(m);
-      revisarTodas(); actualizarCreditos(); guardar();
-    }
-    return;
-  }
-  setEstado(m, m.estado - 1);
-  playRetro();
-  actualizarCreditos(); revisarTodas(); guardar();
-}
-
-function actualizarTextoCard(m) {
-  if (!m.el) return;
-  const nameEl = m.el.querySelector('.name');
-  const metaEl = m.el.querySelector('.meta');
-  if (m.nombre === INGBIOTRAE_NOMBRE) {
-    if (m.opcion) {
-      const op = INGBIOTRAE_OPCIONES[m.opcion];
-      nameEl.textContent = op.nombre;
-      metaEl.textContent = `${op.creditos} cr · ${m.facultad}`;
-    } else {
-      nameEl.textContent = 'Ing. Bio / Trat. Efluentes';
-      metaEl.textContent = `elegir opción · ${m.facultad}`;
-    }
-  }
-  for (const sp of (m.espejos || [])) {
-    const sn = sp.querySelector('.name'), sm = sp.querySelector('.meta');
-    if (sn) sn.textContent = nameEl.textContent;
-    if (sm) sm.textContent = metaEl.textContent;
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// CREAR CARD
-// ═══════════════════════════════════════════════════════
-function crearCard(m, esEspejo = false) {
-  const el = document.createElement('div');
-  let nombre = m.nombre, creditos = m.creditos, facultad = m.facultad;
-  if (nombre === INGBIOTRAE_NOMBRE) {
-    if (m.opcion) {
-      const op = INGBIOTRAE_OPCIONES[m.opcion];
-      nombre = op.nombre; creditos = op.creditos;
-    } else {
-      nombre = 'Ing. Bio / Trat. Efluentes'; creditos = 0;
-    }
-  }
-  el.className = `mat-card ${CLASE_ESTADO[m.estado]}`;
-  el.innerHTML = `<div class="name">${nombre}</div>
-    <div class="meta">${creditos ? creditos+' cr · '+facultad : 'elegir opción · '+facultad}</div>
-    <div class="mat-icon">${ICONO_ESTADO[m.estado]}</div>`;
-  el.addEventListener('click', () => ciclar(m.nombre));
-  el.addEventListener('contextmenu', e => { e.preventDefault(); retroceder(m.nombre); });
-  if (esEspejo) {
-    if (!m.espejos) m.espejos = [];
-    m.espejos.push(el);
-  } else {
-    m.el = el;
-  }
-  return el;
-}
-
-// ═══════════════════════════════════════════════════════
-// INICIALIZACIÓN DE MATERIAS
-// ═══════════════════════════════════════════════════════
-function initMaterias() {
-  const gridTodas = document.getElementById('grid-todas');
-  for (const [nombre, creditos, facultad] of MATERIAS_OBLIG) {
-    const m = { nombre, creditos: creditos||0, facultad, esOpt:false,
-                estado: INICIALES.has(nombre) ? ESTADOS.HABILITADA : ESTADOS.BLOQUEADA,
-                opcion: null, espejos: [] };
-    reg[nombre] = m;
-    todas.push(m);
-    gridTodas.appendChild(crearCard(m));
-  }
-  for (const [nombre, creditos, facultad] of MATERIAS_OPT1) {
-    const m = { nombre, creditos, facultad, esOpt:true, estado: ESTADOS.HABILITADA, opcion: null, espejos: [] };
-    reg[nombre] = m;
-    todas.push(m);
-    todasOpt1.push(m);
-    gridTodas.appendChild(crearCard(m));
-  }
-  for (const [nombre, creditos, facultad] of MATERIAS_OPT2) {
-    const m = { nombre, creditos, facultad, esOpt:true, estado: ESTADOS.HABILITADA, opcion: null, espejos: [] };
-    reg[nombre] = m;
-    todas.push(m);
-    todasOpt2.push(m);
-    gridTodas.appendChild(crearCard(m));
-  }
-}
-
-function poblarTabs() {
-  const gP = document.getElementById('grid-principales');
-  const g1 = document.getElementById('grid-opt1');
-  const g2 = document.getElementById('grid-opt2');
-  for (const m of todas.filter(x => !x.esOpt)) gP.appendChild(crearCard(m, true));
-  for (const m of todasOpt1) g1.appendChild(crearCard(m, true));
-  for (const m of todasOpt2) g2.appendChild(crearCard(m, true));
-}
-
-// ═══════════════════════════════════════════════════════
-// CRÉDITOS Y ESTADÍSTICAS
-// ═══════════════════════════════════════════════════════
-function actualizarCreditos() {
-  let exonCred = 0, exonN = 0, aprN = 0, cursN = 0, habN = 0;
-  const areaCreds = {};
-  for (const m of todas) {
-    const e = m.estado;
-    if (e === ESTADOS.EXONERADA) {
-      const cr = m.opcion ? INGBIOTRAE_OPCIONES[m.opcion]?.creditos || 0 : m.creditos;
-      exonCred += cr; exonN++;
-      const area = AREA_MATERIA[m.nombre];
-      if (area) areaCreds[area] = (areaCreds[area]||0) + cr;
-    } else if (e === ESTADOS.APROBADA) aprN++;
-    else if (e === ESTADOS.CURSANDO) cursN++;
-    else if (e === ESTADOS.HABILITADA) habN++;
-  }
-  const pct = Math.min(exonCred / CREDITOS_META, 1);
-  const circ = 220;
-  document.getElementById('ring-fill').style.strokeDashoffset = circ - circ * pct;
-  document.getElementById('ring-pct').textContent = Math.round(pct*100) + '%';
-  document.getElementById('cred-exon').textContent = exonCred;
-  document.getElementById('stat-cursando').textContent = cursN;
-  document.getElementById('stat-aprobadas').textContent = aprN;
-  document.getElementById('stat-exoneradas').textContent = exonN;
-  document.getElementById('stat-habilitadas').textContent = habN;
-  actualizarAreas(areaCreds);
-  // revisarPas
-  const pas = reg[PAS_NOMBRE];
-  if (pas && !pas.esOpt && pas.estado !== ESTADOS.APROBADA && pas.estado !== ESTADOS.EXONERADA && pas.estado !== ESTADOS.CURSANDO) {
-    if (cumple(PAS_NOMBRE)) { if (pas.estado === ESTADOS.BLOQUEADA) setEstado(pas, ESTADOS.HABILITADA, false); }
-    else if (pas.estado === ESTADOS.HABILITADA) setEstado(pas, ESTADOS.BLOQUEADA, false);
-  }
-  if (exonCred >= CREDITOS_META && !celebrado) {
-    celebrado = true;
-    setTimeout(lanzarConfetti, 300);
-  } else if (exonCred < CREDITOS_META) {
-    celebrado = false;
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// ÁREAS PANEL
-// ═══════════════════════════════════════════════════════
-const _areaEls = {};
-function buildAreasPanel() {
-  const panel = document.getElementById('areas-panel');
-  panel.innerHTML = '';
-  for (const [area, min] of Object.entries(AREAS_MIN)) {
-    const color = AREA_COLOR[area] || '#888';
-    const row = document.createElement('div');
-    row.className = 'area-row';
-    row.innerHTML = `<div class="area-row-top"><span><span class="area-dot" style="background:${color}"></span>${area}</span><span class="val" id="aval-${area}">0/${min}</span></div>
-      <div class="area-bar-bg"><div class="area-bar-fill incomplete" id="abar-${area}" style="background:${color}"></div></div>`;
-    panel.appendChild(row);
-    _areaEls[area] = {
-      val: document.getElementById(`aval-${area}`),
-      bar: document.getElementById(`abar-${area}`),
-      min,
-    };
-  }
-}
-
-function buildAreaFilterBar() {
-  const bar = document.getElementById('area-bar');
-  bar.innerHTML = '';
-  const all = document.createElement('div');
-  all.className = 'area-chip active'; all.textContent = 'Todas las áreas';
-  all.onclick = () => toggleAreaFiltro(null, all);
-  bar.appendChild(all);
-  for (const [area, color] of Object.entries(AREA_COLOR)) {
-    const chip = document.createElement('div');
-    chip.className = 'area-chip';
-    chip.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};margin-right:5px;vertical-align:middle"></span>${area}`;
-    chip.dataset.area = area;
-    chip.onclick = () => toggleAreaFiltro(area, chip);
-    bar.appendChild(chip);
-  }
-}
-
-function toggleAreaFiltro(area, el) {
-  areaFiltro = (areaFiltro === area) ? null : area;
-  document.querySelectorAll('#area-bar .area-chip').forEach(c => c.classList.remove('active'));
-  if (areaFiltro === null) document.querySelector('#area-bar .area-chip').classList.add('active');
-  else el.classList.add('active');
-  aplicarBusqueda();
-}
-
-function actualizarAreas(areaCreds) {
-  for (const [area, wd] of Object.entries(_areaEls)) {
-    const cr = areaCreds[area] || 0;
-    const pct = Math.min(cr / wd.min, 1) * 100;
-    wd.val.textContent = `${cr}/${wd.min}`;
-    wd.bar.style.width = pct + '%';
-    wd.bar.style.background = cr >= wd.min ? 'var(--exonerada)' : (AREA_COLOR[area] || '#888');
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════════
-let tabActual = 'todas';
-document.querySelectorAll('.nav-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const tab = el.dataset.tab;
-    tabActual = tab;
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    el.classList.add('active');
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    document.getElementById('content').scrollTop = 0;
-    aplicarBusqueda();
-  });
-});
-
-// ═══════════════════════════════════════════════════════
-// BÚSQUEDA Y FILTROS
-// ═══════════════════════════════════════════════════════
-function normalizar(s) {
-  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-}
-
-function aplicarBusqueda() {
-  if (searchTimer) clearTimeout(searchTimer);
-  searchTimer = setTimeout(_hacerBusqueda, 80);
-}
-
-function _hacerBusqueda() {
-  const q = normalizar(document.getElementById('search').value.trim());
-  let gridId;
-  if (tabActual === 'todas') gridId = 'grid-todas';
-  else if (tabActual === 'principales') gridId = 'grid-principales';
-  else if (tabActual === 'opt1') gridId = 'grid-opt1';
-  else gridId = 'grid-opt2';
-
-  const cards = document.getElementById(gridId).querySelectorAll('.mat-card');
-  const materiasList = tabActual === 'todas' ? todas
-    : tabActual === 'principales' ? todas.filter(x=>!x.esOpt)
-    : tabActual === 'opt1' ? todasOpt1 : todasOpt2;
-
-  let i = 0;
-  for (const m of materiasList) {
-    const card = cards[i++];
-    if (!card) continue;
-    const matchQ = !q || normalizar(m.nombre).includes(q);
-    const matchE = estadosFiltro.size === 0 || estadosFiltro.has(CLASE_ESTADO[m.estado]);
-    const matchA = !areaFiltro || AREA_MATERIA[m.nombre] === areaFiltro;
-    card.classList.toggle('hidden', !(matchQ && matchE && matchA));
-  }
-}
-
-document.getElementById('search').addEventListener('input', aplicarBusqueda);
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key.toLowerCase() === 'f') { e.preventDefault(); document.getElementById('search').focus(); }
-  if (e.key === 'Escape') {
-    closeAllModals();
-    if (document.getElementById('search').value) { document.getElementById('search').value = ''; aplicarBusqueda(); }
-    else if (estadosFiltro.size) { clearFiltros(); }
-    else if (areaFiltro) { toggleAreaFiltro(null, document.querySelector('#area-bar .area-chip')); }
-  }
-});
-
-document.querySelectorAll('.filter-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    const e = chip.dataset.estado;
-    if (estadosFiltro.has(e)) estadosFiltro.delete(e); else estadosFiltro.add(e);
-    chip.classList.toggle('active', estadosFiltro.has(e));
-    aplicarBusqueda();
-  });
-});
-
-function clearFiltros() {
-  estadosFiltro.clear();
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  aplicarBusqueda();
-}
-
-// ═══════════════════════════════════════════════════════
-// MODALES
-// ═══════════════════════════════════════════════════════
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function closeAllModals() {
-  document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-}
-document.querySelectorAll('.modal-overlay').forEach(ov => {
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
-});
-
-function mostrarPrevias(nombre, opciones) {
-  document.getElementById('previas-titulo').textContent = `⚠️ Previas: ${nombre}`;
-  const body = document.getElementById('previas-body');
-  body.innerHTML = '';
-  const multi = opciones.length > 1;
-  opciones.forEach((blq, idx) => {
-    if (multi) {
-      const lbl = document.createElement('div');
-      lbl.className = 'previas-list';
-      lbl.innerHTML = `<div class="option-label">Opción ${idx+1}</div>`;
-      body.appendChild(lbl);
-    }
-    const ul = document.createElement('ul');
-    ul.className = 'previas-list';
-    blq.forEach(item => {
-      const li = document.createElement('li');
-      if (item.ok) li.classList.add('ok');
-      const accion = item.req === A ? 'Aprobar' : 'Exonerar';
-      li.innerHTML = `<span class="dot" style="background:${item.ok ? 'var(--exonerada)' : 'var(--red)'}"></span>
-        <span>${item.materia}${item.req && !item.materia.includes('créditos') ? ' ('+accion+')' : ''}</span>`;
-      ul.appendChild(li);
-    });
-    body.appendChild(ul);
-  });
-  openModal('modal-previas');
-}
-
-function abrirDualModal(nombre) {
-  const body = document.getElementById('dual-body');
-  body.innerHTML = '';
-  for (const [clave, opt] of Object.entries(INGBIOTRAE_OPCIONES)) {
-    const div = document.createElement('div');
-    div.className = 'dual-option';
-    div.innerHTML = `<div class="opt-name">${clave==='bio'?'🧬':'♻️'} ${opt.nombre}</div>
-      <div class="opt-sub">${opt.desc}</div>
-      <div class="opt-cred">${opt.creditos} créditos</div>`;
-    div.onclick = () => {
-      const m = reg[nombre];
-      m.opcion = clave;
-      m.creditos = opt.creditos;
-      actualizarTextoCard(m);
-      closeModal('modal-dual');
-      revisar(_dep[nombre] || new Set());
-      actualizarCreditos();
-      guardar();
-    };
-    body.appendChild(div);
-  }
-  openModal('modal-dual');
-}
-
-function openReset() { openModal('modal-reset'); }
-function ejecutarReset() {
-  for (const m of todas) {
-    m.opcion = null; m.creditos = MATERIAS_OBLIG.find(x=>x[0]===m.nombre)?.[1] || m.creditos;
-    setEstado(m, INICIALES.has(m.nombre) ? ESTADOS.HABILITADA : ESTADOS.BLOQUEADA, false);
-    if (m.nombre === INGBIOTRAE_NOMBRE) { m.creditos = 0; actualizarTextoCard(m); }
-    if (m.esOpt) setEstado(m, ESTADOS.HABILITADA, false);
-  }
-  revisarTodas(); actualizarCreditos(); aplicarBusqueda();
-  closeModal('modal-reset'); guardar();
-}
-
-function openConfig() {
-  document.getElementById('toggle-toasts').textContent = toastsOn ? 'On' : 'Off';
-  document.getElementById('toggle-toasts').className = `toggle-btn ${toastsOn?'on':'off'}`;
-  openModal('modal-config');
-}
-function toggleToasts() {
-  toastsOn = !toastsOn;
-  document.getElementById('toggle-toasts').textContent = toastsOn ? 'On' : 'Off';
-  document.getElementById('toggle-toasts').className = `toggle-btn ${toastsOn?'on':'off'}`;
-  guardar();
-}
-
-// ═══════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════
-let toastTimer = null;
-function showToast(texto, estado=null) {
-  if (!toastsOn) return;
-  const el = document.getElementById('toast');
-  el.textContent = texto;
-  el.style.borderColor = estado===ESTADOS.EXONERADA ? 'var(--exonerada)'
-    : estado===ESTADOS.APROBADA ? 'var(--aprobada)'
-    : estado===ESTADOS.CURSANDO ? 'var(--cursando)' : 'var(--border)';
-  el.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
-}
-
-// ═══════════════════════════════════════════════════════
-// SONIDO (Web Audio API)
-// ═══════════════════════════════════════════════════════
-let ctx = null;
-function getCtx() {
-  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-  return ctx;
-}
-function beep(freq, dur, type='sine', vol=0.15) {
-  try {
-    const c = getCtx();
-    const osc = c.createOscillator(), gain = c.createGain();
-    osc.connect(gain); gain.connect(c.destination);
-    osc.type = type; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, c.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
-    osc.start(); osc.stop(c.currentTime + dur);
-  } catch {}
-}
-function playAvance()  { beep(880, 0.12, 'sine', 0.12); }
-function playRetro()   { beep(330, 0.15, 'sine', 0.10); }
-function playExon()    { beep(1046,0.08,'sine',0.12); setTimeout(()=>beep(1318,0.12,'sine',0.12),90); setTimeout(()=>beep(1568,0.2,'sine',0.12),200); }
-
-// ═══════════════════════════════════════════════════════
-// CONFETTI
-// ═══════════════════════════════════════════════════════
-function lanzarConfetti() {
-  const canvas = document.getElementById('confetti-canvas');
-  const ctx2 = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.pointerEvents = 'auto';
-  const CC = ['#e63946','#f4a261','#2a9d8f','#4ea8de','#e9c46a','#f72585','#4cc9f0','#ffffff'];
-  const parts = Array.from({length:100}, () => ({
-    x: Math.random()*canvas.width, y: Math.random()*-100,
-    vx: (Math.random()-0.5)*3, vy: Math.random()*4+2,
-    rot: Math.random()*360, drot: (Math.random()-0.5)*10,
-    color: CC[Math.floor(Math.random()*CC.length)],
-    size: Math.random()*10+5,
-  }));
-  // mensaje
-  ctx2.fillStyle = 'rgba(13,17,23,0.85)';
-  ctx2.fillRect(0,0,canvas.width,canvas.height);
-  ctx2.fillStyle = '#fff'; ctx2.font = 'bold 22px Space Mono, monospace';
-  ctx2.textAlign = 'center';
-  const msg = FRASES_CARRERA[Math.floor(Math.random()*FRASES_CARRERA.length)].replace('\n',' ');
-  ctx2.fillText(msg, canvas.width/2, canvas.height/2);
-  ctx2.font = '13px DM Sans, sans-serif'; ctx2.fillStyle = '#8b949e';
-  ctx2.fillText('QuimPath v1.0 — Cristopher Moreira · Clic para cerrar', canvas.width/2, canvas.height/2+36);
-
-  const t0 = Date.now();
-  function anim() {
-    if (Date.now() - t0 > 5500) { ctx2.clearRect(0,0,canvas.width,canvas.height); canvas.style.pointerEvents='none'; return; }
-    ctx2.clearRect(0,0,canvas.width,canvas.height);
-    ctx2.fillStyle = 'rgba(13,17,23,0.85)'; ctx2.fillRect(0,0,canvas.width,canvas.height);
-    ctx2.fillStyle = '#fff'; ctx2.font = 'bold 22px Space Mono, monospace'; ctx2.textAlign = 'center';
-    ctx2.fillText(msg, canvas.width/2, canvas.height/2);
-    ctx2.font = '13px DM Sans, sans-serif'; ctx2.fillStyle = '#8b949e';
-    ctx2.fillText('QuimPath v1.0 — Cristopher Moreira · Clic para cerrar', canvas.width/2, canvas.height/2+36);
-    for (const p of parts) {
-      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.rot+=p.drot;
-      ctx2.save(); ctx2.translate(p.x, p.y); ctx2.rotate(p.rot*Math.PI/180);
-      ctx2.fillStyle = p.color; ctx2.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
-      ctx2.restore();
-    }
-    requestAnimationFrame(anim);
-  }
-  anim();
-  canvas.onclick = () => { ctx2.clearRect(0,0,canvas.width,canvas.height); canvas.style.pointerEvents='none'; };
-}
-
-// ═══════════════════════════════════════════════════════
-// TEMA
-// ═══════════════════════════════════════════════════════
-function toggleTema() {
-  temaOscuro = !temaOscuro;
-  aplicarTema();
-  guardar();
-}
-function aplicarTema() {
-  const r = document.documentElement;
-  if (temaOscuro) {
-    r.style.setProperty('--bg','#0d1117');
-    r.style.setProperty('--bg2','#161b22');
-    r.style.setProperty('--bg3','#1c2333');
-    r.style.setProperty('--bg4','#21262d');
-    r.style.setProperty('--border','#30363d');
-    r.style.setProperty('--text','#e6edf3');
-    r.style.setProperty('--text2','#8b949e');
-    r.style.setProperty('--text3','#6e7681');
-    r.style.setProperty('--habilitada','#c9d1d9');
-    document.getElementById('btn-tema').textContent = '☀️ Claro';
-  } else {
-    r.style.setProperty('--bg','#f6f8fa');
-    r.style.setProperty('--bg2','#ffffff');
-    r.style.setProperty('--bg3','#f0f2f4');
-    r.style.setProperty('--bg4','#e8ebef');
-    r.style.setProperty('--border','#d0d7de');
-    r.style.setProperty('--text','#1f2328');
-    r.style.setProperty('--text2','#656d76');
-    r.style.setProperty('--text3','#818b98');
-    r.style.setProperty('--habilitada','#e0e0e0');
-    document.getElementById('btn-tema').textContent = '🌙 Oscuro';
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// FRASE
-// ═══════════════════════════════════════════════════════
-let _fraseUsadas = [];
-function rotarFrase() {
-  let disp = FRASES_TOP.filter(f => !_fraseUsadas.includes(f));
-  if (!disp.length) { _fraseUsadas = []; disp = [...FRASES_TOP]; }
-  const nueva = disp[Math.floor(Math.random()*disp.length)];
-  _fraseUsadas.push(nueva);
-  const el = document.getElementById('frase-bar');
-  el.style.opacity = 0;
-  setTimeout(() => { el.textContent = nueva; el.style.opacity = 1; }, 200);
-}
-document.getElementById('frase-bar').style.transition = 'opacity 0.3s';
-
-// ═══════════════════════════════════════════════════════
-// APLICAR ESTADOS GUARDADOS
-// ═══════════════════════════════════════════════════════
-function aplicarGuardados(data) {
-  if (!data.estados) return false;
-  let tieneAlgo = false;
-  for (const [nom, info] of Object.entries(data.estados)) {
-    const m = reg[nom];
-    if (!m) continue;
-    if (info.op) { m.opcion = info.op; m.creditos = INGBIOTRAE_OPCIONES[info.op]?.creditos || 0; actualizarTextoCard(m); }
-    setEstado(m, info.e, false);
-    tieneAlgo = true;
-  }
-  return tieneAlgo;
-}
-
-// ═══════════════════════════════════════════════════════
-// INICIO
-// ═══════════════════════════════════════════════════════
-(function init() {
-  initMaterias();
-  construirGrafo();
-  buildAreasPanel();
-  buildAreaFilterBar();
-  poblarTabs();
-  rotarFrase();
-  setInterval(rotarFrase, 300000);
-
-  const saved = cargar();
-  if (saved.toastsOn !== undefined) toastsOn = saved.toastsOn;
-  if (saved.temaOscuro !== undefined) temaOscuro = saved.temaOscuro;
-  aplicarTema();
-
-  const tuvoDatos = aplicarGuardados(saved);
-  revisarTodas();
-  actualizarCreditos();
-
-  if (!tuvoDatos) {
-    setTimeout(() => openModal('modal-welcome'), 400);
-  }
-
-  // Botones modo oscuro iniciales
-  document.getElementById('btn-tema').textContent = temaOscuro ? '☀️ Claro' : '🌙 Oscuro';
-})();
+function switchTab(t){document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));document.getElementById('tp-'+t).classList.add('on');document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));rAll();cSB();}
+function toggleF(s){if(aF.has(s))aF.delete(s);else aF.add(s);document.querySelectorAll('.ch').forEach(c=>c.classList.toggle('on',aF.has(c.dataset.s)));rAll();}
+function applyS(){qr=document.getElementById('sq').value;rAll();}
+function showPP(id,e){const p=PV[id];if(!p)return;const gs2=Array.isArray(p)?p:[p];const g=gs2[0];let h=`<h3>Previas requeridas</h3>`;for(const[pid,ms]of Object.entries(g)){const pn=BI[pid]?.name||pid;const met=gs(pid)>=ms;h+=`<div class="pi"><span class="pn">${pn}</span><span class="pr ${met?'ok':SN[ms]}">${met?'✓':SL[ms]}</span></div>`;}if(gs2.length>1)h+=`<div style="font-size:.56rem;color:var(--tm);margin-top:5px;font-family:'Space Mono',monospace">+${gs2.length-1} grupo(s) alternativo(s)</div>`;const pp=document.getElementById('pp');pp.innerHTML=h;pp.style.left=Math.min(e.clientX+12,window.innerWidth-305)+'px';pp.style.top=Math.min(e.clientY-10,window.innerHeight-210)+'px';pp.classList.add('v');}
+function toast(id,st){const sn=SN[st];const pool=FR[sn];if(!pool)return;const msg=pool[Math.floor(Math.random()*pool.length)];const d=document.createElement('div');d.className=`toast ${sn}`;d.textContent=msg;document.getElementById('tc').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(18px)';d.style.transition='.3s';setTimeout(()=>d.remove(),300);},2800);}
+function openReset(){document.getElementById('ov-r').classList.add('op');}
+function closeReset(){document.getElementById('ov-r').classList.remove('op');}
+function doReset(){est={};bOp=null;cel=false;rc();bldGrds();rAll();upCr();sv();closeReset();}
+function openBio(){document.getElementById('ov-b').classList.add('op');}
+function closeBio(){document.getElementById('ov-b').classList.remove('op');pB=null;}
+function confirmBio(){const s=document.querySelector('input[name="bio"]:checked');if(!s)return;bOp=s.value;closeBio();if(pB!==null){setSt('INGBIOTRAE',pB);pB=null;}}
+function chkCel(){if(cel)return;const{t}=cst();if(t>=META){cel=true;sv();setTimeout(()=>document.getElementById('cel').classList.add('on'),600);}}
+function toggleSB(){document.getElementById('sb').classList.toggle('op');document.getElementById('sbov').classList.toggle('op');}
+function cSB(){document.getElementById('sb').classList.remove('op');document.getElementById('sbov').classList.remove('op');}
+document.getElementById('sbov').onclick=cSB;
+document.getElementById('tkt').textContent=TKF.join('   ·   ');
+function init(){ld();for(const id of INIC)if(!est[id])est[id]=S.H;rc();bldGrds();rAll();upCr();if(bOp){const r=document.querySelector(`input[name="bio"][value="${bOp}"]`);if(r)r.checked=true;}}
+init();
 </script>
-
 </body>
 </html>
