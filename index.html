@@ -38,7 +38,7 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);height:1
 .pb{background:var(--bd);border-radius:100px;height:5px;overflow:hidden;margin-top:4px}
 .pbi{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--ac),var(--a2));transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
 .cd{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:7px}
-.cs{background:var(--bg);border-radius:5px;padding:4px 6px;font-size:.58rem;color:var(--tm);font-family:'Space Mono',monospace}
+.cs{background:rgba(0,0,0,.25);border-radius:5px;padding:4px 6px;font-size:.58rem;color:var(--tm);font-family:'Space Mono',monospace}
 .cs span{display:block;font-size:.9rem;font-weight:700;color:var(--tx);font-family:'Syne',sans-serif}
 
 /* NAV */
@@ -84,14 +84,15 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);height:1
 #filterbar{background:var(--sf);border-bottom:1px solid var(--bd);padding:6px 16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;min-width:0;overflow:hidden;flex-shrink:0}
 .fb-label{font-size:.75rem;color:var(--tm);font-family:'Space Mono',monospace;white-space:nowrap}
 .fc{display:flex;flex-wrap:wrap;gap:4px;flex:1}
-.ch{padding:4px 12px;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
-.ch:hover{border-color:var(--ac);color:var(--ac)}.ch.on{border-color:var(--ac);background:rgba(42,157,143,.15);color:var(--ac)}
-.ch[data-s="cursando"].on{border-color:var(--a3);background:rgba(224,82,82,.15);color:var(--a3)}
-.ch[data-s="aprobada"].on{border-color:var(--a2);background:rgba(78,168,222,.15);color:var(--a2)}
-.ch[data-s="bloqueada"].on{border-color:#7d8590;background:rgba(125,133,144,.15);color:#7d8590}
-.ch[data-s="habilitada"].on{border-color:#888;background:rgba(136,136,136,.15);color:#aaa}
+.ch{padding:4px 12px;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap;outline:none}
+.ch:hover{border-color:var(--tx);color:var(--tx)}
+.ch.on{border-color:var(--tx);background:rgba(255,255,255,.1);color:var(--tx)}
 .clear-btn{padding:4px 10px;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
 .clear-btn:hover{border-color:var(--a3);color:var(--a3)}
+/* Mobile filter toggle */
+.fb-toggle{display:none;background:none;border:1px solid var(--bd);border-radius:6px;color:var(--tm);font-family:'Space Mono',monospace;font-size:.68rem;padding:4px 8px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.fb-toggle.has-filter{border-color:var(--ac);color:var(--ac)}
+#fb-filters{display:flex;flex-wrap:wrap;gap:4px;align-items:center;flex:1}
 
 /* CONTENT - scrollable */
 #ct{padding:16px;flex:1;overflow-y:auto;overflow-x:hidden;min-width:0}
@@ -110,15 +111,24 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);height:1
 .card[data-st="aprobada"]{background:var(--c-ap);border-color:#143450}
 .card[data-st="exonerada"]{background:var(--c-ex);border-color:#123835}
 .card[data-st="habilitada"]:hover{border-color:#888;box-shadow:0 5px 18px rgba(136,136,136,.15)}
-.ci{font-size:.95rem;margin-bottom:5px;display:block;line-height:1}
+.ci{font-size:.95rem;margin-bottom:5px;display:block;line-height:1;font-style:normal}
+.card[data-st="bloqueada"] .ci::before{content:'🔒'}
+.card[data-st="habilitada"] .ci::before{content:'🔓'}
+.card[data-st="cursando"] .ci::before{content:'📖'}
+.card[data-st="aprobada"] .ci::before{content:'✅'}
+.card[data-st="exonerada"] .ci::before{content:'🏆'}
 .cn{font-size:.75rem;font-weight:700;line-height:1.3;margin-bottom:6px}
 .card[data-st="bloqueada"] .cn{color:var(--t-bl)}.card[data-st="habilitada"] .cn{color:var(--t-ha)}
 .card[data-st="cursando"] .cn{color:var(--t-cu)}.card[data-st="aprobada"] .cn{color:var(--t-ap)}.card[data-st="exonerada"] .cn{color:var(--t-ex)}
 .cm2{display:flex;justify-content:space-between;align-items:center}
 .cc{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--tm)}
+/* Badges always use dark backgrounds for readability in both themes */
 .cbg{font-size:.54rem;font-weight:700;padding:1px 6px;border-radius:100px;font-family:'Space Mono',monospace;text-transform:uppercase}
-.card[data-st="bloqueada"] .cbg{background:#060a0e;color:var(--t-bl)}.card[data-st="habilitada"] .cbg{background:#2a2f38;color:var(--t-ha)}
-.card[data-st="cursando"] .cbg{background:#1a0a0a;color:var(--t-cu)}.card[data-st="aprobada"] .cbg{background:#06101c;color:var(--t-ap)}.card[data-st="exonerada"] .cbg{background:#040e0d;color:var(--t-ex)}
+.card[data-st="bloqueada"] .cbg{background:#060a0e;color:#484f58}
+.card[data-st="habilitada"] .cbg{background:#2a2f38;color:#9ea7b5}
+.card[data-st="cursando"] .cbg{background:#1a0a0a;color:#e05252}
+.card[data-st="aprobada"] .cbg{background:#06101c;color:#4ea8de}
+.card[data-st="exonerada"] .cbg{background:#040e0d;color:#2a9d8f}
 .cf{font-size:.53rem;font-family:'Space Mono',monospace;color:var(--tm);margin-top:3px;opacity:.7}
 .card.hd{display:none}
 
@@ -167,10 +177,6 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);height:1
 .toggle-btn{padding:4px 12px;border-radius:100px;border:1px solid var(--bd);background:transparent;font-family:'Space Mono',monospace;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;min-width:60px}
 .toggle-btn.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .toggle-btn.off{background:transparent;border-color:var(--bd);color:var(--tm)}
-.vol-wrap{display:flex;align-items:center;gap:8px}
-input[type=range]{-webkit-appearance:none;width:120px;height:4px;border-radius:100px;background:var(--bd);outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--ac);cursor:pointer}
-.vol-val{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--tm);min-width:32px;text-align:right}
 .color-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
 .color-swatch{width:36px;height:22px;border-radius:4px;border:1px solid var(--bd);cursor:pointer;transition:transform .15s}
 .color-swatch:hover{transform:scale(1.1)}
@@ -201,16 +207,52 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 #confetti-canvas{position:fixed;inset:0;z-index:998;pointer-events:none}
 
 /* LIGHT THEME */
-body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--tm:#888888;--c-bl:#d0d0d0;--t-bl:#888;--c-ha:#e8e8e8;--t-ha:#555;--c-cu:#fde8e8;--t-cu:#b02020;--c-ap:#dceefa;--t-ap:#1060b0;--c-ex:#d4f0ec;--t-ex:#1a7a6e}
+body.light{--bg:#e8edf2;--sf:#1a2744;--sf2:#243157;--bd:#2d3d6b;--tx:#e6edf3;--tm:#8fa8cc;--c-bl:#a8b4c0;--t-bl:#4a5568;--c-ha:#e8edf2;--t-ha:#2d3748;--c-cu:#fde8e8;--t-cu:#b02020;--c-ap:#dceefa;--t-ap:#1060b0;--c-ex:#d4f0ec;--t-ex:#1a7a6e}
+body.light #mn{background:#e8edf2}
+body.light #tb{background:#1a2744;border-bottom-color:#2d3d6b}
+body.light #filterbar{background:#e8edf2;border-bottom-color:#c5cdd8}
+body.light #filterbar .fb-label{color:#4a5568}
+body.light #filterbar .ch{color:#4a5568;border-color:#c5cdd8}
+body.light #filterbar .clear-btn{color:#4a5568;border-color:#c5cdd8}
+body.light #sw-wrap #sq{background:#243157;border-color:#2d3d6b;color:#e6edf3}
+body.light #sw-wrap #sq::placeholder{color:#8fa8cc}
+body.light #ct{background:#e8edf2}
+body.light .card[data-st="bloqueada"]{background:#b0bac5;border-color:#a0abb5}
+body.light .card[data-st="habilitada"]{background:#dde3ea;border-color:#c5cdd8}
+body.light .card[data-st="habilitada"] .cn{color:#2d3748}
+body.light .card[data-st="bloqueada"] .cn{color:#4a5568}
+body.light .st{color:#4a5568}
+body.light #tk{background:#1a2744;border-top-color:#2d3d6b;color:#8fa8cc}
+body.light .tb-btn{color:#e6edf3;border-color:#2d3d6b}
+body.light .tb-btn:hover{background:#243157}
+body.light .toast{background:#fff;border-color:#c5cdd8;color:#222}
+body.light .sect-label{color:#4a5568;border-bottom-color:#c5cdd8}
+
+/* MOBILE RESET BUTTON - only visible on mobile */
+#mob-reset-btn{display:none;padding:5px 10px;border-radius:6px;border:1px solid #3d1f1f;background:transparent;color:var(--a3);font-family:'Syne',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+#mob-reset-btn:hover{background:#2a1515}
+
+/* SEMESTER SECTIONS */
+.sect-label{font-size:.58rem;text-transform:uppercase;letter-spacing:2px;color:var(--tm);font-family:'Space Mono',monospace;margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid var(--bd);width:100%;grid-column:1/-1}
+.sect-label:first-child{margin-top:0}
 
 /* MOBILE */
 #sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+#filterbar{position:relative}
 @media(max-width:768px){
   #sb{position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--sw);transform:translateX(-100%)}
   #sb.op{transform:translateX(0)}#sbov.op{display:block}
   .bg{display:flex}#ct{padding:10px}
   .gd{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
   .tb-btns .tb-btn span.label{display:none}
+  /* Mobile: compact filterbar */
+  #filterbar{padding:5px 10px;flex-wrap:nowrap;gap:5px}
+  .fb-label{display:none}
+  .fb-toggle{display:flex;align-items:center;gap:4px}
+  #fb-filters{display:none;position:fixed;left:0;right:0;background:var(--sf);border-bottom:2px solid var(--bd);padding:10px 14px;flex-wrap:wrap;gap:8px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  #fb-filters.open{display:flex}
+  .fc{display:contents}
+  #mob-reset-btn{display:flex;align-items:center}
 }
 @media(max-width:400px){.gd{grid-template-columns:1fr 1fr}}
 </style>
@@ -261,6 +303,7 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
       <input type="text" id="sq" placeholder="Buscar materia... (Ctrl+F)" oninput="applyS()">
     </div>
     <div class="tb-btns">
+      <button id="mob-reset-btn" onclick="openReset()" title="Reiniciar todo">🗑️ Reiniciar</button>
       <button class="tb-btn tog-theme" id="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙 <span class="label">Oscuro</span></button>
     </div>
   </div>
@@ -268,21 +311,24 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
   <!-- FILTER BAR: estado + área -->
   <div id="filterbar">
     <span class="fb-label">Filtrar:</span>
-    <div class="fc">
+    <button class="fb-toggle" id="fb-toggle-btn" onclick="toggleFilterBar()">🔽 Filtrar</button>
+    <div id="fb-filters" class="fc">
       <button class="ch" data-s="bloqueada" onclick="toggleF('bloqueada')">🔒 Bloqueada</button>
       <button class="ch" data-s="habilitada" onclick="toggleF('habilitada')">🔓 Habilitada</button>
       <button class="ch" data-s="cursando" onclick="toggleF('cursando')">📖 Cursando</button>
       <button class="ch" data-s="aprobada" onclick="toggleF('aprobada')">✅ Aprobada</button>
       <button class="ch" data-s="exonerada" onclick="toggleF('exonerada')">🏆 Exonerada</button>
+      <button class="clear-btn" onclick="clearFilters()">✕ Limpiar</button>
     </div>
-    <button class="clear-btn" onclick="clearFilters()">✕ Limpiar</button>
   </div>
   <!-- CONTENT -->
   <div id="ct">
     <div class="tp" id="tp-todas">
       <div class="gd" id="g-ta"></div>
     </div>
-    <div class="tp on" id="tp-princ"><div class="gd" id="g-pr"></div></div>
+    <div class="tp on" id="tp-princ" style="min-width:0;width:100%">
+      <!-- Semester grids injected by JS -->
+    </div>
     <div class="tp" id="tp-opt1"><div class="gd" id="g-o1"></div></div>
     <div class="tp" id="tp-opt2"><div class="gd" id="g-o2"></div></div>
   </div>
@@ -330,14 +376,12 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
   <h2>⚙️ Configuración</h2>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
-  <div class="cfg-row"><span class="cfg-row-label">🔉 Volumen</span><div class="vol-wrap"><input type="range" id="vol-slider" min="5" max="100" step="5" oninput="setVol(this.value)"><span class="vol-val" id="vol-val">25%</span></div></div>
   <div class="cfg-row"><span class="cfg-row-label">💬 Mensajes flotantes</span><button class="toggle-btn" id="cfg-toasts" onclick="toggleToasts()"></button></div>
   <div class="sep"></div>
   <div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Colores de estado</div>
   <div id="color-rows"></div>
   <div style="margin-top:6px"><button class="bsc" style="font-size:.72rem" onclick="resetColors()">↺ Restablecer colores</button></div>
   <div class="sep"></div>
-  <button class="cfg-action-btn" onclick="closeConfig();openHelp()">❓ Ver Ayuda</button>
   <div class="ma"><button class="bsc" onclick="closeConfig()">Cerrar</button></div>
 </div></div>
 
@@ -346,20 +390,47 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
   <h2>❓ Ayuda — QuimPath</h2>
   <p class="sub">Seguimiento curricular para Ingeniería Química (UdelaR) · Ingreso por FQ</p>
   <div class="sep"></div>
-  <div class="help-section">
-    <h3>Controles</h3>
-    <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
-    <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado de la materia.</span></div>
-    <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Hover para ver qué previas te faltan.</span></div>
-    <div class="wlc-row"><span class="wlc-key">Configuración</span><span class="wlc-val">Sonido, colores, mensajes y más.</span></div>
-    <div class="wlc-row"><span class="wlc-key">Frase del ticker</span><span class="wlc-val">Se rota automáticamente.</span></div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:14px">
+    <button class="toggle-btn on" id="help-tab-pc" onclick="switchHelpTab('pc')" style="flex:1;text-align:center">🖥️ PC / Desktop</button>
+    <button class="toggle-btn off" id="help-tab-mob" onclick="switchHelpTab('mob')" style="flex:1;text-align:center">📱 Mobile</button>
   </div>
-  <div class="sep"></div>
-  <div class="help-section">
-    <h3>Atajos de teclado</h3>
-    <div class="wlc-row"><span class="wlc-key">Ctrl + F</span><span class="wlc-val">Enfocar la barra de búsqueda.</span></div>
-    <div class="wlc-row"><span class="wlc-key">Escape</span><span class="wlc-val">Cerrar modales, limpiar búsqueda o filtros.</span></div>
+
+  <!-- PC -->
+  <div id="help-pc">
+    <div class="help-section">
+      <h3>Controles</h3>
+      <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado de la materia.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Clic para ver qué previas te faltan.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Configuración</span><span class="wlc-val">Sonido, colores, mensajes y más.</span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="help-section">
+      <h3>Atajos de teclado</h3>
+      <div class="wlc-row"><span class="wlc-key">Ctrl + F</span><span class="wlc-val">Enfocar la barra de búsqueda.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Escape</span><span class="wlc-val">Cerrar modales, limpiar búsqueda o filtros.</span></div>
+    </div>
   </div>
+
+  <!-- Mobile -->
+  <div id="help-mob" style="display:none">
+    <div class="help-section">
+      <h3>Controles táctiles</h3>
+      <div class="wlc-row"><span class="wlc-key">Toque</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada → Habilitada (ciclo completo).</span></div>
+      <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Toque para ver qué previas te faltan.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Menú lateral</span><span class="wlc-val">Toca el ☰ para abrir o deslizá desde el borde izquierdo.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Filtros y áreas</span><span class="wlc-val">Disponibles en la barra superior.</span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="help-section">
+      <h3>Diferencias respecto a PC</h3>
+      <div class="wlc-row"><span class="wlc-key">Sin clic derecho</span><span class="wlc-val">El estado cicla en loop: al llegar a Exonerada, el siguiente toque vuelve a Habilitada.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Sin Ctrl+F</span><span class="wlc-val">Usá la barra de búsqueda directamente.</span></div>
+    </div>
+  </div>
+
   <div class="sep"></div>
   <p style="font-size:.65rem;color:var(--tm);font-family:'Space Mono',monospace">Desarrollado por Cristopher Moreira · QuimPath Web</p>
   <div class="ma"><button class="bpr" onclick="closeHelp()">Entendido</button></div>
@@ -370,9 +441,10 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
   <h2>👋 Bienvenido/a a QuimPath</h2>
   <p class="sub">Tu organizador de carrera de Ingeniería Química · UdelaR</p>
   <div class="sep"></div>
-  <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
-  <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado de la materia.</span></div>
-  <div class="wlc-row"><span class="wlc-key">Hover en bloqueada</span><span class="wlc-val">Ver qué previas te faltan.</span></div>
+  <div class="wlc-row"><span class="wlc-key">Clic / Toque</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
+  <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado (en PC).</span></div>
+  <div class="wlc-row"><span class="wlc-key">Loop móvil</span><span class="wlc-val">En celular, al llegar a Exonerada el siguiente toque vuelve a Habilitada.</span></div>
+  <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Toca para ver qué previas te faltan.</span></div>
   <div class="wlc-row"><span class="wlc-key">Configuración</span><span class="wlc-val">Ajustar sonido, tema, colores y más.</span></div>
   <div class="sep"></div>
   <p style="font-size:.72rem;color:var(--tm)">Tu progreso se guarda automáticamente en el navegador.</p>
@@ -583,12 +655,13 @@ const DEF_COLORS={bl:'#7a7a7a',ha:'#e0e0e0',cu:'#e05252',ap:'#4ea8de',ex:'#2a9d8
 
 // STATE
 let est={},bOp=null,aF=new Set(),areaF='',qr='',pB=null,cel=false;
-let soundOn=true,toastsOn=true,volume=0.25;
+let soundOn=true,toastsOn=true;
+const volume=1;
 let customColors={...DEF_COLORS};
 let theme=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
 const SK='qp_v3';
 
-function sv(){try{localStorage.setItem(SK,JSON.stringify({est,bOp,cel,soundOn,toastsOn,volume,customColors,theme}))}catch(e){}}
+function sv(){try{localStorage.setItem(SK,JSON.stringify({est,bOp,cel,soundOn,toastsOn,customColors,theme}))}catch(e){}}
 function ld(){
   try{
     const d=JSON.parse(localStorage.getItem(SK));
@@ -596,7 +669,6 @@ function ld(){
       est=d.est||{};bOp=d.bOp||null;cel=d.cel||false;
       soundOn=d.soundOn!==undefined?d.soundOn:true;
       toastsOn=d.toastsOn!==undefined?d.toastsOn:true;
-      volume=d.volume||0.25;
       if(d.customColors)customColors={...DEF_COLORS,...d.customColors};
       if(d.theme)theme=d.theme;
     }
@@ -636,33 +708,44 @@ function cp(id){
   for(const g of gs2){let ok=true;for(const[pid,ms]of Object.entries(g))if(gs(pid)<ms){ok=false;break}if(ok)return S.H;}
   return S.B;
 }
-function rc(){for(const s of ALL){const c=gs(s.id);if(c===S.B||c===S.H){const sh=cp(s.id);if(sh!==c)est[s.id]=sh;}}}
-function gcr(id,st){if(st<S.A)return 0;if(id==='INGBIOTRAE')return bOp?BO[bOp].cr:0;return BI[id]?.cr??0;}
+function rc(){
+  for(const s of ALL){
+    const c=gs(s.id);
+    if(c===S.B||c===S.H){
+      const sh=cp(s.id);
+      est[s.id]=sh; // always write, even if same
+    }
+  }
+}
+function gcr(id,st){if(st<S.E)return 0;if(id==='INGBIOTRAE')return bOp?BO[bOp].cr:0;return BI[id]?.cr??0;}
 function cst(){let t=0,ex=0,ap=0,cu=0,ha=0;for(const s of ALL){const st=gs(s.id);t+=gcr(s.id,st);if(st===S.E)ex++;else if(st===S.A)ap++;else if(st===S.C)cu++;else if(st===S.H)ha++;}return{t,ex,ap,cu,ha};}
 function acr(){const r={};for(const s of ALL){const st=gs(s.id);const c=gcr(s.id,st);const ar=AM[s.id];if(ar&&c>0)r[ar]=(r[ar]||0)+c;}return r;}
+
+// Detect touch device for mobile loop behavior
+const isMobile=()=>('ontouchstart' in window)||navigator.maxTouchPoints>0;
 
 function cycleAdv(id){
   const cur=gs(id);
   if(cur===S.B)return;
-  if(cur===S.E)return;
-  const nx=cur+1;
-  if(id==='INGBIOTRAE'){pB=nx;openBio(false);return;}
-  setSt(id,nx,false);
+  if(cur===S.E){
+    if(isMobile()){
+      if(id==='INGBIOTRAE'){bOp=null;sv();setSt(id,S.H,true);openBio();return;}
+      setSt(id,S.H,true);return;
+    }
+    return;
+  }
+  setSt(id,cur+1,false);
 }
 function cycleBack(id){
   const cur=gs(id);
   if(cur===S.B)return;
   if(cur===S.H){
-    // For INGBIOTRAE, right-click on habilitada resets selection
+    // Right-click on habilitada: reset variant and go back to dual selection
     if(id==='INGBIOTRAE'&&bOp){bOp=null;sv();rc();rAll();upCr();sndBack();}
     return;
   }
-  const nx=cur-1;
-  if(id==='INGBIOTRAE'&&nx===S.H){
-    // Going back to habilitada resets selection
-    bOp=null;sv();setSt(id,nx,true);return;
-  }
-  setSt(id,nx,true);
+  // For INGBIOTRAE going back to H: keep bOp, just change state
+  setSt(id,cur-1,true);
 }
 
 function setSt(id,ns,back){
@@ -681,7 +764,19 @@ function mkCard(s){
   d.innerHTML=`<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;
   d.addEventListener('click',e=>{
     AC_.resume();
-    if(s.id==='INGBIOTRAE'){hidePP();openBio(gs(s.id)===S.B);return;}
+    if(s.id==='INGBIOTRAE'){
+      hidePP();
+      const cur=gs('INGBIOTRAE');
+      // Always open modal if blocked or no variant chosen yet
+      if(cur===S.B||!bOp){openBio();return;}
+      // Has variant + exonerada on mobile: loop back and re-pick
+      if(cur===S.E&&isMobile()){bOp=null;sv();setSt('INGBIOTRAE',S.H,true);openBio();return;}
+      // Has variant + exonerada on desktop: do nothing
+      if(cur===S.E)return;
+      // Has variant: advance directly
+      setSt('INGBIOTRAE',cur+1,false);
+      return;
+    }
     if(gs(s.id)===S.B){showPP(s.id);return;}
     hidePP();cycleAdv(s.id);
   });
@@ -690,18 +785,12 @@ function mkCard(s){
   return d;
 }
 
-function cardColor(st,forText){
-  // st=state index, returns CSS var name
-  const map=['bl','ha','cu','ap','ex'];return map[st]||'bl';
-}
 
 function upCard(el,id){
   const st=gs(id);el.dataset.st=SN[st];
-  el.querySelector('.ci').textContent=SI[st];
   el.querySelector('.cbg').textContent=SL[st];
   let cr;if(id==='INGBIOTRAE'&&bOp)cr=BO[bOp].cr+' cr';else cr=BI[id]?.cr!=null?BI[id].cr+' cr':'—';
   el.querySelector('.cc').textContent=cr;
-  // Update displayed name for dual subject
   if(id==='INGBIOTRAE'){
     const nm=el.querySelector('.cn');
     if(nm)nm.textContent=bOp?BO[bOp].name:'Ing. Bioquímica / Trat. Efluentes';
@@ -720,6 +809,16 @@ function rAll(){
     const show=stMatch&&qMatch&&arMatch;
     for(const el of els){upCard(el,id);el.classList.toggle('hd',!show);}
   }
+  // Hide semester labels if all cards in their section are hidden
+  document.querySelectorAll('.sect-label').forEach(lbl=>{
+    let next=lbl.nextElementSibling;
+    let anyVisible=false;
+    while(next&&!next.classList.contains('sect-label')){
+      if(!next.classList.contains('hd'))anyVisible=true;
+      next=next.nextElementSibling;
+    }
+    lbl.style.display=anyVisible?'':'none';
+  });
 }
 
 function buildABSidebar(){
@@ -797,31 +896,50 @@ function topoSort(arr){
   return [...arr].sort((a,b)=>(level[a.id]??0)-(level[b.id]??0));
 }
 
-const OB_S=topoSort(OB);
 const O1_S=topoSort(O1).map(s=>({...s,name:s.name+' *'}));
 const O2_S=topoSort(O2).map(s=>({...s,name:s.name+' *'}));
 
 const ALL_S=topoSort([...OB,...O1.map(s=>({...s,name:s.name+' *'})),...O2.map(s=>({...s,name:s.name+' *'}))]);
 
+// ══════════ SEMESTRES (curricula sugerida) ══════════
+const SEMESTRES=[
+  {label:'1er Semestre',ids:['MAT01','MAT03','QUIGEN1','PRERIELAB']},
+  {label:'2do Semestre',ids:['MAT04','FIS101','QUIGEN2','INTINGQUI']},
+  {label:'3er Semestre',ids:['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1']},
+  {label:'4to Semestre',ids:['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO']},
+  {label:'5to Semestre',ids:['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL']},
+  {label:'6to Semestre',ids:['MAT09','FISQUI104','FLU','TRACALMA1','COM1']},
+  {label:'7mo Semestre',ids:['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1']},
+  {label:'8vo Semestre',ids:['IRREAQUI2','INGAMB','DINCONPRO','INTINGBIO','MECAPL']},
+  {label:'9no Semestre',ids:['INGBIOTRAE','PROIND1','DISPROQUI']},
+  {label:'10mo Semestre',ids:['PROIND2','PAS']}
+];
+
 let blt={};
 function bldGrds(){
   if(!blt.t){ALL_S.forEach(s=>document.getElementById('g-ta').appendChild(mkCard(s)));blt.t=true;}
-  if(!blt.p){OB_S.forEach(s=>document.getElementById('g-pr').appendChild(mkCard(s)));blt.p=true;}
+  if(!blt.p){
+    const container=document.getElementById('tp-princ');
+    // Build one shared grid with semester labels as grid-spanning separators
+    const gd=document.createElement('div');gd.className='gd';gd.id='g-pr';
+    const idMap=Object.fromEntries(OB.map(s=>[s.id,s]));
+    for(const sem of SEMESTRES){
+      // Semester label spans full grid width
+      const lbl=document.createElement('div');lbl.className='sect-label';lbl.textContent='📅 '+sem.label;
+      gd.appendChild(lbl);
+      for(const id of sem.ids){
+        const s=idMap[id];if(!s)continue;
+        gd.appendChild(mkCard(s));
+      }
+    }
+    container.appendChild(gd);
+    blt.p=true;
+  }
   if(!blt.o1){O1_S.forEach(s=>document.getElementById('g-o1').appendChild(mkCard(s)));blt.o1=true;}
   if(!blt.o2){O2_S.forEach(s=>document.getElementById('g-o2').appendChild(mkCard(s)));blt.o2=true;}
-  if(!blt.o2){O2.forEach(s=>document.getElementById('g-o2').appendChild(mkCard(s)));blt.o2=true;}
 }
 
-function buildAreaBar(){
-  const bar=document.getElementById('areabar');bar.innerHTML='';
-  const all=document.createElement('button');all.className='arch'+(areaF===''?' on':'');
-  all.textContent='Todas las áreas';all.onclick=()=>setAreaF('');bar.appendChild(all);
-  for(const area of AREAS_ORDER){
-    const b=document.createElement('button');b.className='arch'+(areaF===area?' on':'');
-    b.textContent=area;b.style.color=areaF===area?'var(--tx)':undefined;
-    b.onclick=()=>setAreaF(areaF===area?'':area);bar.appendChild(b);
-  }
-}
+
 function setAreaF(a){
   areaF=a;
   buildABSidebar();
@@ -840,8 +958,45 @@ function switchTab(t){
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   rAll();cSB();
 }
-function toggleF(s){if(aF.has(s))aF.delete(s);else aF.add(s);document.querySelectorAll('.ch').forEach(c=>c.classList.toggle('on',aF.has(c.dataset.s)));rAll();}
-function clearFilters(){aF.clear();document.querySelectorAll('.ch').forEach(c=>c.classList.remove('on'));rAll();}
+function toggleFilterBar(){
+  const fb=document.getElementById('fb-filters');
+  const bar=document.getElementById('filterbar');
+  const isOpen=fb.classList.contains('open');
+  if(!isOpen){
+    const rect=bar.getBoundingClientRect();
+    fb.style.top=rect.bottom+'px';
+  }
+  fb.classList.toggle('open');
+}
+// Close filter panel when tapping outside
+document.addEventListener('click',function(e){
+  const fb=document.getElementById('fb-filters');
+  const btn=document.getElementById('fb-toggle-btn');
+  if(fb&&fb.classList.contains('open')&&!fb.contains(e.target)&&e.target!==btn&&!btn.contains(e.target)){
+    fb.classList.remove('open');
+  }
+});
+function updateFilterToggleBtn(){
+  const btn=document.getElementById('fb-toggle-btn');
+  if(!btn)return;
+  const active=aF.size>0;
+  btn.className='fb-toggle'+(active?' has-filter':'');
+  btn.textContent=active?`🔽 Filtros (${aF.size})`:'🔽 Filtrar';
+}
+function toggleF(s){
+  if(aF.has(s))aF.delete(s);else aF.add(s);
+  document.querySelectorAll('.ch').forEach(c=>c.classList.toggle('on',aF.has(c.dataset.s)));
+  updateFilterToggleBtn();
+  rAll();
+}
+function clearFilters(){
+  aF.clear();
+  document.querySelectorAll('.ch').forEach(c=>c.classList.remove('on'));
+  updateFilterToggleBtn();
+  // Close mobile filter panel
+  document.getElementById('fb-filters').classList.remove('open');
+  rAll();
+}
 function applyS(){qr=document.getElementById('sq').value;rAll();}
 
 // ══════════ PREREQ MODAL ══════════
@@ -872,32 +1027,46 @@ function ppOverlayClick(e){if(e.target===document.getElementById('ov-pp'))hidePP
 function hidePP(){const ov=document.getElementById('ov-pp');ov.classList.remove('op');ov.removeEventListener('click',ppOverlayClick);}
 
 // ══════════ TOAST ══════════
+let activeToast=null;
 function toast(id,st){
   if(!toastsOn)return;
   const sn=SN[st];const pool=FR[sn];if(!pool)return;
   const tc=document.getElementById('tc');
-  // Limit to 3 visible toasts — remove oldest if over limit
-  while(tc.children.length>=3){
-    const oldest=tc.firstElementChild;
-    oldest.style.opacity='0';oldest.style.transform='translateX(16px)';oldest.style.transition='.2s';
-    setTimeout(()=>oldest.remove(),200);
-    break;
+  // Remove any existing toast immediately
+  if(activeToast){
+    clearTimeout(activeToast._t);
+    activeToast.remove();
+    activeToast=null;
   }
   const msg=pool[Math.floor(Math.random()*pool.length)];
   const d=document.createElement('div');d.className=`toast ${sn}`;d.textContent=msg;
   tc.appendChild(d);
-  setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(16px)';d.style.transition='.3s';setTimeout(()=>d.remove(),300);},2800);
+  activeToast=d;
+  d._t=setTimeout(()=>{
+    d.style.opacity='0';d.style.transform='translateX(16px)';d.style.transition='.3s';
+    setTimeout(()=>{d.remove();if(activeToast===d)activeToast=null;},300);
+  },2800);
 }
 
 // ══════════ MODALS ══════════
 function openReset(){document.getElementById('ov-r').classList.add('op');}
 function closeReset(){document.getElementById('ov-r').classList.remove('op');}
-function doReset(){est={};bOp=null;cel=false;rc();blt={};document.getElementById('g-ta').innerHTML='';document.getElementById('g-pr').innerHTML='';document.getElementById('g-o1').innerHTML='';document.getElementById('g-o2').innerHTML='';Object.keys(CE).forEach(k=>delete CE[k]);bldGrds();rAll();upCr();sv();closeReset();}
-function openBio(fromBlocked){
+function doReset(){
+  est={};bOp=null;cel=false;
+  rc();blt={};
+  document.getElementById('g-ta').innerHTML='';
+  // Remove the semester grid if exists
+  const pr=document.getElementById('tp-princ');pr.innerHTML='';
+  const o1=document.getElementById('g-o1');if(o1)o1.innerHTML='';
+  const o2=document.getElementById('g-o2');if(o2)o2.innerHTML='';
+  Object.keys(CE).forEach(k=>delete CE[k]);
+  bldGrds();rAll();upCr();sv();closeReset();
+}
+let _bioAdvance=false;
+function openBio(){
   document.getElementById('bio-prereq-section').style.display='none';
   document.getElementById('bio-back-btn').style.display='none';
   document.getElementById('bio-confirm-btn').textContent='Confirmar';
-  // If already selected, precheck and show prereqs immediately
   const presel=bOp||'bio';
   const r=document.querySelector(`input[name="bio"][value="${presel}"]`);if(r)r.checked=true;
   document.getElementById('ov-b').classList.add('op');
@@ -923,23 +1092,13 @@ function confirmBio(){
   bOp=s.value;sv();
   rc();rAll();upCr();
   closeBio();
-  if(pB!==null){
-    // Check if prereqs met for advancing
-    const pvs=PV_BIO[bOp];let ok=true;
-    for(const[pid,ms]of Object.entries(pvs))if(gs(pid)<ms){ok=false;break;}
-    if(ok)setSt('INGBIOTRAE',pB,false);
-    pB=null;
-  }
 }
 
 function openConfig(){
-  // Update toggles
   document.getElementById('cfg-sound').textContent=soundOn?'✔ On':'✘ Off';
   document.getElementById('cfg-sound').className='toggle-btn '+(soundOn?'on':'off');
   document.getElementById('cfg-toasts').textContent=toastsOn?'✔ On':'✘ Off';
   document.getElementById('cfg-toasts').className='toggle-btn '+(toastsOn?'on':'off');
-  document.getElementById('vol-slider').value=Math.round(volume*100);
-  document.getElementById('vol-val').textContent=Math.round(volume*100)+'%';
   buildColorRows();
   document.getElementById('ov-cfg').classList.add('op');
 }
@@ -947,12 +1106,17 @@ function closeConfig(){document.getElementById('ov-cfg').classList.remove('op');
 
 function openHelp(){document.getElementById('ov-help').classList.add('op');}
 function closeHelp(){document.getElementById('ov-help').classList.remove('op');}
+function switchHelpTab(tab){
+  document.getElementById('help-pc').style.display=tab==='pc'?'':'none';
+  document.getElementById('help-mob').style.display=tab==='mob'?'':'none';
+  document.getElementById('help-tab-pc').className='toggle-btn '+(tab==='pc'?'on':'off');
+  document.getElementById('help-tab-mob').className='toggle-btn '+(tab==='mob'?'on':'off');
+}
 function openWelcome(){document.getElementById('ov-wlc').classList.add('op');}
 function closeWelcome(){document.getElementById('ov-wlc').classList.remove('op');sv();}
 
 function toggleSound(){soundOn=!soundOn;if(soundOn)sndAdvance();document.getElementById('cfg-sound').textContent=soundOn?'✔ On':'✘ Off';document.getElementById('cfg-sound').className='toggle-btn '+(soundOn?'on':'off');sv();}
 function toggleToasts(){toastsOn=!toastsOn;document.getElementById('cfg-toasts').textContent=toastsOn?'✔ On':'✘ Off';document.getElementById('cfg-toasts').className='toggle-btn '+(toastsOn?'on':'off');sv();}
-function setVol(v){volume=v/100;document.getElementById('vol-val').textContent=v+'%';sv();}
 
 // ══════════ CUSTOM COLORS ══════════
 const COLOR_NAMES={bl:'Bloqueada',ha:'Habilitada',cu:'Cursando',ap:'Aprobada',ex:'Exonerada'};
@@ -984,8 +1148,6 @@ function applyCustomColors(){
   r.style.setProperty('--t-cu',customColors.cu);
   r.style.setProperty('--t-ap',customColors.ap);
   r.style.setProperty('--t-ex',customColors.ex);
-  // Update sidebar area bars for exon color
-  document.documentElement.style.setProperty('--ac',customColors.ex);
   // Re-render all cards
   for(const[id,els]of Object.entries(CE))for(const el of els)upCard(el,id);
 }
