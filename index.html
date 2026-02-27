@@ -311,8 +311,8 @@ body.light{--bg:#f0f0f0;--sf:#ffffff;--sf2:#f5f5f5;--bd:#dddddd;--tx:#222222;--t
   <h2>🧬 Elegí una orientación</h2>
   <p class="sub">Esta materia tiene dos variantes. Seleccioná cuál querés cursar:</p>
   <div class="rg" id="bio-options">
-    <label class="ro"><input type="radio" name="bio" value="bio"><div><div class="rl">Ing. Bioquímica</div><div class="rc">10 créditos · Previas: Intro Ing. Bioquímica, Ing. Reacciones Q.1, Transf. Calor y Masa 2</div></div></label>
-    <label class="ro"><input type="radio" name="bio" value="trat"><div><div class="rl">Trat. Efluentes y Res. Sól.</div><div class="rc">9 créditos · Previas: Intro Ing. Bioquímica, Ing. Reacciones Q.1</div></div></label>
+    <label class="ro"><input type="radio" name="bio" value="bio"><div><div class="rl">Ing. Bioquímica</div><div class="rc">10 créditos</div></div></label>
+    <label class="ro"><input type="radio" name="bio" value="trat"><div><div class="rl">Trat. Efluentes y Res. Sól.</div><div class="rc">9 créditos</div></div></label>
   </div>
   <div id="bio-prereq-section" style="display:none">
     <div class="sep"></div>
@@ -894,21 +894,19 @@ function openReset(){document.getElementById('ov-r').classList.add('op');}
 function closeReset(){document.getElementById('ov-r').classList.remove('op');}
 function doReset(){est={};bOp=null;cel=false;rc();blt={};document.getElementById('g-ta').innerHTML='';document.getElementById('g-pr').innerHTML='';document.getElementById('g-o1').innerHTML='';document.getElementById('g-o2').innerHTML='';Object.keys(CE).forEach(k=>delete CE[k]);bldGrds();rAll();upCr();sv();closeReset();}
 function openBio(fromBlocked){
-  // fromBlocked: if true, show prereqs after selection. Always show selection first.
-  document.getElementById('bio-options').style.display='';
   document.getElementById('bio-prereq-section').style.display='none';
   document.getElementById('bio-back-btn').style.display='none';
   document.getElementById('bio-confirm-btn').textContent='Confirmar';
-  // If already selected, precheck
-  if(bOp){const r=document.querySelector(`input[name="bio"][value="${bOp}"]`);if(r)r.checked=true;}
+  // If already selected, precheck and show prereqs immediately
+  const presel=bOp||'bio';
+  const r=document.querySelector(`input[name="bio"][value="${presel}"]`);if(r)r.checked=true;
   document.getElementById('ov-b').classList.add('op');
-  // After radio change, show prereqs preview inline
   document.querySelectorAll('input[name="bio"]').forEach(r=>{
-    r.onchange=()=>showBioPrereqPreview(r.value,fromBlocked);
+    r.onchange=()=>showBioPrereqPreview(r.value);
   });
-  if(bOp&&fromBlocked)showBioPrereqPreview(bOp,fromBlocked);
+  showBioPrereqPreview(presel);
 }
-function showBioPrereqPreview(opt,fromBlocked){
+function showBioPrereqPreview(opt){
   const pvs=PV_BIO[opt];const nm=BO[opt].name;
   let rows='';
   for(const[pid,ms]of Object.entries(pvs)){
@@ -917,11 +915,6 @@ function showBioPrereqPreview(opt,fromBlocked){
   }
   document.getElementById('bio-prereq-list').innerHTML=`<div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;margin-bottom:7px">Previas requeridas para <b style="color:var(--tx)">${nm}</b>:</div>${rows}`;
   document.getElementById('bio-prereq-section').style.display='';
-}
-function bioBack(){
-  document.getElementById('bio-options').style.display='';
-  document.getElementById('bio-prereq-section').style.display='none';
-  document.getElementById('bio-back-btn').style.display='none';
 }
 function closeBio(){document.getElementById('ov-b').classList.remove('op');pB=null;}
 function confirmBio(){
