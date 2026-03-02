@@ -453,7 +453,7 @@ window.fbSignOut = async function() {
 window.fbSave = async function(data) {
   if (!currentUser) return;
   try {
-    await setDoc(doc(db, 'users', currentUser.uid), data);
+    await setDoc(doc(db, 'users', currentUser.uid), {...data, email: currentUser.email});
   } catch(e) { console.error('fbSave error:', e); }
 };
 
@@ -473,9 +473,9 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   window._fbCurrentUser = user;
   if (user) {
-    // Cargar datos de la nube y aplicarlos
     const cloud = await window.fbLoad();
     if (cloud && window._applyCloudData) window._applyCloudData(cloud);
+    try { await setDoc(doc(db, 'users', user.uid), {email: user.email}, {merge: true}); } catch(e) {}
     updateAuthUI(user);
   } else {
     updateAuthUI(null);
