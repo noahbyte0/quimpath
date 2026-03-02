@@ -240,6 +240,8 @@ body.light .toast.exonerada{border-left-color:#00c897}
   .sbtn:hover{background:transparent!important;color:var(--tm)!important}
   .tb-btn:hover{background:transparent!important}
   .ch:hover{border-color:var(--bd)!important;color:var(--tm)!important}
+  *:focus{outline:none!important}
+  button:focus,div:focus{background:inherit!important}
 }
 </style>
 </head>
@@ -711,7 +713,8 @@ function mkCard(s){
   const d=document.createElement('div');
   d.className='card';d.dataset.id=s.id;
   d.innerHTML=`<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;
-  d.addEventListener('click',()=>{
+  d.addEventListener('click',e=>{
+    if('ontouchstart' in window)e.currentTarget.blur();
     AC_.resume();
     if(s.id==='INGBIOTRAE'){
       hidePP();
@@ -999,6 +1002,8 @@ function stopConfetti(){confActive=false;const c=document.getElementById('confet
 function toggleSB(){document.getElementById('sb').classList.toggle('op');document.getElementById('sbov').classList.toggle('op');}
 function cSB(){document.getElementById('sb').classList.remove('op');document.getElementById('sbov').classList.remove('op');}
 document.getElementById('sbov').onclick=cSB;
+// Blur any focused element after touch to prevent stuck hover states
+document.addEventListener('touchend',e=>{if(e.target&&e.target.blur)e.target.blur();},{passive:true});
 
 // ══════════ TECLADO ══════════
 document.addEventListener('keydown',e=>{
