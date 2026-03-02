@@ -475,7 +475,6 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     const cloud = await window.fbLoad();
     if (cloud && window._applyCloudData) window._applyCloudData(cloud);
-    try { await setDoc(doc(db, 'users', user.uid), {email: user.email}, {merge: true}); } catch(e) {}
     updateAuthUI(user);
   } else {
     updateAuthUI(null);
@@ -700,7 +699,8 @@ const SK='qp_v3';
 function sv(){
   const data={est,bOp,cel,soundOn,toastsOn,theme};
   try{localStorage.setItem(SK,JSON.stringify(data))}catch(e){}
-  window.fbSave?.(data);
+  const cloudData={est,bOp,cel,soundOn,theme};
+  window.fbSave?.(cloudData);
 }
 function ld(){
   try{
@@ -1166,11 +1166,10 @@ window._applyCloudData = function(d) {
   if (!d) return;
   est=d.est||{};bOp=d.bOp||null;cel=d.cel||false;
   soundOn=d.soundOn!==undefined?d.soundOn:true;
-  toastsOn=d.toastsOn!==undefined?d.toastsOn:!('ontouchstart' in window);
   if(d.theme)theme=d.theme;
   for(const id of INIC)if(!est[id])est[id]=S.H;
   rc();rAll();upCr();applyTheme();
-  try{localStorage.setItem(SK,JSON.stringify(d))}catch(e){}
+  try{const local=JSON.parse(localStorage.getItem(SK)||'{}');localStorage.setItem(SK,JSON.stringify({...d,toastsOn:local.toastsOn??!('ontouchstart' in window)}));}catch(e){}
 };
 
 function init(){
