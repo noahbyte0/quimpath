@@ -60,6 +60,8 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--tx);height:1
 .abt{background:var(--bd);border-radius:100px;height:3px;overflow:hidden}
 .abf{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .sbot{padding:8px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:5px}
+.fb-type-btn{flex:1;padding:5px 4px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Space Mono',monospace;font-size:.6rem;cursor:pointer;transition:all .15s;text-align:center}
+.fb-type-btn.on{border-color:var(--ac);background:rgba(42,157,143,.15);color:var(--ac)}
 #auth-section{display:flex;flex-direction:column;gap:4px;padding-bottom:4px;border-bottom:1px solid var(--bd);margin-bottom:2px}
 #auth-info{font-size:.58rem;color:var(--ac);font-family:'Space Mono',monospace;text-align:center;min-height:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
 .sbtn{width:100%;padding:6px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Syne',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:left}
@@ -268,6 +270,7 @@ body.light .toast.exonerada{border-left-color:#00c897}
       <button class="sbtn" id="auth-btn" onclick="window.fbSignIn?.()">☁️ Iniciar sesión con Google</button>
     </div>
     <button class="sbtn" onclick="openHelp()">❓ Ayuda</button>
+    <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
     <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
     <button class="sbtn danger" onclick="openReset()">🗑️ Reiniciar</button>
   </div>
@@ -313,6 +316,35 @@ body.light .toast.exonerada{border-left-color:#00c897}
 
 <div id="ov-pp"><div class="pp-modal" id="pp-modal"></div></div>
 <div id="tc"></div>
+
+<div class="ov" id="ov-fb"><div class="md">
+  <h2>📝 Reportar error o sugerencia</h2>
+  <p class="sub">Tu reporte ayuda a mejorar QuimPath. No es necesario estar logueado.</p>
+  <div class="sep"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div>
+      <div class="lb" style="margin-bottom:5px">Tipo</div>
+      <div style="display:flex;gap:6px">
+        <button class="fb-type-btn on" data-type="error" onclick="selectFbType(this)">🐛 Error en materia</button>
+        <button class="fb-type-btn" data-type="sugerencia" onclick="selectFbType(this)">💡 Sugerencia</button>
+        <button class="fb-type-btn" data-type="otro" onclick="selectFbType(this)">📌 Otro</button>
+      </div>
+    </div>
+    <div id="fb-materia-row">
+      <div class="lb" style="margin-bottom:5px">Materia (opcional)</div>
+      <input id="fb-materia" type="text" placeholder="Ej: Matemática 04" style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;color:var(--tx);font-family:'Space Mono',monospace;font-size:.72rem;outline:none">
+    </div>
+    <div>
+      <div class="lb" style="margin-bottom:5px">Descripción</div>
+      <textarea id="fb-desc" placeholder="Describí el error o sugerencia..." style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;color:var(--tx);font-family:'Space Mono',monospace;font-size:.72rem;outline:none;resize:vertical;min-height:80px"></textarea>
+    </div>
+  </div>
+  <div id="fb-msg" style="font-size:.7rem;text-align:center;min-height:18px;margin-top:8px"></div>
+  <div class="ma">
+    <button class="bsc" onclick="closeFeedback()">Cancelar</button>
+    <button class="bpr" id="fb-send-btn" onclick="sendFeedback()">Enviar reporte</button>
+  </div>
+</div></div>
 
 <div class="ov" id="ov-r"><div class="md">
   <h2>⚠️ Reiniciar progreso</h2>
@@ -390,7 +422,7 @@ body.light .toast.exonerada{border-left-color:#00c897}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWP8CFJcqAXfWvPGVktfF_ZcNrxLnY5tM",
@@ -425,6 +457,10 @@ window.fbSave = async function(data) {
   } catch(e) { console.error('fbSave error:', e); }
 };
 
+window.fbSaveFeedback = async function(data) {
+  await addDoc(collection(db, 'feedback'), data);
+};
+
 window.fbLoad = async function() {
   if (!currentUser) return null;
   try {
@@ -435,6 +471,7 @@ window.fbLoad = async function() {
 
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
+  window._fbCurrentUser = user;
   if (user) {
     // Cargar datos de la nube y aplicarlos
     const cloud = await window.fbLoad();
@@ -970,7 +1007,45 @@ function showPP(id){
 function ppOvClick(e){if(e.target===document.getElementById('ov-pp'))hidePP();}
 function hidePP(){const ov=document.getElementById('ov-pp');ov.classList.remove('op');ov.removeEventListener('click',ppOvClick);}
 
-// ══════════ TOAST ══════════
+// ══════════ FEEDBACK ══════════
+let fbType='error';
+function openFeedback(){
+  fbType='error';
+  document.querySelectorAll('.fb-type-btn').forEach(b=>b.classList.toggle('on',b.dataset.type==='error'));
+  document.getElementById('fb-materia').value='';
+  document.getElementById('fb-desc').value='';
+  document.getElementById('fb-msg').textContent='';
+  document.getElementById('fb-msg').style.color='';
+  document.getElementById('fb-send-btn').disabled=false;
+  document.getElementById('ov-fb').classList.add('op');
+}
+function closeFeedback(){document.getElementById('ov-fb').classList.remove('op');}
+function selectFbType(btn){
+  fbType=btn.dataset.type;
+  document.querySelectorAll('.fb-type-btn').forEach(b=>b.classList.toggle('on',b===btn));
+  document.getElementById('fb-materia-row').style.display=fbType==='error'?'':'none';
+}
+async function sendFeedback(){
+  const desc=document.getElementById('fb-desc').value.trim();
+  if(!desc){document.getElementById('fb-msg').textContent='Por favor escribí una descripción.';document.getElementById('fb-msg').style.color='var(--a3)';return;}
+  const btn=document.getElementById('fb-send-btn');
+  btn.disabled=true;btn.textContent='Enviando...';
+  const msg=document.getElementById('fb-msg');
+  try{
+    await window.fbSaveFeedback({
+      tipo:fbType,
+      materia:fbType==='error'?document.getElementById('fb-materia').value.trim():'',
+      descripcion:desc,
+      fecha:new Date().toISOString(),
+      uid:window._fbCurrentUser?.uid||'anonimo'
+    });
+    msg.textContent='✓ Reporte enviado. ¡Gracias!';msg.style.color='var(--gn)';
+    setTimeout(closeFeedback,1500);
+  }catch(e){
+    msg.textContent='Error al enviar. Intentá de nuevo.';msg.style.color='var(--a3)';
+    btn.disabled=false;btn.textContent='Enviar reporte';
+  }
+}
 let activeToast=null;
 function toast(id,st){
   if(!toastsOn)return;
@@ -1068,7 +1143,7 @@ document.getElementById('sbov').onclick=cSB;
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();const sq=document.getElementById('sq');sq.focus();sq.select();}
   if(e.key==='Escape'){
-    const modals=[['ov-pp',hidePP],['ov-cfg',closeConfig],['ov-help',closeHelp],['ov-r',closeReset],['ov-b',closeBio]];
+    const modals=[['ov-pp',hidePP],['ov-cfg',closeConfig],['ov-help',closeHelp],['ov-fb',closeFeedback],['ov-r',closeReset],['ov-b',closeBio]];
     for(const[id,fn]of modals)if(document.getElementById(id).classList.contains('op')){fn();return;}
     const sq=document.getElementById('sq');if(sq.value){sq.value='';qr='';rAll();return;}
     if(aF.size){clearFilters();return;}
