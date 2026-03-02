@@ -132,6 +132,7 @@ body.light .ci{filter:drop-shadow(0 0 2px rgba(0,0,0,.5))}
 
 /* TOASTS */
 #tc{position:fixed;bottom:18px;right:18px;z-index:1000;display:flex;flex-direction:column-reverse;gap:6px;pointer-events:none}
+@media(max-width:768px){#tc{bottom:env(safe-area-inset-bottom,18px);bottom:calc(env(safe-area-inset-bottom,0px) + 70px);right:12px;left:12px;align-items:flex-end}}
 .toast{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 13px;font-size:.76rem;font-weight:600;max-width:260px;animation:si .3s cubic-bezier(.4,0,.2,1);box-shadow:0 5px 18px rgba(0,0,0,.4);border-left:3px solid var(--ac)}
 .toast.cursando{border-left-color:var(--a3)}.toast.aprobada{border-left-color:var(--a2)}.toast.exonerada{border-left-color:var(--ac)}
 @keyframes si{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
@@ -915,7 +916,8 @@ function toast(id,st){
   const d=document.createElement('div');d.className=`toast ${SN[st]}`;
   d.innerHTML=`<div style="font-size:.65rem;color:var(--tm);font-family:'Space Mono',monospace;margin-bottom:2px">${BI[id]?.name||id}</div>${msgs[Math.floor(Math.random()*msgs.length)]}`;
   document.getElementById('tc').appendChild(d);activeToast=d;
-  d._t=setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(16px)';d.style.transition='.3s';setTimeout(()=>{d.remove();if(activeToast===d)activeToast=null;},300);},2800);
+  const dur=('ontouchstart' in window)?4500:2800;
+  d._t=setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(16px)';d.style.transition='.3s';setTimeout(()=>{d.remove();if(activeToast===d)activeToast=null;},300);},dur);
 }
 
 // ══════════ MODALES ══════════
@@ -1000,6 +1002,14 @@ function cSB(){document.getElementById('sb').classList.remove('op');document.get
 document.getElementById('sbov').onclick=cSB;
 // Blur any focused element after touch to prevent stuck hover states
 document.addEventListener('touchend',e=>{if(e.target&&e.target.blur)e.target.blur();},{passive:true});
+// Fix sticky :hover on mobile - forces browser to recalculate hover state after touch
+if('ontouchstart' in window){
+  document.body.addEventListener('touchstart',()=>{},{passive:true});
+  document.addEventListener('touchend',()=>{
+    const el=document.querySelector(':hover');
+    if(el){const t=el.style.transition;el.style.transition='none';requestAnimationFrame(()=>{el.style.transition=t;});}
+  },{passive:true});
+}
 
 // ══════════ TECLADO ══════════
 document.addEventListener('keydown',e=>{
