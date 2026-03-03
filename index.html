@@ -1279,7 +1279,8 @@ function cp(id) {
   const p = PV[id];
   if (!p) return S.H;
   if (id === 'PAS' && crBasicas() < 190) return S.B;
-  if (id === 'INGBIOTRAE' && bOp) {
+  if (id === 'INGBIOTRAE') {
+    if (!bOp) return S.B;
     for (const [pid, ms] of Object.entries(PV_BIO[bOp]))
       if (gs(pid) < ms) return S.B;
     return S.H;
@@ -1341,7 +1342,10 @@ function setSt(id, ns, back) {
 
 function cycleBack(id) {
   const cur = gs(id);
-  if (cur === S.B) return;
+  if (cur === S.B) {
+    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    return;
+  }
   if (cur === S.H) {
     if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
@@ -1358,12 +1362,20 @@ function mkCard(s) {
   d.dataset.id  = s.id;
   d.innerHTML   = `<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;
 
-  d.addEventListener('click', () => {
+  d.addEventListener('click', (e) => {
     AC_.resume();
+    // Ctrl+click: mostrar previas sin importar estado
+    if (e.ctrlKey) {
+      e.preventDefault();
+      if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
+      if (PV[s.id]) { showPP(s.id); return; }
+      return;
+    }
     if (s.id === 'INGBIOTRAE') {
       hidePP();
       const cur = gs('INGBIOTRAE');
-      if (cur === S.B || !bOp)      { openBio(); return; }
+      if (!bOp)      { openBio(); return; }
+      if (cur === S.B) { showPPBio(); return; }
       if (cur === S.E && isMobile()) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
       if (cur === S.E) return;
       setSt('INGBIOTRAE', cur + 1, false);
@@ -1424,10 +1436,19 @@ function rAll() {
 }
 
 // ══════════ SIDEBAR ══════════
+let sbAreasOpen = false, sbGrpsOpen = false;
+
 function buildABSidebar() {
   const c = document.getElementById('ab-sidebar');
-  c.innerHTML = '<div class="nl" style="margin-top:4px">Áreas</div>';
+  c.innerHTML = '';
   const ac = acr();
+  // Header desplegable
+  const hdr = document.createElement('button');
+  hdr.className = 'nb sb-collapsible';
+  hdr.innerHTML = `<span style="flex:1">Áreas</span><span style="font-size:.6rem;transition:transform .2s;display:inline-block;transform:rotate(${sbAreasOpen?'90':'0'}deg)">▶</span>`;
+  hdr.addEventListener('click', () => { sbAreasOpen = !sbAreasOpen; buildABSidebar(); });
+  c.appendChild(hdr);
+  if (!sbAreasOpen) return;
   for (const area of AREAS_ORDER) {
     const mn = AMIN[area], ea = ac[area] || 0, pt = Math.min(100, Math.round(ea / mn * 100));
     const done = ea >= mn, active = areaF === area, barCol = done ? 'var(--gn)' : 'var(--ac)';
@@ -1443,7 +1464,13 @@ function buildABSidebar() {
 function buildGrpSidebar() {
   const c = document.getElementById('grp-sidebar');
   if (!c) return;
-  c.innerHTML = '<div class="nl" style="margin-top:4px">Grupos</div>';
+  c.innerHTML = '';
+  const hdr = document.createElement('button');
+  hdr.className = 'nb sb-collapsible';
+  hdr.innerHTML = `<span style="flex:1">Grupos</span><span style="font-size:.6rem;transition:transform .2s;display:inline-block;transform:rotate(${sbGrpsOpen?'90':'0'}deg)">▶</span>`;
+  hdr.addEventListener('click', () => { sbGrpsOpen = !sbGrpsOpen; buildGrpSidebar(); });
+  c.appendChild(hdr);
+  if (!sbGrpsOpen) return;
   for (const grp of GROUPS_ORDER) {
     const b = document.createElement('button');
     b.className = 'nb' + (grpF === grp ? ' on' : '');
@@ -1624,7 +1651,7 @@ function showPP(id) {
     rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
   }
   const alts = Array.isArray(p) ? p : [p];
-  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${rows}${alts.length > 1 ? `<div class="pp-alts">⚡ Hay ${alts.length - 1} combinación(es) alternativa(s) de previas.</div>` : ''}`;
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${rows}`;
   ov.classList.add('op');
   ov.addEventListener('click', ppOvClick);
 }
@@ -1638,6 +1665,20 @@ function hidePP() {
   ov.classList.remove('op');
   ov.removeEventListener('click', ppOvClick);
 }
+function showPPBio() {
+  if (!bOp) return;
+  const ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
+  const pvs = PV_BIO[bOp];
+  let rows = '';
+  for (const [pid, ms] of Object.entries(pvs)) {
+    const met = gs(pid) >= ms;
+    rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
+  }
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BO[bOp].name}</div>${rows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openBio()">↩ Cambiar opción</div>`;
+  ov.classList.add('op');
+  ov.addEventListener('click', ppOvClick);
+}
+
 
 // ══════════ FEEDBACK ══════════
 let fbType = 'error';
@@ -1771,6 +1812,7 @@ function confirmBio() {
   if (!s) return;
   bOp = s.value;
   sv(); rc(); rAll(); upCr(); closeBio();
+  if (gs('INGBIOTRAE') === S.B) showPPBio();
 }
 
 function openConfig() {
