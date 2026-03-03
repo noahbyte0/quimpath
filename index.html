@@ -160,23 +160,6 @@ body {
 .nb.done { color: var(--gn); }
 .nb .ic  { font-size: .9rem; width: 16px; text-align: center; }
 
-/* Sidebar — área de links */
-.ab-section { border-top: 1px solid var(--bd); padding: 8px; }
-.ab-item {
-  margin-bottom: 3px;
-  border-radius: 6px;
-  padding: 5px 8px;
-  cursor: pointer;
-  transition: background .15s;
-  border-left: 2px solid transparent;
-}
-.ab-on { background: rgba(42,157,143,.15) !important; border-left-color: var(--ac); }
-.abh   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-.abn   { font-size: .6rem; font-weight: 700; }
-.abc   { font-family: 'Space Mono', monospace; font-size: .56rem; color: var(--tm); }
-.abt   { background: var(--bd); border-radius: 100px; height: 3px; overflow: hidden; }
-.abf   { height: 100%; border-radius: 100px; transition: width .6s cubic-bezier(.4,0,.2,1); }
-
 /* Sidebar — botones inferiores */
 .sbot {
   padding: 8px;
@@ -550,6 +533,60 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 }
 .wlc-val { color: var(--tm); line-height: 1.5; }
 
+/* ══════════ SPLASH BIENVENIDA ══════════ */
+#splash {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#splash.on { display: flex; }
+.splash-inner {
+  max-width: 520px;
+  width: 100%;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+  animation: pop .5s cubic-bezier(.34,1.56,.64,1);
+}
+.splash-logo { font-size: 2.8rem; text-align: center; margin-bottom: 6px; }
+.splash-title {
+  font-size: 1.9rem; font-weight: 800; text-align: center;
+  background: linear-gradient(135deg, var(--ac), var(--a2), #c77dff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 4px;
+}
+.splash-sub { text-align: center; font-size: .72rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 22px; }
+.splash-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+.splash-card { background: var(--sf2); border: 1px solid var(--bd); border-radius: 10px; padding: 12px 11px; }
+.splash-card .sc-icon  { font-size: 1.3rem; margin-bottom: 5px; display: block; }
+.splash-card .sc-title { font-size: .76rem; font-weight: 700; color: var(--tx); margin-bottom: 3px; }
+.splash-card .sc-desc  { font-size: .63rem; color: var(--tm); font-family: 'Space Mono', monospace; line-height: 1.5; }
+.splash-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  border-top: 1px solid var(--bd); padding-top: 16px;
+}
+.splash-hint { font-size: .58rem; color: var(--tm); font-family: 'Space Mono', monospace; }
+.splash-plan-sel { margin-bottom: 18px; }
+.splash-plan-label { font-size: .7rem; color: var(--tm); font-family: 'Space Mono', monospace; text-align: center; margin-bottom: 10px; }
+.splash-plan-btns { display: flex; gap: 10px; }
+.splash-plan-btn { flex: 1; padding: 11px; border-radius: 8px; border: 2px solid var(--bd); background: var(--sf2); color: var(--tm); font-family: 'Syne', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+.splash-plan-btn.selected { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--tx); }
+#splash-start-btn:disabled { opacity: .4; cursor: not-allowed; }
+@media (max-width: 480px) {
+  .splash-cards { grid-template-columns: 1fr; }
+  .splash-title { font-size: 1.4rem; }
+  .splash-inner { padding: 20px 16px 18px; }
+}
+
 /* ══════════ TICKER ══════════ */
 #tk {
   background: var(--sf);
@@ -673,7 +710,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 /* ══════════ HOVER (solo dispositivos con mouse) ══════════ */
 @media (hover: hover) {
   .nb:hover          { background: var(--sf2); color: var(--tx); }
-  .ab-item:hover     { background: rgba(255,255,255,.05); }
   .sbtn:hover        { background: var(--sf2); color: var(--tx); }
   .sbtn.danger:hover { background: #2a1515; }
   .tb-btn:hover      { background: var(--sf2); color: var(--tx); }
@@ -786,6 +822,48 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
+<!-- ══ SPLASH BIENVENIDA ══ -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-logo">🔬</div>
+    <div class="splash-title">QuimPath</div>
+    <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
+    <div class="splash-plan-sel">
+      <div class="splash-plan-label">¿Qué plan de estudios seguís?</div>
+      <div class="splash-plan-btns">
+        <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021</button>
+        <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000</button>
+      </div>
+    </div>
+    <div class="splash-cards">
+      <div class="splash-card">
+        <span class="sc-icon">🖱️</span>
+        <div class="sc-title">Clic izquierdo</div>
+        <div class="sc-desc">Avanzar estado:<br>Habilitada → Cursando → Aprobada → Exonerada</div>
+      </div>
+      <div class="splash-card">
+        <span class="sc-icon">🖱️</span>
+        <div class="sc-title">Clic derecho</div>
+        <div class="sc-desc">Retroceder el estado de la materia.</div>
+      </div>
+      <div class="splash-card">
+        <span class="sc-icon">🔒</span>
+        <div class="sc-title">Materia bloqueada</div>
+        <div class="sc-desc">Hacé clic para ver qué previas te faltan cumplir.</div>
+      </div>
+      <div class="splash-card">
+        <span class="sc-icon">⚙️</span>
+        <div class="sc-title">Configuración</div>
+        <div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el panel lateral.</div>
+      </div>
+    </div>
+    <div class="splash-footer">
+      <span class="splash-hint">❓ Podés volver a ver esto y más desde Ayuda</span>
+      <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ TOAST CONTAINER ══ -->
 <div id="tc"></div>
 
@@ -824,6 +902,16 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
 </div></div>
 
+<!-- ══ MODAL: Cambiar plan ══ -->
+<div class="ov" id="ov-chplan" style="z-index:400"><div class="md">
+  <h2>⚠️ Cambiar plan de estudios</h2>
+  <p class="sub">Cambiar al <span id="chplan-label"></span> reiniciará todo tu progreso. Esta acción no se puede deshacer.</p>
+  <div class="ma">
+    <button class="bsc" onclick="closeChangePlan()">Cancelar</button>
+    <button class="bdn" onclick="confirmChangePlan()">Sí, cambiar</button>
+  </div>
+</div></div>
+
 <!-- ══ MODAL: Reiniciar ══ -->
 <div class="ov" id="ov-r"><div class="md">
   <h2>⚠️ Reiniciar progreso</h2>
@@ -857,6 +945,8 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <div class="ov" id="ov-cfg"><div class="md">
   <h2>⚙️ Configuración</h2>
   <div class="sep"></div>
+  <div class="cfg-row"><span class="cfg-row-label">📋 Plan de estudios</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-plan-2021" onclick="changePlan('2021')">2021</button><button class="toggle-btn" id="cfg-plan-2000" onclick="changePlan('2000')">2000</button></div></div>
+  <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
   <div class="cfg-row"><span class="cfg-row-label">💬 Mensajes flotantes</span><button class="toggle-btn" id="cfg-toasts" onclick="toggleToasts()"></button></div>
   <div class="sep"></div>
@@ -866,7 +956,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <!-- ══ MODAL: Ayuda ══ -->
 <div class="ov" id="ov-help"><div class="md">
   <h2>❓ Ayuda — QuimPath</h2>
-  <p class="sub">Seguimiento curricular para Ingeniería Química (UdelaR) · Ingreso por FQ</p>
+  <p class="sub">Seguimiento curricular para Ingeniería Química (UdelaR) · Plan 2021 y Plan 2000</p>
   <div class="sep"></div>
   <div style="display:flex;gap:6px;margin-bottom:14px">
     <button class="toggle-btn on"  id="help-tab-pc"  onclick="switchHelpTab('pc')"  style="flex:1;text-align:center">🖥️ PC / Desktop</button>
@@ -880,6 +970,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     </div>
     <div class="sep"></div>
     <div class="help-section"><h3>Atajos de teclado</h3>
+      <div class="wlc-row"><span class="wlc-key">Shift + Clic</span><span class="wlc-val">Ver las previas de cualquier materia, sin importar su estado.</span></div>
       <div class="wlc-row"><span class="wlc-key">Ctrl + F</span><span class="wlc-val">Enfocar la barra de búsqueda.</span></div>
       <div class="wlc-row"><span class="wlc-key">Escape</span><span class="wlc-val">Cerrar modales, limpiar búsqueda o filtros.</span></div>
     </div>
@@ -1013,19 +1104,19 @@ const OB = [
   { id: 'QUIANA2',   name: 'Química Analítica 2',               cr: 10,   fac: 'FQ',        grp: 'Básicas' },
   { id: 'QUIORG102I',name: 'Química Orgánica 102',              cr: 5,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'INTINGPRO', name: 'Intro a la Ing. de Procesos',       cr: 5,    fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
-  { id: 'QUIINO1',   name: 'Química Inorgánica (T+Lab)',        cr: 6,    fac: 'FQ',        grp: 'Básicas' },
+  { id: 'QUIINO1',   name: 'Química Inorgánica (T)',            cr: 6,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'FISQUI103', name: 'Fisicoquímica 103',                 cr: 12,   fac: 'FQ',        grp: 'Básicas' },
   { id: 'QUIORG103L',name: 'Química Orgánica 103 (Lab)',        cr: 5,    fac: 'FQ',        grp: 'Básicas' },
-  { id: 'FENTRA',    name: 'Fenómenos de Transporte',           cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
+  { id: 'FENTRA', crNote: '(12)',    name: 'Fenómenos de Transporte',           cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'TERAPL',    name: 'Termodinámica Aplicada',            cr: 9,    fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'MAT09',     name: 'Matemática 09',                     cr: 4,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'FISQUI104', name: 'Fisicoquímica 104',                 cr: 7,    fac: 'FQ',        grp: 'Básicas' },
-  { id: 'FLU',       name: 'Fluidodinámica',                    cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
-  { id: 'TRACALMA1', name: 'Transferencia Calor y Masa 1',      cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
+  { id: 'FLU', crNote: '(12)',       name: 'Fluidodinámica',                    cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
+  { id: 'TRACALMA1', crNote: '(12)', name: 'Transferencia Calor y Masa 1',      cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'COM1',      name: 'Computación 1',                     cr: 10,   fac: 'FING/INCO', grp: 'Básicas' },
   { id: 'IRREAQUI1', name: 'Ing. Reacciones Químicas 1',        cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'TECSERIND1',name: 'Tecnología y Serv. Industriales 1', cr: 10,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
-  { id: 'TRACALMA2', name: 'Transferencia Calor y Masa 2',      cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
+  { id: 'TRACALMA2', crNote: '(12)', name: 'Transferencia Calor y Masa 2',      cr: 14,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'ELE1',      name: 'Electrotécnica 1',                  cr: 9,    fac: 'FING/IIE',  grp: 'Técnicas' },
   { id: 'IRREAQUI2', name: 'Ing. Reacciones Químicas 2',        cr: 10,   fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'INGAMB',    name: 'Ingeniería Ambiental',              cr: 6,    fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
@@ -1103,13 +1194,12 @@ const O2 = [
 ];
 
 // ══════════ IDs DE OPTATIVAS ══════════
-const OPT_IDS = new Set([...O1.map(s => s.id), ...O2.map(s => s.id)]);
-const ALL = [...OB, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2.map(s => ({ ...s, name: s.name + ' *' }))];
-const BI  = Object.fromEntries(ALL.map(s => [s.id, s]));
-const INIC = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
+// Plan-dynamic variables (set by applyPlan)
+let OPT_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O2_ACT;
+let plan = null;
 
 // ══════════ PREVIAS ══════════
-const PV = {
+const PV_2021 = {
   'MAT04':     { 'MAT01': A, 'MAT03': A },
   'MAT05':     { 'MAT01': A, 'MAT03': A, 'MAT04': A },
   'MAT06':     { 'MAT01': A, 'MAT03': A },
@@ -1159,6 +1249,63 @@ const BO = {
   trat: { name: 'Trat. Efluentes',  cr: 9  },
 };
 
+// ══════════ PLAN 2000 — DATOS ══════════
+const INIC_2021 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
+const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB']);
+
+const PV_2000 = (() => {
+  const p = { ...PV_2021 };
+  delete p['INTINGPRO'];
+  p['INTINGQP']   = { 'MAT01': A, 'FIS101': A, 'QUIGEN2': A };
+  p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
+  p['FLU']        = [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGQP': E }];
+  p['TRACALMA1']  = [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGQP': E }];
+  return p;
+})();
+
+const SEMESTRES_2000 = [
+  { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
+  { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2'] },
+  { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGQP'] },
+  { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
+  { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
+  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
+  { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','INTINGBIO','MECAPL'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DINCONPRO'] },
+  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
+];
+
+// ══════════ APLICAR PLAN ══════════
+function applyPlan(p) {
+  plan = p;
+  if (p === '2000') {
+    OB_ACT = OB
+      .filter(s => !['INTINGQUI','INGAMB','DISPROQUI'].includes(s.id))
+      .map(s => {
+        if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
+        if (s.id === 'INTINGPRO')  return { ...s, id: 'INTINGQP', name: 'Intro a la Ing. Química y de Procesos', cr: 7 };
+        if (s.id === 'INGBIOTRAE') return { ...s, name: 'Ing. Bioquímica', cr: 14, dual: false };
+        return s;
+      });
+    // TSI2: sacar de optativas, agregar a obligatorias
+    OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
+    O2_ACT      = O2.filter(s => s.id !== 'TECSERIND2');
+    PV_ACT      = PV_2000;
+    INIC_ACT    = INIC_2000;
+    SEMESTRES_ACT = SEMESTRES_2000;
+  } else {
+    OB_ACT      = OB;
+    O2_ACT      = O2;
+    PV_ACT      = PV_2021;
+    INIC_ACT    = INIC_2021;
+    SEMESTRES_ACT = SEMESTRES_2021;
+  }
+  OPT_IDS = new Set([...O1.map(s => s.id), ...O2_ACT.map(s => s.id)]);
+  ALL     = [...OB_ACT, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
+  BI      = Object.fromEntries(ALL.map(s => [s.id, s]));
+}
+
 // ══════════ ÁREAS ══════════
 const AM = {
   'MAT01':'Matemática','MAT03':'Matemática','MAT04':'Matemática','MAT05':'Matemática',
@@ -1172,7 +1319,7 @@ const AM = {
   'QCATECGRA':'Química','TECPOL':'Química','QUIBIOINT':'Química','QUIBIOINP':'Química',
   'QUIAMB':'Química','SINORGTRE':'Química','H2FUEENE':'Química','BIODIEST':'Química',
   'INTINGBIO':'Biología','INTCIEBIO1':'Biología','BIO1':'Biología',
-  'INTINGQUI':'Troncales','INTINGPRO':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
+  'INTINGQUI':'Troncales','INTINGPRO':'Troncales','INTINGQP':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
   'FLU':'Troncales','TRACALMA1':'Troncales','IRREAQUI1':'Troncales','TRACALMA2':'Troncales',
   'PROIND1':'Troncales','PROIND2':'Troncales','PAS':'Troncales',
   'TECSERIND1':'Avanzadas','IRREAQUI2':'Avanzadas','INGAMB':'Avanzadas','DINCONPRO':'Avanzadas',
@@ -1223,9 +1370,9 @@ let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
 function sv() {
-  const data = { est, bOp, cel, soundOn, toastsOn, theme };
+  const data = { est, bOp, cel, soundOn, toastsOn, theme, plan };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, cel, soundOn, theme });
+  window.fbSave?.({ est, bOp, cel, soundOn, theme, plan });
 }
 
 function ld() {
@@ -1238,15 +1385,29 @@ function ld() {
     soundOn = d.soundOn  !== undefined ? d.soundOn  : true;
     toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
     if (d.theme) theme = d.theme;
+    if (d.plan)  plan  = d.plan;
   } catch (e) {}
 }
 
 // ══════════ AUDIO ══════════
-const AC_ = new (window.AudioContext || window.webkitAudioContext)();
+let AC_ = null;
+function getAC() {
+  if (!AC_ || AC_.state === 'closed') AC_ = new (window.AudioContext || window.webkitAudioContext)();
+  return AC_;
+}
 
-function playTone(freq, dur, vol = 1) {
+async function playTone(freq, dur, vol = 1) {
   if (!soundOn) return;
   try {
+    const AC_ = getAC();
+    if (AC_.state === 'suspended') await AC_.resume();
+    // Buffer silencioso para calentar el contexto
+    const silence = AC_.createBuffer(1, Math.ceil(AC_.sampleRate * 0.05), AC_.sampleRate);
+    const silSrc = AC_.createBufferSource();
+    silSrc.buffer = silence;
+    silSrc.connect(AC_.destination);
+    silSrc.start();
+    await new Promise(r => setTimeout(r, 50));
     const g = AC_.createGain();
     g.gain.setValueAtTime(vol, AC_.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, AC_.currentTime + dur);
@@ -1269,19 +1430,20 @@ function crBasicas() {
   let t = 0;
   for (const s of ALL)
     if (s.grp === 'Básicas' && gs(s.id) === S.E)
-      t += s.id === 'INGBIOTRAE' ? (bOp ? BO[bOp].cr : 0) : (s.cr || 0);
+      t += s.id === 'INGBIOTRAE' ? (plan === '2000' ? 14 : (bOp ? BO[bOp].cr : 0)) : (s.cr || 0);
   return t;
 }
 
 function cp(id) {
-  if (OPT_IDS.has(id)) return S.B; // optativas: en desarrollo
-  if (INIC.has(id)) return S.H;
-  const p = PV[id];
+  if (OPT_IDS.has(id)) return S.B;
+  if (INIC_ACT.has(id)) return S.H;
+  const p = PV_ACT[id];
   if (!p) return S.H;
   if (id === 'PAS' && crBasicas() < 190) return S.B;
   if (id === 'INGBIOTRAE') {
-    if (!bOp) return S.B;
-    for (const [pid, ms] of Object.entries(PV_BIO[bOp]))
+    const pvs = plan === '2000' ? PV_BIO.bio : (bOp ? PV_BIO[bOp] : null);
+    if (!pvs) return S.B;
+    for (const [pid, ms] of Object.entries(pvs))
       if (gs(pid) < ms) return S.B;
     return S.H;
   }
@@ -1302,7 +1464,11 @@ function rc() {
 
 function gcr(id, st) {
   if (st < S.E) return 0;
-  return id === 'INGBIOTRAE' ? (bOp ? BO[bOp].cr : 0) : (BI[id]?.cr ?? 0);
+  if (id === 'INGBIOTRAE') {
+    if (plan === '2000') return 14;
+    return bOp ? BO[bOp].cr : 0;
+  }
+  return BI[id]?.cr ?? 0;
 }
 
 function cst() {
@@ -1343,11 +1509,11 @@ function setSt(id, ns, back) {
 function cycleBack(id) {
   const cur = gs(id);
   if (cur === S.B) {
-    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   if (cur === S.H) {
-    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   setSt(id, cur - 1, true);
@@ -1363,17 +1529,23 @@ function mkCard(s) {
   d.innerHTML   = `<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;
 
   d.addEventListener('click', (e) => {
-    AC_.resume();
-    // Ctrl+click: mostrar previas sin importar estado
-    if (e.ctrlKey) {
-      e.preventDefault();
+    getAC();
+    // Shift+click: mostrar previas sin importar estado
+    if (e.shiftKey) {
+      e.preventDefault(); e.stopPropagation();
       if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
-      if (PV[s.id]) { showPP(s.id); return; }
+      if (PV_ACT[s.id]) { showPP(s.id); return; }
       return;
     }
     if (s.id === 'INGBIOTRAE') {
       hidePP();
       const cur = gs('INGBIOTRAE');
+      if (plan === '2000') {
+        if (cur === S.B) { showPPBio(); return; }
+        if (cur === S.E) { if (isMobile()) setSt('INGBIOTRAE', S.H, true); return; }
+        setSt('INGBIOTRAE', cur + 1, false);
+        return;
+      }
       if (!bOp)      { openBio(); return; }
       if (cur === S.B) { showPPBio(); return; }
       if (cur === S.E && isMobile()) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
@@ -1393,7 +1565,7 @@ function mkCard(s) {
   });
 
   d.addEventListener('contextmenu', (e) => {
-    e.preventDefault(); AC_.resume();
+    e.preventDefault(); getAC();
     if (OPT_IDS.has(s.id)) { toastWip(); return; }
     hidePP(); cycleBack(s.id);
   });
@@ -1407,12 +1579,13 @@ function upCard(el, id) {
   const st = gs(id);
   el.dataset.st = SN[st];
   el.querySelector('.cbg').textContent = SL[st];
+  const _m = BI[id]; const _crNote = (plan === '2021' && _m?.crNote) ? ' ' + _m.crNote : '';
   el.querySelector('.cc').textContent  = id === 'INGBIOTRAE' && bOp
     ? BO[bOp].cr + ' créditos'
-    : BI[id]?.cr != null ? BI[id].cr + ' créditos' : '—';
+    : _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
   if (id === 'INGBIOTRAE') {
     const nm = el.querySelector('.cn');
-    if (nm) nm.textContent = bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes';
+    if (nm) nm.textContent = plan === '2000' ? 'Ing. Bioquímica' : (bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes');
   }
 }
 
@@ -1531,7 +1704,7 @@ function topoSort(arr) {
   while (changed) {
     changed = false;
     for (const id of ids) {
-      const p = PV[id]; if (!p) continue;
+      const p = PV_ACT[id]; if (!p) continue;
       for (const g of (Array.isArray(p) ? p : [p]))
         for (const dep of Object.keys(g)) {
           if (!idSet.has(dep)) continue;
@@ -1544,7 +1717,7 @@ function topoSort(arr) {
 }
 
 // ══════════ GRIDS ══════════
-const SEMESTRES = [
+const SEMESTRES_2021 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
@@ -1566,8 +1739,8 @@ function bldGrds() {
   if (!blt.p) {
     const gd = document.createElement('div');
     gd.className = 'gd';
-    const idMap = Object.fromEntries(OB.map(s => [s.id, s]));
-    for (const sem of SEMESTRES) {
+    const idMap = Object.fromEntries(OB_ACT.map(s => [s.id, s]));
+    for (const sem of SEMESTRES_ACT) {
       const lbl = document.createElement('div');
       lbl.className   = 'sect-label';
       lbl.textContent = '📅 ' + sem.label;
@@ -1585,7 +1758,7 @@ function bldGrds() {
     blt.o1 = true;
   }
   if (!blt.o2) {
-    topoSort(O2).forEach(s => document.getElementById('g-o2').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    topoSort(O2_ACT).forEach(s => document.getElementById('g-o2').appendChild(mkCard({ ...s, name: s.name + ' *' })));
     blt.o2 = true;
   }
 }
@@ -1638,7 +1811,7 @@ function applyS() { qr = document.getElementById('sq').value; rAll(); }
 
 // ══════════ MODAL PREVIAS ══════════
 function showPP(id) {
-  const p = PV[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
+  const p = PV_ACT[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
   if (!p) { ov.classList.remove('op'); return; }
   const g = (Array.isArray(p) ? p : [p])[0];
   let rows = '';
@@ -1650,7 +1823,6 @@ function showPP(id) {
     const met = gs(pid) >= ms;
     rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
   }
-  const alts = Array.isArray(p) ? p : [p];
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${rows}`;
   ov.classList.add('op');
   ov.addEventListener('click', ppOvClick);
@@ -1678,7 +1850,6 @@ function showPPBio() {
   ov.classList.add('op');
   ov.addEventListener('click', ppOvClick);
 }
-
 
 // ══════════ FEEDBACK ══════════
 let fbType = 'error';
@@ -1773,11 +1944,17 @@ function toastWip() {
 function openReset()  { document.getElementById('ov-r').classList.add('op'); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); }
 
-function doReset() {
-  est = {}; bOp = null; cel = false; rc(); blt = {};
-  ['g-ta','tp-princ','g-o1','g-o2'].forEach(id => document.getElementById(id).innerHTML = '');
+function rebuildAllGrids() {
   Object.keys(CE).forEach(k => delete CE[k]);
-  bldGrds(); rAll(); upCr(); sv(); closeReset();
+  ['g-ta','tp-princ','g-o1','g-o2'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+  blt = {};
+  bldGrds();
+}
+
+function doReset() {
+  est = {}; bOp = null; cel = false;
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv(); closeReset();
 }
 
 function openBio() {
@@ -1791,18 +1968,6 @@ function openBio() {
 function bioBack() {
   document.getElementById('bio-prereq-section').style.display = 'none';
   document.getElementById('bio-back-btn').style.display       = 'none';
-}
-
-function showBioPrereqs(variant) {
-  const pvs = PV_BIO[variant];
-  let rows = '';
-  for (const [pid, ms] of Object.entries(pvs)) {
-    const met = gs(pid) >= ms;
-    rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
-  }
-  document.getElementById('bio-prereq-list').innerHTML = `<div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;margin-bottom:7px">Previas para <b style="color:var(--tx)">${BO[variant].name}</b>:</div>${rows}`;
-  document.getElementById('bio-prereq-section').style.display = '';
-  document.getElementById('bio-back-btn').style.display       = '';
 }
 
 function closeBio() { document.getElementById('ov-b').classList.remove('op'); }
@@ -1822,6 +1987,7 @@ function openConfig() {
     document.getElementById(id).className   = 'toggle-btn ' + (on ? 'on' : 'off');
   });
   document.getElementById('ov-cfg').classList.add('op');
+  updateCfgPlanBtns();
 }
 
 function closeConfig() { document.getElementById('ov-cfg').classList.remove('op'); }
@@ -1927,8 +2093,8 @@ document.getElementById('sbov').onclick = cSB;
 
 // ══════════ TECLADO ══════════
 document.addEventListener('keydown', e => {
-  // 🤫 Combo secreto: Shift+Ctrl+Alt+E — exonera todo
-  if (e.shiftKey && e.ctrlKey && e.altKey && e.key === 'E') {
+  // 🤫 Combo secreto: Shift+Ctrl+E — exonera todo
+  if (e.shiftKey && e.ctrlKey && !e.altKey && e.code === 'KeyE') {
     for (const s of ALL) est[s.id] = S.E;
     if (!bOp) bOp = 'bio';
     rc(); rAll(); upCr(); chkCel(); sv();
@@ -1948,6 +2114,7 @@ document.addEventListener('keydown', e => {
       ['ov-fb',  closeFeedback],
       ['ov-r',   closeReset],
       ['ov-b',   closeBio],
+      ['ov-chplan', closeChangePlan],
     ];
     for (const [id, fn] of modals)
       if (document.getElementById(id).classList.contains('op')) { fn(); return; }
@@ -1981,7 +2148,8 @@ window._applyCloudData = function (d) {
   cel     = d.cel   || false;
   soundOn = d.soundOn !== undefined ? d.soundOn : true;
   if (d.theme) theme = d.theme;
-  for (const id of INIC) if (!est[id]) est[id] = S.H;
+  if (d.plan && d.plan !== plan) { plan = d.plan; applyPlan(plan); rebuildAllGrids(); }
+  for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
   rc(); rAll(); upCr(); applyTheme();
   try {
     const local = JSON.parse(localStorage.getItem(SK) || '{}');
@@ -1989,10 +2157,66 @@ window._applyCloudData = function (d) {
   } catch (e) {}
 };
 
+// ══════════ SPLASH ══════════
+let splashPlan = null;
+function selectSplashPlan(p) {
+  splashPlan = p;
+  document.querySelectorAll('.splash-plan-btn').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + p));
+  document.getElementById('splash-start-btn').disabled = false;
+}
+function closeSplash() {
+  if (!splashPlan) return;
+  if (splashPlan !== plan) {
+    est = {}; bOp = null; cel = false;
+    applyPlan(splashPlan);
+    rebuildAllGrids();
+    rc(); rAll(); upCr();
+  }
+  document.getElementById('splash').classList.remove('on');
+  try { localStorage.setItem('qp_welcomed', '1'); } catch(e) {}
+  sv();
+}
+function maybeShowSplash() {
+  try {
+    if (!localStorage.getItem('qp_welcomed')) {
+      splashPlan = plan;
+      document.querySelectorAll('.splash-plan-btn').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
+      document.getElementById('splash-start-btn').disabled = false;
+      document.getElementById('splash').classList.add('on');
+    }
+  } catch(e) { document.getElementById('splash').classList.add('on'); }
+}
+
+// ══════════ CAMBIO DE PLAN ══════════
+function changePlan(p) {
+  if (p === plan) return;
+  document.getElementById('chplan-label').textContent = 'Plan ' + p;
+  document.getElementById('ov-chplan').dataset.target = p;
+  document.getElementById('ov-chplan').classList.add('op');
+  updateCfgPlanBtns();
+}
+function closeChangePlan() { document.getElementById('ov-chplan').classList.remove('op'); updateCfgPlanBtns(); }
+function confirmChangePlan() {
+  const p = document.getElementById('ov-chplan').dataset.target;
+  est = {}; bOp = null; cel = false;
+  applyPlan(p);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  closeChangePlan();
+}
+function updateCfgPlanBtns() {
+  ['2021','2000'].forEach(p => {
+    const btn = document.getElementById('cfg-plan-' + p);
+    if (btn) btn.className = 'toggle-btn ' + (plan === p ? 'on' : 'off');
+  });
+}
+
 function init() {
   ld();
-  for (const id of INIC) if (!est[id]) est[id] = S.H;
-  rc(); bldGrds(); rAll(); upCr(); applyTheme();
+  if (!plan) plan = '2021';
+  applyPlan(plan);
+  for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
+  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash();
 }
 
 init();
