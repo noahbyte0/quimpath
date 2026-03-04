@@ -437,9 +437,9 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
   user-select: none;
 }
 #quimi.quimpi {
-  right: 14px;
-  left: auto;
-  align-items: flex-end;
+  right: auto;
+  left: calc(var(--sw) + 14px);
+  align-items: flex-start;
 }
 #quimi-img {
   width: 90px;
@@ -450,7 +450,18 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
   display: block;
 }
 #quimi-img { transform: scaleX(-1); }
-#quimi.quimpi #quimi-img { transform: scaleX(-1); }
+#quimi.quimpi #quimi-img { transform: scaleX(1); }
+#quimi.quimpi #quimi-bubble {
+  right: auto;
+  left: 0;
+  transform-origin: bottom left;
+  border-right-width: 1px;
+  border-left-width: 3px;
+}
+#quimi.quimpi #quimi-bubble::after {
+  right: auto;
+  left: 18px;
+}
 #quimi { transition: opacity .2s; }
 body.modal-open #quimi { opacity: 0; pointer-events: none; }
 #quimi-bubble {
@@ -516,6 +527,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 
 .help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-right: 1px solid var(--bd); }
 .help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
+.help-quimi-col img.mirror { transform: scaleX(-1); }
 .help-quimi-col p { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tx); line-height: 1.55; margin: 0; }
 .help-quimi-col p em { color: var(--ac); font-style: italic; }
 .help-md-body { flex: 1; min-width: 0; padding: 22px; overflow-y: auto; max-height: 90vh; }
@@ -2318,7 +2330,10 @@ function applyMascot() {
   if (el)  el.classList.toggle('quimpi', mascot === 'quimpi');
   if (img) { img.src = imgs[img.dataset.mood] || imgs.idle; }
   if (cel) cel.src = mascot === 'quimpi' ? 'quimpi_celebrando.png' : 'quimi_celebrando.png';
-  if (hlp) hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png'  : 'quimi_ensenando.png';
+  if (hlp) {
+    hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png' : 'quimi_ensenando.png';
+    hlp.classList.toggle('mirror', mascot === 'quimpi');
+  }
 }
 
 
@@ -2672,7 +2687,7 @@ function closeSplash() {
   if (isNewMascot && mascot === 'quimpi') {
     setTimeout(() => quimiSay('¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱', 'happy', 4000), 600);
   } else if (isNewMascot && mascot === 'quimi') {
-    setTimeout(() => quimiSay('¡Hola! Soy Quimi, tu compañero/a de carrera 🐾', 'happy', 3500), 600);
+    setTimeout(() => quimiSay('¡Hola! Soy Quimi, tu compañero de carrera 🐾', 'happy', 3500), 600);
   }
 }
 function maybeShowSplash() {
@@ -2776,13 +2791,27 @@ const QUIMI_MSGS = [
   '¡Otro semestre y al título! 🎓',
   '¡La química te necesita! ⚗️',
   '¡Seguí dale que se nota el progreso! 📚',
-  '¡Woof! ¡Esta materia cae seguro! 🐾',
   '¡El café y yo te bancamos! ☕',
   '¡Cada crédito cuenta! ⚖️',
   '¡No te rindas, campeón! 🏆',
 ];
+const QUIMPI_MSGS = [
+  '¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱',
+  '¡Miau! ¡Esta materia cae seguro! 🐱',
+  '¡Vamos, vos podés! 💪',
+  '¡Otro semestre y al título! 🎓',
+  '¡La química te necesita! ⚗️',
+  '¡Seguí dale que se nota el progreso! 📚',
+  '¡El café y yo te bancamos! ☕',
+  '¡Cada crédito cuenta! ⚖️',
+  '¡No te rindas, campeón/a! 🏆',
+  'Estoy segura que serás ingeniero/a algún día 🐱',
+  'Lo sé, vas a llegar. Confío en vos 🌟',
+  'Tengo fe en que este semestre es el tuyo 🐱',
+];
 document.getElementById('quimi').addEventListener('click', () => {
-  quimiSay(QUIMI_MSGS[Math.floor(Math.random() * QUIMI_MSGS.length)], 'happy', 2800);
+  const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
+  quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 2800);
 });
 
 function init() {
