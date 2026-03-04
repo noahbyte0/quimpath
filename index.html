@@ -2803,8 +2803,8 @@ function maybeShowSplash() {
       const mob = isMobile();
       document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
       document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
+      document.getElementById('splash-start-btn').disabled = true;
       document.getElementById('splash').classList.add('on'); setModalOpen(true);
-      selectSplashPlan(plan); // sincroniza botón + mascota col de una
     }
   } catch(e) { document.getElementById('splash').classList.add('on'); setModalOpen(true); }
 }
