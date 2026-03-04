@@ -687,6 +687,11 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   border-top: 1px solid var(--bd); padding-top: 16px;
 }
 .splash-hint { font-size: .58rem; color: var(--tm); font-family: 'Space Mono', monospace; }
+.splash-instructions { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--bd); border-radius: 10px; overflow: hidden; }
+.si-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--bd); font-size: .72rem; color: var(--tm); line-height: 1.5; }
+.si-row:last-child { border-bottom: none; }
+.si-ic { font-size: .9rem; flex-shrink: 0; width: 20px; text-align: center; }
+.si-title { font-weight: 700; color: var(--tx); }
 .splash-plan-sel { margin-bottom: 18px; }
 .splash-plan-label { font-size: .7rem; color: var(--tm); font-family: 'Space Mono', monospace; text-align: center; margin-bottom: 10px; }
 .splash-plan-btns { display: flex; gap: 10px; }
@@ -956,12 +961,12 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <!-- ══ SPLASH BIENVENIDA ══ -->
 <div id="splash">
   <div class="splash-inner">
-    <!-- Quimπ — izquierda -->
-    <div class="splash-mascot-col left" id="sp-col-quimpi" onclick="selectSplashPlan('2000')">
-      <span class="smc-badge">Plan 2000</span>
-      <img src="quimpi_saludando.png" alt="Quimπ saludando"/>
-      <span class="smc-name">Quimπ</span>
-      <div class="smc-bubble">¡Hola! Soy Quimπ 🐱<br>¡Es un gusto tenerte aquí!</div>
+    <!-- Quimi — izquierda -->
+    <div class="splash-mascot-col left" id="sp-col-quimi" onclick="selectSplashPlan('2021')">
+      <span class="smc-badge">Plan 2021</span>
+      <img src="quimi_saludando.png" alt="Quimi saludando" class="mirror"/>
+      <span class="smc-name">Quimi</span>
+      <div class="smc-bubble">¡Hola! Soy Quimi 🐾<br>Bienvenido/a a QuimPath</div>
     </div>
     <!-- Centro -->
     <div class="splash-content-col">
@@ -975,28 +980,32 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
           <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000 · Quimπ 🐱</button>
         </div>
       </div>
-      <div class="splash-cards" id="splash-cards-pc">
-        <div class="splash-card"><span class="sc-icon">🖱️</span><div class="sc-title">Clic izquierdo</div><div class="sc-desc">Avanzar estado:<br>Habilitada → Cursando → Aprobada → Exonerada</div></div>
-        <div class="splash-card"><span class="sc-icon">🖱️</span><div class="sc-title">Clic derecho</div><div class="sc-desc">Retroceder el estado de la materia.</div></div>
-        <div class="splash-card"><span class="sc-icon">🔒</span><div class="sc-title">Materia bloqueada</div><div class="sc-desc">Hacé clic para ver qué previas te faltan cumplir.</div></div>
-        <div class="splash-card"><span class="sc-icon">⚙️</span><div class="sc-title">Configuración</div><div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el panel lateral.</div></div>
+      <div id="splash-cards-pc" style="margin-bottom:18px">
+        <div class="splash-instructions">
+          <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
+          <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic derecho</span> — Retroceder el estado de la materia</div></div>
+          <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Clic para ver qué previas te faltan</div></div>
+          <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Ajustá sonidos, notificaciones y plan desde el panel lateral</div></div>
+        </div>
       </div>
-      <div class="splash-cards" id="splash-cards-mob" style="display:none;grid-template-columns:1fr">
-        <div class="splash-card"><span class="sc-icon">👆</span><div class="sc-title">Tocá una materia</div><div class="sc-desc">Avanza el estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
-        <div class="splash-card"><span class="sc-icon">🔒</span><div class="sc-title">Materia bloqueada</div><div class="sc-desc">Tocá para ver qué previas te faltan cumplir.</div></div>
-        <div class="splash-card"><span class="sc-icon">⚙️</span><div class="sc-title">Configuración</div><div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el menú lateral.</div></div>
+      <div id="splash-cards-mob" style="display:none;margin-bottom:18px">
+        <div class="splash-instructions">
+          <div class="si-row"><span class="si-ic">👆</span><div><span class="si-title">Tocá una materia</span> — Avanza el estado en loop hasta Exonerada</div></div>
+          <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Tocá para ver qué previas te faltan</div></div>
+          <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Abrí el menú lateral con ☰</div></div>
+        </div>
       </div>
       <div class="splash-footer">
         <span class="splash-hint">❓ Podés volver a ver esto y más desde Ayuda</span>
         <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
       </div>
     </div>
-    <!-- Quimi — derecha -->
-    <div class="splash-mascot-col right" id="sp-col-quimi" onclick="selectSplashPlan('2021')">
-      <span class="smc-badge">Plan 2021</span>
-      <img src="quimi_saludando.png" alt="Quimi saludando" class="mirror"/>
-      <span class="smc-name">Quimi</span>
-      <div class="smc-bubble">¡Hola! Soy Quimi 🐾<br>Bienvenido/a a QuimPath</div>
+    <!-- Quimπ — derecha -->
+    <div class="splash-mascot-col right" id="sp-col-quimpi" onclick="selectSplashPlan('2000')">
+      <span class="smc-badge">Plan 2000</span>
+      <img src="quimpi_saludando.png" alt="Quimπ saludando"/>
+      <span class="smc-name">Quimπ</span>
+      <div class="smc-bubble">¡Hola! Soy Quimπ 🐱<br>¡Es un gusto tenerte aquí!</div>
     </div>
   </div>
 </div>
