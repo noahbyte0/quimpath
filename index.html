@@ -1730,7 +1730,7 @@ let _prevTab = 'princ';
 function sv() {
   const data = { est, bOp, dOp, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, dOp, cel, soundOn, theme, plan });
+  window.fbSave?.({ est, bOp, dOp, cel, soundOn, quimiOn, mascot, theme, plan });
 }
 
 function ld() {
@@ -2749,7 +2749,7 @@ window._applyCloudData = function (d) {
   cel     = d.cel   || false;
   soundOn = d.soundOn !== undefined ? d.soundOn : true;
   quimiOn = d.quimiOn !== undefined ? d.quimiOn : true;
-  mascot  = d.mascot  || 'quimi';
+  mascot  = d.mascot  || mascot;
   if (d.theme) theme = d.theme;
   if (d.plan && d.plan !== plan) { plan = d.plan; applyPlan(plan); rebuildAllGrids(); }
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
@@ -2890,7 +2890,17 @@ function quimiAmbientSay() {
 // Dice una frase entre 2 y 4 minutos al azar, indefinidamente
 (function scheduleAmbient() {
   const delay = (120 + Math.random() * 120) * 1000;
-  setTimeout(() => { quimiAmbientSay(); scheduleAmbient(); }, delay);
+  setTimeout(() => {
+    // Alterna aleatoriamente entre frase de porcentaje y frase de click
+    if (Math.random() < 0.5) {
+      quimiAmbientSay();
+    } else {
+      if (!toastsOn || !quimiOn) { scheduleAmbient(); return; }
+      const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
+      quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 4000);
+    }
+    scheduleAmbient();
+  }, delay);
 })();
 
 // ══════════ QUIMI — CLICK ══════════
@@ -2903,6 +2913,8 @@ const QUIMI_MSGS = [
   '¡El café y yo te bancamos! ☕',
   '¡Cada crédito cuenta! ⚖️',
   '¡No te rindas, campeón! 🏆',
+  '¿Perdido? El botón ❓ de arriba tiene todo lo que necesitás saber 😉',
+  '¿Encontraste algo raro? ¡Avisame en "Reportar error" y lo arreglamos! 🐛',
 ];
 const QUIMPI_MSGS = [
   '¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱',
@@ -2917,6 +2929,8 @@ const QUIMPI_MSGS = [
   'Estoy segura que serás ingeniero/a algún día 🐱',
   'Lo sé, vas a llegar. Confío en vos 🌟',
   'Tengo fe en que este semestre es el tuyo 🐱',
+  '¿Dudas? El botón ❓ de arriba tiene toda la ayuda que necesitás 😸',
+  '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
 ];
 document.getElementById('quimi').addEventListener('click', () => {
   const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
