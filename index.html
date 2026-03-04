@@ -523,9 +523,9 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 #quimi-img[data-mood="exonerada"] { animation: quimi-jump-f .5s cubic-bezier(.34,1.56,.64,1); }
 #quimi-img[data-mood="celebrate"] { animation: quimi-rock-f .45s ease-in-out infinite alternate; }
 
-#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); transform: scaleX(-1); }
+#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
 
-.help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-right: 1px solid var(--bd); }
+.help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-left: 1px solid var(--bd); }
 .help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
 .help-quimi-col img.mirror { transform: scaleX(-1); }
 .help-quimi-col p { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tx); line-height: 1.55; margin: 0; }
@@ -1132,10 +1132,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
 <!-- ══ MODAL: Ayuda ══ -->
 <div class="ov" id="ov-help"><div class="md" style="max-width:720px;display:flex;padding:0;gap:0;overflow:hidden">
-  <div class="help-quimi-col">
-    <img src="quimi_ensenando.png" alt="Quimi enseñando"/>
-    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso? 😏</p>
-  </div>
   <div class="help-md-body">
   <h2>❓ Ayuda — QuimPath</h2>
   <p class="sub">Seguimiento curricular para Ingeniería Química (UdelaR) · Plan 2021 y Plan 2000</p>
@@ -1166,7 +1162,12 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
   <div class="sep"></div>
   <div class="ma"><button class="bpr" onclick="closeHelp()">Entendido</button></div>
-</div></div></div>
+</div>
+  <div class="help-quimi-col">
+    <img src="quimi_ensenando.png" alt="Quimi enseñando" class="mirror"/>
+    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso? 😏</p>
+  </div>
+</div></div>
 
 <!-- ══ PANTALLA CELEBRACIÓN ══ -->
 <div id="cel"><div class="celi">
@@ -2329,10 +2330,13 @@ function applyMascot() {
   const imgs = getMascotImgs();
   if (el)  el.classList.toggle('quimpi', mascot === 'quimpi');
   if (img) { img.src = imgs[img.dataset.mood] || imgs.idle; }
-  if (cel) cel.src = mascot === 'quimpi' ? 'quimpi_celebrando.png' : 'quimi_celebrando.png';
+  if (cel) {
+    cel.src = mascot === 'quimpi' ? 'quimpi_celebrando.png' : 'quimi_celebrando.png';
+    cel.style.transform = 'scaleX(-1)';
+  }
   if (hlp) {
     hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png' : 'quimi_ensenando.png';
-    hlp.classList.toggle('mirror', mascot === 'quimpi');
+    hlp.classList.toggle('mirror', mascot !== 'quimpi');
   }
 }
 
@@ -2693,16 +2697,11 @@ function closeSplash() {
 function maybeShowSplash() {
   try {
     if (!localStorage.getItem('qp_welcomed')) {
-      splashPlan   = plan;
-      splashMascot = mascot;
-      document.querySelectorAll('.splash-plan-btn[id^="sp-btn-"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
-      document.getElementById('sp-col-quimi') .classList.toggle('chosen', mascot === 'quimi');
-      document.getElementById('sp-col-quimpi').classList.toggle('chosen', mascot === 'quimpi');
-      document.getElementById('splash-start-btn').disabled = false;
       const mob = isMobile();
       document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
       document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
       document.getElementById('splash').classList.add('on'); setModalOpen(true);
+      selectSplashPlan(plan); // sincroniza botón + mascota col de una
     }
   } catch(e) { document.getElementById('splash').classList.add('on'); setModalOpen(true); }
 }
