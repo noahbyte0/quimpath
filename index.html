@@ -1346,7 +1346,7 @@ const OB = [
   { id: 'FIS103LAB', name: 'Física 103 (Lab)',                  cr: 8,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'FISQUI101', name: 'Fisicoquímica 101',                 cr: 13,   fac: 'FQ',        grp: 'Básicas' },
   { id: 'QUIANA2',   name: 'Química Analítica 2',               cr: 10,   fac: 'FQ',        grp: 'Básicas' },
-  { id: 'QUIORG102I',name: 'Química Orgánica 102',              cr: 5,    fac: 'FQ',        grp: 'Básicas' },
+  { id: 'QUIORG102I',name: 'Química Orgánica 102 I',             cr: 5,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'INTINGPRO', name: 'Intro a la Ing. de Procesos',       cr: 5,    fac: 'FING/IIQ',  grp: 'Esp. Ing. Química' },
   { id: 'QUIINO1',   name: 'Química Inorgánica (T)',            cr: 6,    fac: 'FQ',        grp: 'Básicas' },
   { id: 'FISQUI103', name: 'Fisicoquímica 103',                 cr: 12,   fac: 'FQ',        grp: 'Básicas' },
@@ -1962,7 +1962,7 @@ function upCard(el, id) {
   const st = gs(id);
   el.dataset.st = SN[st];
   el.querySelector('.cbg').textContent = SL[st];
-  const _m = BI[id]; const _crNote = (plan === '2021' && _m?.crNote) ? ' ' + _m.crNote : '';
+  const _m = BI[id]; const _crNote = _m?.crNote ? ' ' + _m.crNote : '';
   if (id === 'DINCONPRO') {
     el.querySelector('.cc').textContent = dOp ? DO[dOp].cr + ' créditos' : '— créditos';
     const nm = el.querySelector('.cn');
@@ -1979,10 +1979,11 @@ function upCard(el, id) {
 }
 
 function rAll() {
-  const q = qr.toLowerCase();
+  const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const q = norm(qr);
   for (const [id, els] of Object.entries(CE)) {
     const show = (aF.size === 0 || aF.has(SN[gs(id)]))
-      && (!q || BI[id]?.name?.toLowerCase().includes(q))
+      && (!q || norm(BI[id]?.name ?? '').includes(q))
       && (!areaF || AM_ACT[id] === areaF)
 
     for (const el of els) { upCard(el, id); el.classList.toggle('hd', !show); }
@@ -2752,7 +2753,7 @@ window._applyCloudData = function (d) {
   if (d.theme) theme = d.theme;
   if (d.plan && d.plan !== plan) { plan = d.plan; applyPlan(plan); rebuildAllGrids(); }
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
-  rc(); rAll(); upCr(); applyTheme();
+  rc(); rAll(); upCr(); applyTheme(); applyMascot(); applyQuimiVisibility();
   try {
     const local = JSON.parse(localStorage.getItem(SK) || '{}');
     localStorage.setItem(SK, JSON.stringify({ ...d, toastsOn: local.toastsOn ?? !isMobile() }));
