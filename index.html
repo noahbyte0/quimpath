@@ -518,12 +518,22 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 @keyframes quimi-jump-f    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
 @keyframes quimi-rock-f    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
 
+@keyframes quimpi-breathe { 0%,100%{transform:scaleX(1) scale(1)} 50%{transform:scaleX(1) scale(1.03)} }
+@keyframes quimpi-bounce  { 0%{transform:scaleX(1) translateY(0)} 35%{transform:scaleX(1) translateY(-14px)} 65%{transform:scaleX(1) translateY(-6px)} 100%{transform:scaleX(1) translateY(0)} }
+@keyframes quimpi-jump    { 0%{transform:scaleX(1) translateY(0) scale(1)} 30%{transform:scaleX(1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(1) translateY(0) scale(1)} }
+@keyframes quimpi-rock    { 0%{transform:scaleX(1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(1) rotate(7deg) translateY(-8px)} }
+
 #quimi-img[data-mood="idle"]      { animation: quimi-breathe-f 3.5s ease-in-out infinite; }
 #quimi-img[data-mood="happy"]     { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
 #quimi-img[data-mood="exonerada"] { animation: quimi-jump-f .5s cubic-bezier(.34,1.56,.64,1); }
 #quimi-img[data-mood="celebrate"] { animation: quimi-rock-f .45s ease-in-out infinite alternate; }
 
-#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+#quimi.quimpi #quimi-img[data-mood="idle"]      { animation: quimpi-breathe 3.5s ease-in-out infinite; }
+#quimi.quimpi #quimi-img[data-mood="happy"]     { animation: quimpi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="exonerada"] { animation: quimpi-jump .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="celebrate"] { animation: quimpi-rock .45s ease-in-out infinite alternate; }
+
+#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock-f .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
 
 .help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-left: 1px solid var(--bd); }
 .help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
@@ -2332,12 +2342,14 @@ function applyMascot() {
   if (img) { img.src = imgs[img.dataset.mood] || imgs.idle; }
   if (cel) {
     cel.src = mascot === 'quimpi' ? 'quimpi_celebrando.png' : 'quimi_celebrando.png';
-    cel.style.transform = 'scaleX(-1)';
+    cel.style.animation = mascot === 'quimpi'
+      ? 'quimpi-rock .45s ease-in-out infinite alternate'
+      : 'quimi-rock-f .45s ease-in-out infinite alternate';
   }
   if (hlp) {
     hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png' : 'quimi_ensenando.png';
-    // Quimpi: izquierda, mirando derecha (sin flip). Quimi: derecha, mirando izquierda (con flip)
-    hlp.classList.toggle('mirror', mascot === 'quimi');
+    // Quimpi: izquierda, mirando derecha (con flip). Quimi: derecha, mirando izquierda (con flip)
+    hlp.classList.add('mirror');
     const col = document.querySelector('.help-quimi-col');
     if (col) {
       if (mascot === 'quimpi') {
