@@ -826,6 +826,11 @@ body.light #filterbar .ch,
 body.light #filterbar .clear-btn { color: #4a5568; border-color: #c5cdd8; }
 body.light #filterbar .ch.on { background: #2d3748; border-color: #2d3748; color: #e6edf3; }
 body.light #filterbar .ch    { text-shadow: 0 0 3px rgba(0,0,0,.4); }
+body.light #fb-filters       { background: #e8edf2; border-bottom-color: #c5cdd8; }
+body.light #fb-filters .ch,
+body.light #fb-filters .clear-btn { color: #4a5568; border-color: #c5cdd8; }
+body.light #fb-filters .ch.on { background: #2d3748; border-color: #2d3748; color: #e6edf3; }
+body.light #fb-filters .ch    { text-shadow: 0 0 3px rgba(0,0,0,.4); }
 body.light #sq               { background: #243157; border-color: #2d3d6b; color: #e6edf3; }
 body.light #sq::placeholder  { color: #8fa8cc; }
 body.light #ct               { background: #e8edf2; }
@@ -887,14 +892,16 @@ body.light .sect-label { color: #4a5568; border-bottom-color: #c5cdd8; }
     position: fixed;
     left: 0; right: 0;
     background: var(--sf);
-    border-bottom: 2px solid var(--bd);
-    padding: 10px 14px;
+    border-bottom: 1px solid var(--bd);
+    padding: 6px 16px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+    align-items: center;
     z-index: 200;
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
   }
   #fb-filters.open { display: flex; }
+  .clear-btn   { flex-shrink: 0; }
   #mob-reset-btn:hover     { background: #2a1515; }
 }
 
@@ -2211,6 +2218,7 @@ function switchTab(t) {
   document.querySelectorAll('.tp').forEach(p => p.classList.remove('on'));
   document.getElementById('tp-' + t).classList.add('on');
   document.querySelectorAll('.nb[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  if (areaF) { areaF = ''; buildABSidebar(); }
   rAll(); cSB();
 }
 
