@@ -538,6 +538,38 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 
 #cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock-f .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
 
+/* ══ FLOATING TOASTS (fallback sin mascota) ══ */
+#ft-container {
+  position: fixed;
+  bottom: 20px;
+  right: 14px;
+  z-index: 600;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  pointer-events: none;
+}
+.ft {
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-right-width: 3px;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--tx);
+  max-width: 230px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  opacity: 0;
+  transform: translateX(12px);
+  transition: opacity .22s, transform .22s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1.4;
+}
+.ft.on { opacity: 1; transform: translateX(0); }
+.ft[data-mood="exonerada"] { border-right-color: var(--ac); }
+.ft[data-mood="aprobada"]  { border-right-color: var(--a2); }
+.ft[data-mood="cursando"]  { border-right-color: #f4a261; }
+
 .help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-left: 1px solid var(--bd); }
 .help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
 .help-quimi-col img.mirror { transform: scaleX(-1); }
@@ -729,6 +761,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   .help-quimi-col { display: none; }
   #cel-quimi-img { display: none; }
   .smc-hint { display: none; }
+  .cfg-mascot-row { display: none; }
   .splash-content-col { padding: 16px 14px 14px; }
   .splash-title { font-size: 1.3rem; }
   .splash-logo  { font-size: 2rem; margin-bottom: 4px; }
@@ -1044,6 +1077,9 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <img id="quimi-img" src="quimi_estatico.png" data-mood="idle" alt="Quimi"/>
 </div>
 
+<!-- ══ FLOATING TOAST CONTAINER ══ -->
+<div id="ft-container"></div>
+
 <!-- ══ TOAST CONTAINER ══ -->
 <div id="tc"></div>
 
@@ -1137,11 +1173,11 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <h2>⚙️ Configuración</h2>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">📋 Plan de estudios</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-plan-2021" onclick="changePlan('2021')">2021</button><button class="toggle-btn" id="cfg-plan-2000" onclick="changePlan('2000')">2000</button></div></div>
-  <div class="cfg-row"><span class="cfg-row-label">🐾 Mascota</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mascot-quimi" onclick="changeMascot('quimi')">Quimi</button><button class="toggle-btn" id="cfg-mascot-quimpi" onclick="changeMascot('quimpi')">Quimπ</button></div></div>
+  <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mascota</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mascot-quimi" onclick="changeMascot('quimi')">Quimi</button><button class="toggle-btn" id="cfg-mascot-quimpi" onclick="changeMascot('quimpi')">Quimπ</button></div></div>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
   <div class="cfg-row"><span class="cfg-row-label">💬 Mensajes flotantes</span><button class="toggle-btn" id="cfg-toasts" onclick="toggleToasts()"></button></div>
-  <div class="cfg-row"><span class="cfg-row-label">🐾 Mostrar mascota</span><button class="toggle-btn" id="cfg-quimi" onclick="toggleQuimi()"></button></div>
+  <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mostrar mascota</span><button class="toggle-btn" id="cfg-quimi" onclick="toggleQuimi()"></button></div>
   <div class="sep"></div>
   <div class="ma"><button class="bsc" onclick="closeConfig()">Cerrar</button></div>
 </div></div>
@@ -2331,6 +2367,25 @@ function quimiSay(msg, mood = 'happy', dur = 3000) {
   }, dur);
 }
 
+let ftCurrent = null;
+function floatToast(msg, mood, dur) {
+  if (!toastsOn) return;
+  const c = document.getElementById('ft-container');
+  if (ftCurrent) { ftCurrent.classList.remove('on'); ftCurrent.remove(); ftCurrent = null; }
+  const el = document.createElement('div');
+  el.className = 'ft';
+  el.dataset.mood = mood;
+  el.textContent = msg;
+  c.appendChild(el);
+  void el.offsetWidth;
+  el.classList.add('on');
+  ftCurrent = el;
+  setTimeout(() => {
+    el.classList.remove('on');
+    setTimeout(() => { if (ftCurrent === el) ftCurrent = null; el.remove(); }, 300);
+  }, dur);
+}
+
 const MASCOT_IMGS = {
   quimi:  { idle:'quimi_estatico.png',   happy:'quimi_estatico.png',   aprobada:'quimi_estatico.png',   cursando:'quimi_estatico.png',   wip:'quimi_estatico.png',   exonerada:'quimi_celebrando.png',   celebrate:'quimi_celebrando.png'  },
   quimpi: { idle:'quimpi_estatico.png',  happy:'quimpi_estatico.png',  aprobada:'quimpi_estatico.png',  cursando:'quimpi_estatico.png',  wip:'quimpi_estatico.png',  exonerada:'quimpi_celebrando.png',  celebrate:'quimpi_celebrando.png' },
@@ -2387,10 +2442,13 @@ function toast(id, st) {
   const msgs = FR[SN[st]];
   if (!msgs) return;
   const msg  = msgs[Math.floor(Math.random() * msgs.length)];
-  const name = BI[id]?.name || id;
   const mood = st === S.E ? 'exonerada' : st === S.A ? 'aprobada' : 'cursando';
   const dur  = st === S.E ? 3800 : 2800;
-  quimiSay(msg, mood, dur);
+  if (quimiOn) {
+    quimiSay(msg, mood, dur);
+  } else {
+    floatToast(msg, mood, dur);
+  }
 }
 
 // ══════════ TOAST "EN DESARROLLO" ══════════
