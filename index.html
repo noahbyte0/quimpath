@@ -966,6 +966,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         <button class="sbtn" id="auth-btn" onclick="window.fbSignIn?.()">☁️ Iniciar sesión con Google</button>
       </div>
       <button class="sbtn" onclick="openHelp()">❓ Ayuda</button>
+      <button class="sbtn" onclick="reopenSplash()">👋 Bienvenida</button>
       <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
       <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
 
@@ -2444,7 +2445,7 @@ function toast(id, st) {
   const msg  = msgs[Math.floor(Math.random() * msgs.length)];
   const mood = st === S.E ? 'exonerada' : st === S.A ? 'aprobada' : 'cursando';
   const dur  = st === S.E ? 3800 : 2800;
-  if (quimiOn) {
+  if (quimiOn && !isMobile()) {
     quimiSay(msg, mood, dur);
   } else {
     floatToast(msg, mood, dur);
@@ -2782,6 +2783,19 @@ function closeSplash() {
   } else if (isNewMascot && mascot === 'quimi') {
     setTimeout(() => quimiSay('¡Hola! Soy Quimi, tu compañero de carrera 🐾', 'happy', 3500), 600);
   }
+}
+function reopenSplash() {
+  splashPlan   = plan;
+  splashMascot = mascot;
+  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
+  document.getElementById('sp-col-quimi') ?.classList.toggle('chosen', mascot === 'quimi');
+  document.getElementById('sp-col-quimpi')?.classList.toggle('chosen', mascot === 'quimpi');
+  document.getElementById('splash-start-btn').disabled = false;
+  const mob = isMobile();
+  document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
+  document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
+  document.getElementById('splash').classList.add('on'); setModalOpen(true);
+  cSB();
 }
 function maybeShowSplash() {
   try {
