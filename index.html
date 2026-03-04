@@ -1488,6 +1488,7 @@ const PV_2021 = {
   'TRACALMA2': [{ 'QUIANA2': E, 'QUIANA1': E, 'FISQUI103': E, 'TRACALMA1': E, 'MAT05': E, 'FENTRA': E, 'MAT07': E, 'MAT08': E }],
   'TECSERIND1':[{ 'TRACALMA1': A, 'QUIANA1': E, 'QUIANA2': E, 'TERAPL': E, 'FENTRA': E, 'FISQUI104': A, 'FISQUI103': E, 'FLU': A, 'QUIINO1': A }],
   'IRREAQUI2': { 'IRREAQUI1': A },
+  'TECSERIND2':{ 'TECSERIND1': A, 'TRACALMA1': A },
   'INGAMB':    { 'IRREAQUI1': A, 'FENTRA': E, 'FLU': A },
   'DINCONPRO': [{ 'TRACALMA1': E, 'COM1': A, 'IRREAQUI1': A }, { 'TRACALMA1': E, 'MAT06': A, 'IRREAQUI1': A }],
   'INTINGBIO': { 'QUIORG102I': E, 'QUIORGT101': A, 'FISQUI103': A },
@@ -1521,7 +1522,7 @@ const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI'
 
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
-  p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
+  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   return p;
 })();
 
