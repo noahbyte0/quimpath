@@ -369,9 +369,9 @@ body {
 .card[data-st="exonerada"]  { background: var(--c-ex); border-color: #1a6b5a; }
 .card.hd { display: none; }
 
-.ci { font-size: .95rem; margin-bottom: 5px; display: block; line-height: 1; }
+.ci { font-size: .78rem; margin-bottom: 5px; display: block; line-height: 1; }
 .card[data-st="bloqueada"]  .ci::before { content: '🔒'; }
-.card[data-st="habilitada"] .ci::before { content: '🔓'; }
+.card[data-st="habilitada"] .ci::before { content: ''; }
 .card[data-st="cursando"]   .ci::before { content: '📖'; }
 .card[data-st="aprobada"]   .ci::before { content: '✅'; }
 .card[data-st="exonerada"]  .ci::before { content: '🏆'; }
@@ -386,6 +386,8 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 
 .cm2 { display: flex; justify-content: space-between; align-items: center; }
 .cc  { font-family: 'Space Mono', monospace; font-size: .68rem; color: #c8d0d8; }
+.card[data-st="bloqueada"] .cc,
+.card[data-st="bloqueada"] .cf { color: #484f58; }
 .cbg { font-size: .54rem; font-weight: 700; padding: 1px 6px; border-radius: 100px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
 .card[data-st="bloqueada"]  .cbg { background: #060a0e; color: #484f58; }
 .card[data-st="habilitada"] .cbg { background: #2a2f38; color: #9ea7b5; }
@@ -582,11 +584,29 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 .splash-plan-btn.selected { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--tx); }
 #splash-start-btn:disabled { opacity: .4; cursor: not-allowed; }
 @media (max-width: 480px) {
-  .splash-cards { grid-template-columns: 1fr; }
-  .splash-title { font-size: 1.4rem; }
-  .splash-inner { padding: 20px 16px 18px; }
+  .splash-title { font-size: 1.3rem; }
+  .splash-logo  { font-size: 2rem; margin-bottom: 4px; }
+  .splash-sub   { font-size: .65rem; margin-bottom: 14px; }
+  .splash-inner { padding: 16px 14px 14px; max-height: 95dvh; overflow-y: auto; }
+  .splash-plan-sel { margin-bottom: 12px; }
+  .splash-card  { padding: 10px; }
+  .splash-card .sc-icon { font-size: 1.1rem; margin-bottom: 3px; }
+  .splash-footer { padding-top: 12px; }
 }
 
+
+#plan-badge {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: .58rem;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--ac);
+  color: var(--ac);
+  letter-spacing: .03em;
+}
 /* ══════════ TICKER ══════════ */
 #tk {
   background: var(--sf);
@@ -638,7 +658,7 @@ body.light .toast.cursando   { border-left-color: #ff4444; }
 body.light .toast.aprobada   { border-left-color: #1e90ff; }
 body.light .toast.exonerada  { border-left-color: #00c897; }
 body.light .card[data-st="bloqueada"]  { background: #b0bac5; border-color: #a0abb5; }
-body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #c5cdd8; }
+body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }
 body.light .card[data-st="bloqueada"]  .cn,
 body.light .card[data-st="bloqueada"]  .cc,
 body.light .card[data-st="bloqueada"]  .cf  { color: #4a5568; }
@@ -741,6 +761,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <div class="sl">
       <h1>🔬 QuimPath</h1>
       <p>Ing. Química</p>
+      <div id="plan-badge"></div>
     </div>
 
     <div class="cb">
@@ -803,7 +824,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <button class="fb-toggle" id="fb-toggle-btn" onclick="toggleFilterBar()">🔽 Filtrar</button>
       <div id="fb-filters">
         <button class="ch" data-s="bloqueada"  onclick="toggleF('bloqueada')">🔒 Bloqueada</button>
-        <button class="ch" data-s="habilitada" onclick="toggleF('habilitada')">🔓 Habilitada</button>
+        <button class="ch" data-s="habilitada" onclick="toggleF('habilitada')">Habilitada</button>
         <button class="ch" data-s="cursando"   onclick="toggleF('cursando')">📖 Cursando</button>
         <button class="ch" data-s="aprobada"   onclick="toggleF('aprobada')">✅ Aprobada</button>
         <button class="ch" data-s="exonerada"  onclick="toggleF('exonerada')">🏆 Exonerada</button>
@@ -835,7 +856,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000</button>
       </div>
     </div>
-    <div class="splash-cards">
+    <div class="splash-cards" id="splash-cards-pc">
       <div class="splash-card">
         <span class="sc-icon">🖱️</span>
         <div class="sc-title">Clic izquierdo</div>
@@ -855,6 +876,23 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         <span class="sc-icon">⚙️</span>
         <div class="sc-title">Configuración</div>
         <div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el panel lateral.</div>
+      </div>
+    </div>
+    <div class="splash-cards" id="splash-cards-mob" style="display:none;grid-template-columns:1fr">
+      <div class="splash-card">
+        <span class="sc-icon">👆</span>
+        <div class="sc-title">Tocá una materia</div>
+        <div class="sc-desc">Avanza el estado: Habilitada → Cursando → Aprobada → Exonerada</div>
+      </div>
+      <div class="splash-card">
+        <span class="sc-icon">🔒</span>
+        <div class="sc-title">Materia bloqueada</div>
+        <div class="sc-desc">Tocá para ver qué previas te faltan cumplir.</div>
+      </div>
+      <div class="splash-card">
+        <span class="sc-icon">⚙️</span>
+        <div class="sc-title">Configuración</div>
+        <div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el menú lateral.</div>
       </div>
     </div>
     <div class="splash-footer">
@@ -902,15 +940,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
 </div></div>
 
-<!-- ══ MODAL: Cambiar plan ══ -->
-<div class="ov" id="ov-chplan" style="z-index:400"><div class="md">
-  <h2>⚠️ Cambiar plan de estudios</h2>
-  <p class="sub">Cambiar al <span id="chplan-label"></span> reiniciará todo tu progreso. Esta acción no se puede deshacer.</p>
-  <div class="ma">
-    <button class="bsc" onclick="closeChangePlan()">Cancelar</button>
-    <button class="bdn" onclick="confirmChangePlan()">Sí, cambiar</button>
-  </div>
-</div></div>
 
 <!-- ══ MODAL: Reiniciar ══ -->
 <div class="ov" id="ov-r"><div class="md">
@@ -938,6 +967,26 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <button class="bsc" id="bio-back-btn" onclick="bioBack()" style="display:none">← Volver</button>
     <button class="bsc" onclick="closeBio()">Cancelar</button>
     <button class="bpr" id="bio-confirm-btn" onclick="confirmBio()">Confirmar</button>
+  </div>
+</div></div>
+
+
+<!-- ══ MODAL: Din/Inst ══ -->
+<div class="ov" id="ov-d"><div class="md">
+  <h2>⚗️ Elegí una opción</h2>
+  <p class="sub">Debe cursarse al menos una de las dos opciones.</p>
+  <div class="rg" id="din-options">
+    <label class="ro"><input type="radio" name="din" value="din"><div><div class="rl">Dinámica y Control de Procesos</div><div class="rc">10 créditos</div></div></label>
+    <label class="ro"><input type="radio" name="din" value="inst"><div><div class="rl">Instrumentación Industrial</div><div class="rc">10 créditos</div></div></label>
+  </div>
+  <div id="din-prereq-section" style="display:none">
+    <div class="sep"></div>
+    <div id="din-prereq-list"></div>
+  </div>
+  <div class="ma">
+    <button class="bsc" id="din-back-btn" onclick="dinBack()" style="display:none">← Volver</button>
+    <button class="bsc" onclick="closeDin()">Cancelar</button>
+    <button class="bpr" id="din-confirm-btn" onclick="confirmDin()">Confirmar</button>
   </div>
 </div></div>
 
@@ -1249,30 +1298,35 @@ const BO = {
   trat: { name: 'Trat. Efluentes',  cr: 9  },
 };
 
+const DO = {
+  din:  { name: 'Dinámica y Control de Procesos', cr: 10 },
+  inst: { name: 'Instrumentación Industrial',     cr: 10 },
+};
+const PV_DIN = {
+  din:  [{ 'TRACALMA1': E, 'COM1': A, 'IRREAQUI1': A }, { 'TRACALMA1': E, 'MAT06': A, 'IRREAQUI1': A }],
+  inst: { 'MECAPL': A, 'TERAPL': E, 'ELE1': E, 'FENTRA': E },
+};
+
 // ══════════ PLAN 2000 — DATOS ══════════
 const INIC_2021 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
-const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB']);
+const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
 
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
-  delete p['INTINGPRO'];
-  p['INTINGQP']   = { 'MAT01': A, 'FIS101': A, 'QUIGEN2': A };
   p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
-  p['FLU']        = [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGQP': E }];
-  p['TRACALMA1']  = [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGQP': E }];
   return p;
 })();
 
 const SEMESTRES_2000 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
-  { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2'] },
+  { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
-  { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGQP'] },
+  { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
   { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
   { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
   { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
   { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','INTINGBIO','MECAPL'] },
-  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DINCONPRO'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DINCONPRO','DISPROQUI'] },
   { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
 ];
 
@@ -1281,10 +1335,10 @@ function applyPlan(p) {
   plan = p;
   if (p === '2000') {
     OB_ACT = OB
-      .filter(s => !['INTINGQUI','INGAMB','DISPROQUI'].includes(s.id))
+      .filter(s => s.id !== 'INGAMB')
       .map(s => {
         if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
-        if (s.id === 'INTINGPRO')  return { ...s, id: 'INTINGQP', name: 'Intro a la Ing. Química y de Procesos', cr: 7 };
+        if (s.id === 'QUIORG102I') return { ...s, name: 'Química Orgánica 102', cr: 6 };
         if (s.id === 'INGBIOTRAE') return { ...s, name: 'Ing. Bioquímica', cr: 14, dual: false };
         return s;
       });
@@ -1301,9 +1355,13 @@ function applyPlan(p) {
     INIC_ACT    = INIC_2021;
     SEMESTRES_ACT = SEMESTRES_2021;
   }
-  OPT_IDS = new Set([...O1.map(s => s.id), ...O2_ACT.map(s => s.id)]);
-  ALL     = [...OB_ACT, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
-  BI      = Object.fromEntries(ALL.map(s => [s.id, s]));
+  OPT_IDS      = new Set([...O1.map(s => s.id), ...O2_ACT.map(s => s.id)]);
+  ALL          = [...OB_ACT, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
+  BI           = Object.fromEntries(ALL.map(s => [s.id, s]));
+  AMIN_ACT     = p === '2000' ? AMIN_2000 : AMIN_2021;
+  const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
+  AREAS_ORDER_ACT = p === '2000' ? AREAS_ORDER_2000 : AREAS_ORDER_2021;
+  AM_ACT       = p === '2000' ? AM_2000 : AM;
 }
 
 // ══════════ ÁREAS ══════════
@@ -1319,7 +1377,7 @@ const AM = {
   'QCATECGRA':'Química','TECPOL':'Química','QUIBIOINT':'Química','QUIBIOINP':'Química',
   'QUIAMB':'Química','SINORGTRE':'Química','H2FUEENE':'Química','BIODIEST':'Química',
   'INTINGBIO':'Biología','INTCIEBIO1':'Biología','BIO1':'Biología',
-  'INTINGQUI':'Troncales','INTINGPRO':'Troncales','INTINGQP':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
+  'INTINGQUI':'Troncales','INTINGPRO':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
   'FLU':'Troncales','TRACALMA1':'Troncales','IRREAQUI1':'Troncales','TRACALMA2':'Troncales',
   'PROIND1':'Troncales','PROIND2':'Troncales','PAS':'Troncales',
   'TECSERIND1':'Avanzadas','IRREAQUI2':'Avanzadas','INGAMB':'Avanzadas','DINCONPRO':'Avanzadas',
@@ -1334,8 +1392,23 @@ const AM = {
   'EPI':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias',
   'TALENCCRE':'Complementarias','TUTPARTEP':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
 };
-const AMIN = { Matemática: 70, Física: 30, Química: 80, Biología: 5, Troncales: 75, Avanzadas: 80, Técnicas: 30, Complementarias: 5 };
-const AREAS_ORDER  = ['Matemática','Física','Química','Biología','Troncales','Avanzadas','Técnicas','Complementarias'];
+// Plan 2021
+const AMIN_2021 = { Matemática: 70, Física: 30, Química: 80, Biología: 5, Troncales: 75, Avanzadas: 80, Técnicas: 30, Complementarias: 5 };
+const AREAS_ORDER_2021 = ['Matemática','Física','Química','Biología','Troncales','Avanzadas','Técnicas','Complementarias'];
+
+// Plan 2000 — áreas distintas según el plan original
+const AMIN_2000 = { Matemática: 70, Física: 30, Química: 80, Biología: 5, 'Ing. Proc. Físicos': 65, 'Ing. Proc. Q/B': 45, 'Act. Integradoras': 50, Técnicas: 25, Complementarias: 12 };
+const AREAS_ORDER_2000 = ['Matemática','Física','Química','Biología','Ing. Proc. Físicos','Ing. Proc. Q/B','Act. Integradoras','Técnicas','Complementarias'];
+
+// AM_2000: reasignar áreas específicas para el plan 2000
+const AM_2000 = { ...AM };
+['INTINGQUI','INTINGPRO','TERAPL','FENTRA','FLU','TRACALMA1','TRACALMA2'].forEach(id => AM_2000[id] = 'Ing. Proc. Físicos');
+['IRREAQUI1','IRREAQUI2','INGBIOTRAE','DINCONPRO'].forEach(id => AM_2000[id] = 'Ing. Proc. Q/B');
+['TECSERIND1','TECSERIND2','PROIND1','PROIND2','PAS','DISPROQUI'].forEach(id => AM_2000[id] = 'Act. Integradoras');
+
+// Variables activas (se asignan en applyPlan)
+let AMIN_ACT, AREAS_ORDER_ACT, AM_ACT;
+
 const GROUPS_ORDER = ['Básicas','Esp. Ing. Química','Técnicas'];
 
 // ══════════ FRASES DE TOAST ══════════
@@ -1363,16 +1436,16 @@ const TKF = [
 ];
 
 // ══════════ ESTADO GLOBAL ══════════
-let est = {}, bOp = null, aF = new Set(), areaF = '', grpF = '', qr = '', cel = false;
+let est = {}, bOp = null, dOp = null, aF = new Set(), areaF = '', grpF = '', qr = '', cel = false;
 let soundOn = true, toastsOn = !isMobile();
 let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
 function sv() {
-  const data = { est, bOp, cel, soundOn, toastsOn, theme, plan };
+  const data = { est, bOp, dOp, cel, soundOn, toastsOn, theme, plan };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, cel, soundOn, theme, plan });
+  window.fbSave?.({ est, bOp, dOp, cel, soundOn, theme, plan });
 }
 
 function ld() {
@@ -1381,6 +1454,8 @@ function ld() {
     if (!d) return;
     est     = d.est   || {};
     bOp     = d.bOp   || null;
+  dOp     = d.dOp   || null;
+    dOp     = d.dOp   || null;
     cel     = d.cel   || false;
     soundOn = d.soundOn  !== undefined ? d.soundOn  : true;
     toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
@@ -1430,7 +1505,7 @@ function crBasicas() {
   let t = 0;
   for (const s of ALL)
     if (s.grp === 'Básicas' && gs(s.id) === S.E)
-      t += s.id === 'INGBIOTRAE' ? (plan === '2000' ? 14 : (bOp ? BO[bOp].cr : 0)) : (s.cr || 0);
+      t += s.id === 'INGBIOTRAE' ? (plan === '2000' ? 14 : (bOp ? BO[bOp].cr : 0)) : s.id === 'DINCONPRO' ? (dOp ? DO[dOp].cr : 0) : (s.cr || 0);
   return t;
 }
 
@@ -1440,6 +1515,16 @@ function cp(id) {
   const p = PV_ACT[id];
   if (!p) return S.H;
   if (id === 'PAS' && crBasicas() < 190) return S.B;
+  if (id === 'DINCONPRO') {
+    if (!dOp) return S.B;
+    const pvd = PV_DIN[dOp];
+    for (const g of (Array.isArray(pvd) ? pvd : [pvd])) {
+      let ok = true;
+      for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
+      if (ok) return S.H;
+    }
+    return S.B;
+  }
   if (id === 'INGBIOTRAE') {
     const pvs = plan === '2000' ? PV_BIO.bio : (bOp ? PV_BIO[bOp] : null);
     if (!pvs) return S.B;
@@ -1468,6 +1553,7 @@ function gcr(id, st) {
     if (plan === '2000') return 14;
     return bOp ? BO[bOp].cr : 0;
   }
+  if (id === 'DINCONPRO') return dOp ? DO[dOp].cr : 0;
   return BI[id]?.cr ?? 0;
 }
 
@@ -1487,7 +1573,7 @@ function cst() {
 function acr() {
   const r = {};
   for (const s of ALL) {
-    const c = gcr(s.id, gs(s.id)), ar = AM[s.id];
+    const c = gcr(s.id, gs(s.id)), ar = AM_ACT[s.id];
     if (ar && c > 0) r[ar] = (r[ar] || 0) + c;
   }
   return r;
@@ -1510,10 +1596,12 @@ function cycleBack(id) {
   const cur = gs(id);
   if (cur === S.B) {
     if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   if (cur === S.H) {
     if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   setSt(id, cur - 1, true);
@@ -1533,8 +1621,19 @@ function mkCard(s) {
     // Shift+click: mostrar previas sin importar estado
     if (e.shiftKey) {
       e.preventDefault(); e.stopPropagation();
+      if (s.id === 'DINCONPRO')  { dOp ? showPPDin() : openDin(); return; }
       if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
       if (PV_ACT[s.id]) { showPP(s.id); return; }
+      return;
+    }
+    if (s.id === 'DINCONPRO') {
+      hidePP();
+      const cur = gs('DINCONPRO');
+      if (!dOp)      { openDin(); return; }
+      if (cur === S.B) { showPPDin(); return; }
+      if (cur === S.E && isMobile()) { dOp = null; sv(); setSt('DINCONPRO', S.H, true); openDin(); return; }
+      if (cur === S.E) return;
+      setSt('DINCONPRO', cur + 1, false);
       return;
     }
     if (s.id === 'INGBIOTRAE') {
@@ -1580,9 +1679,15 @@ function upCard(el, id) {
   el.dataset.st = SN[st];
   el.querySelector('.cbg').textContent = SL[st];
   const _m = BI[id]; const _crNote = (plan === '2021' && _m?.crNote) ? ' ' + _m.crNote : '';
-  el.querySelector('.cc').textContent  = id === 'INGBIOTRAE' && bOp
-    ? BO[bOp].cr + ' créditos'
-    : _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
+  if (id === 'DINCONPRO') {
+    el.querySelector('.cc').textContent = dOp ? DO[dOp].cr + ' créditos' : '— créditos';
+    const nm = el.querySelector('.cn');
+    if (nm) nm.textContent = dOp ? DO[dOp].name : 'Din. y Control / Inst. Industrial';
+  } else {
+    el.querySelector('.cc').textContent  = id === 'INGBIOTRAE' && bOp
+      ? BO[bOp].cr + ' créditos'
+      : _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
+  }
   if (id === 'INGBIOTRAE') {
     const nm = el.querySelector('.cn');
     if (nm) nm.textContent = plan === '2000' ? 'Ing. Bioquímica' : (bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes');
@@ -1622,8 +1727,8 @@ function buildABSidebar() {
   hdr.addEventListener('click', () => { sbAreasOpen = !sbAreasOpen; buildABSidebar(); });
   c.appendChild(hdr);
   if (!sbAreasOpen) return;
-  for (const area of AREAS_ORDER) {
-    const mn = AMIN[area], ea = ac[area] || 0, pt = Math.min(100, Math.round(ea / mn * 100));
+  for (const area of AREAS_ORDER_ACT) {
+    const mn = AMIN_ACT[area], ea = ac[area] || 0, pt = Math.min(100, Math.round(ea / mn * 100));
     const done = ea >= mn, active = areaF === area, barCol = done ? 'var(--gn)' : 'var(--ac)';
     const b = document.createElement('button');
     b.className  = 'nb' + (active ? ' on' : done ? ' done' : '');
@@ -1952,9 +2057,52 @@ function rebuildAllGrids() {
 }
 
 function doReset() {
-  est = {}; bOp = null; cel = false;
+  est = {}; bOp = null; dOp = null; cel = false;
   rebuildAllGrids();
   rc(); rAll(); upCr(); sv(); closeReset();
+}
+
+
+// ══════════ DIN/INST MODAL ══════════
+function openDin() {
+  document.getElementById('din-prereq-section').style.display = 'none';
+  document.getElementById('din-back-btn').style.display       = 'none';
+  document.getElementById('din-confirm-btn').style.display    = '';
+  document.querySelectorAll('input[name="din"]').forEach(r => r.checked = r.value === dOp);
+  document.getElementById('ov-d').classList.add('op');
+}
+function dinBack() {
+  document.getElementById('din-prereq-section').style.display = 'none';
+  document.getElementById('din-back-btn').style.display       = 'none';
+}
+function closeDin() { document.getElementById('ov-d').classList.remove('op'); }
+function confirmDin() {
+  const s = document.querySelector('input[name="din"]:checked');
+  if (!s) return;
+  dOp = s.value;
+  sv(); rc(); rAll(); upCr(); closeDin();
+  if (gs('DINCONPRO') === S.B) showPPDin();
+}
+function showPPDin() {
+  if (!dOp) return;
+  const pvd = PV_DIN[dOp];
+  const pvList = Array.isArray(pvd) ? pvd : [pvd];
+  // Mostrar el grupo de previas más favorable
+  let bestRows = '', bestMet = -1;
+  for (const g of pvList) {
+    let rows = '', met = 0;
+    for (const [pid, ms] of Object.entries(g)) {
+      const ok = gs(pid) >= ms;
+      if (ok) met++;
+      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+    }
+    if (met > bestMet) { bestMet = met; bestRows = rows; }
+  }
+  const modal = document.getElementById('pp-modal');
+  const ov    = document.getElementById('ov-pp');
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${DO[dOp].name}</div>${bestRows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openDin()">↩ Cambiar opción</div>`;
+  ov.classList.add('op');
+  ov.addEventListener('click', ppOvClick);
 }
 
 function openBio() {
@@ -2097,6 +2245,7 @@ document.addEventListener('keydown', e => {
   if (e.shiftKey && e.ctrlKey && !e.altKey && e.code === 'KeyE') {
     for (const s of ALL) est[s.id] = S.E;
     if (!bOp) bOp = 'bio';
+    if (!dOp) dOp = 'din';
     rc(); rAll(); upCr(); chkCel(); sv();
     return;
   }
@@ -2114,7 +2263,7 @@ document.addEventListener('keydown', e => {
       ['ov-fb',  closeFeedback],
       ['ov-r',   closeReset],
       ['ov-b',   closeBio],
-      ['ov-chplan', closeChangePlan],
+      ['ov-d',   closeDin],
     ];
     for (const [id, fn] of modals)
       if (document.getElementById(id).classList.contains('op')) { fn(); return; }
@@ -2182,6 +2331,10 @@ function maybeShowSplash() {
       splashPlan = plan;
       document.querySelectorAll('.splash-plan-btn').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
       document.getElementById('splash-start-btn').disabled = false;
+      // Mostrar tarjetas según dispositivo
+      const mob = isMobile();
+      document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
+      document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
       document.getElementById('splash').classList.add('on');
     }
   } catch(e) { document.getElementById('splash').classList.add('on'); }
@@ -2190,19 +2343,10 @@ function maybeShowSplash() {
 // ══════════ CAMBIO DE PLAN ══════════
 function changePlan(p) {
   if (p === plan) return;
-  document.getElementById('chplan-label').textContent = 'Plan ' + p;
-  document.getElementById('ov-chplan').dataset.target = p;
-  document.getElementById('ov-chplan').classList.add('op');
-  updateCfgPlanBtns();
-}
-function closeChangePlan() { document.getElementById('ov-chplan').classList.remove('op'); updateCfgPlanBtns(); }
-function confirmChangePlan() {
-  const p = document.getElementById('ov-chplan').dataset.target;
-  est = {}; bOp = null; cel = false;
   applyPlan(p);
   rebuildAllGrids();
   rc(); rAll(); upCr(); sv();
-  closeChangePlan();
+  updateCfgPlanBtns();
 }
 function updateCfgPlanBtns() {
   ['2021','2000'].forEach(p => {
