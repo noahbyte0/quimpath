@@ -2336,7 +2336,20 @@ function applyMascot() {
   }
   if (hlp) {
     hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png' : 'quimi_ensenando.png';
-    hlp.classList.toggle('mirror', mascot !== 'quimpi');
+    // Quimpi: izquierda, mirando derecha (sin flip). Quimi: derecha, mirando izquierda (con flip)
+    hlp.classList.toggle('mirror', mascot === 'quimi');
+    const col = document.querySelector('.help-quimi-col');
+    if (col) {
+      if (mascot === 'quimpi') {
+        col.style.order = '-1';
+        col.style.borderRight = '1px solid var(--bd)';
+        col.style.borderLeft  = 'none';
+      } else {
+        col.style.order = '';
+        col.style.borderLeft  = '1px solid var(--bd)';
+        col.style.borderRight = 'none';
+      }
+    }
   }
 }
 
