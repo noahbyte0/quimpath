@@ -1540,7 +1540,7 @@ function applyPlan(p) {
       .map(s => {
         if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
         if (s.id === 'QUIORG102I') return { ...s, name: 'Química Orgánica 102', cr: 6 };
-        if (s.id === 'INGBIOTRAE') return { ...s, name: 'Ing. Bioquímica', cr: 14, dual: false };
+
         return s;
       });
     // TSI2: sacar de optativas, agregar a obligatorias
@@ -1791,7 +1791,7 @@ function crBasicas() {
   let t = 0;
   for (const s of ALL)
     if (s.grp === 'Básicas' && gs(s.id) === S.E)
-      t += s.id === 'INGBIOTRAE' ? (plan === '2000' ? 14 : (bOp ? BO[bOp].cr : 0)) : s.id === 'DINCONPRO' ? (dOp ? DO[dOp].cr : 0) : (s.cr || 0);
+      t += s.id === 'INGBIOTRAE' ? (bOp ? BO[bOp].cr : 0) : s.id === 'DINCONPRO' ? (dOp ? DO[dOp].cr : 0) : (s.cr || 0);
   return t;
 }
 
@@ -1802,21 +1802,26 @@ function cp(id) {
   if (!p) return S.H;
   if (id === 'PAS' && crBasicas() < 190) return S.B;
   if (id === 'DINCONPRO') {
-    if (!dOp) return S.B;
-    const pvd = PV_DIN[dOp];
-    for (const g of (Array.isArray(pvd) ? pvd : [pvd])) {
-      let ok = true;
-      for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
-      if (ok) return S.H;
+    // Chequear si al menos una opción tiene previas cumplidas
+    const opts = Object.keys(PV_DIN);
+    for (const op of opts) {
+      const pvd = PV_DIN[op];
+      for (const g of (Array.isArray(pvd) ? pvd : [pvd])) {
+        let ok = true;
+        for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
+        if (ok) return S.H;
+      }
     }
     return S.B;
   }
   if (id === 'INGBIOTRAE') {
-    const pvs = plan === '2000' ? PV_BIO.bio : (bOp ? PV_BIO[bOp] : null);
-    if (!pvs) return S.B;
-    for (const [pid, ms] of Object.entries(pvs))
-      if (gs(pid) < ms) return S.B;
-    return S.H;
+    // Chequear si al menos una opción tiene previas cumplidas
+    for (const pvs of Object.values(PV_BIO)) {
+      let ok = true;
+      for (const [pid, ms] of Object.entries(pvs)) if (gs(pid) < ms) { ok = false; break; }
+      if (ok) return S.H;
+    }
+    return S.B;
   }
   for (const g of (Array.isArray(p) ? p : [p])) {
     let ok = true;
@@ -1836,7 +1841,6 @@ function rc() {
 function gcr(id, st) {
   if (st < S.E) return 0;
   if (id === 'INGBIOTRAE') {
-    if (plan === '2000') return 14;
     return bOp ? BO[bOp].cr : 0;
   }
   if (id === 'DINCONPRO') return dOp ? DO[dOp].cr : 0;
@@ -1881,12 +1885,12 @@ function setSt(id, ns, back) {
 function cycleBack(id) {
   const cur = gs(id);
   if (cur === S.B) {
-    if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   if (cur === S.H) {
-    if (plan === '2021' && id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
@@ -1925,12 +1929,6 @@ function mkCard(s) {
     if (s.id === 'INGBIOTRAE') {
       hidePP();
       const cur = gs('INGBIOTRAE');
-      if (plan === '2000') {
-        if (cur === S.B) { showPPBio(); return; }
-        if (cur === S.E) { if (isMobile()) setSt('INGBIOTRAE', S.H, true); return; }
-        setSt('INGBIOTRAE', cur + 1, false);
-        return;
-      }
       if (!bOp)      { openBio(); return; }
       if (cur === S.B) { showPPBio(); return; }
       if (cur === S.E && isMobile()) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
@@ -1976,7 +1974,7 @@ function upCard(el, id) {
   }
   if (id === 'INGBIOTRAE') {
     const nm = el.querySelector('.cn');
-    if (nm) nm.textContent = plan === '2000' ? 'Ing. Bioquímica' : (bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes');
+    if (nm) nm.textContent = bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes';
   }
 }
 
