@@ -447,7 +447,7 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 #quimi-img { transform: scaleX(-1); }
 #quimi { transition: opacity .2s; }
 body.modal-open #quimi { opacity: 0; pointer-events: none; }
-#quimi:hover #quimi-img { transform: scaleX(-1) scale(1.08) translateY(-4px); }
+#quimi:hover #quimi-img { animation-play-state: paused; transform: scaleX(-1) scale(1.08) translateY(-4px); }
 #quimi-bubble {
   position: absolute;
   bottom: 98px;
@@ -2262,6 +2262,8 @@ function quimiSetMood(mood) {
   const img = document.getElementById('quimi-img');
   if (!img) return;
   img.src = QUIMI_IMGS[mood] || QUIMI_IMGS.idle;
+  img.dataset.mood = '';
+  void img.offsetWidth; // fuerza reflow para reiniciar la animación CSS
   img.dataset.mood = mood;
 }
 
