@@ -22,7 +22,7 @@
   --gn:  #3fb950;
 
   --c-bl: #0d1117; --t-bl: #484f58;
-  --c-ha: #1e2228; --t-ha: #9ea7b5;
+  --c-ha: #1e2228;
   --c-cu: #3d1212; --t-cu: #e05252;
   --c-ap: #0a2240; --t-ap: #4ea8de;
   --c-ex: #0a2e28; --t-ex: #2a9d8f;
@@ -635,7 +635,7 @@ body.light {
   --bg: #e8edf2; --sf: #1a2744; --sf2: #243157; --bd: #2d3d6b;
   --tx: #e6edf3; --tm: #8fa8cc;
   --c-bl: #a8b4c0; --t-bl: #4a5568;
-  --c-ha: #e8edf2; --t-ha: #2d3748;
+  --c-ha: #e8edf2;
   --c-cu: #f5b8b8; --t-cu: #b02020;
   --c-ap: #a8d4f5; --t-ap: #1060b0;
   --c-ex: #a0ddd0; --t-ex: #1a7a6e;
@@ -781,7 +781,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <button class="nb"    data-tab="opt2"  onclick="switchTab('opt2')">Optativas Par</button>
       <button class="nb"    data-tab="todas" onclick="switchTab('todas')">Todas</button>
       <div id="ab-sidebar"></div>
-      <div id="grp-sidebar"></div>
     </nav>
 
     <div class="sbot">
@@ -1181,6 +1180,8 @@ const OB = [
 
 const O1 = [
   { id: 'FUNOPT',    name: 'Fundamentos de Optimización',          cr: 6,  fac: 'FING/IMERL', grp: 'Básicas' },
+  { id: 'ASEGCALANA', name: 'Aseg. Calidad Proc. Analíticos',          cr: 5,  fac: 'FQ',         grp: 'Básicas' },
+  { id: 'QCASOLACUA', name: 'Qca en Solución Acuosa',                  cr: 7,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'INTCIEBIO1',name: 'Intro Ciencias Biológicas 1',          cr: 5,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'QUIANA3',   name: 'Química Analítica 3',                  cr: 10, fac: 'FQ',         grp: 'Básicas' },
   { id: 'CATADS',    name: 'Catalizadores y Adsorbentes',          cr: 9,  fac: 'FQ',         grp: 'Básicas' },
@@ -1202,7 +1203,7 @@ const O1 = [
   { id: 'INGCIE',    name: 'Inglés Científico',                    cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
   { id: 'TUTPAR',    name: 'Tutorías entre Pares',                 cr: 8,  fac: 'UdelaR',     grp: 'Complementarias' },
   { id: 'TUTPARFQ',  name: 'Tutorías entre Pares (FQ)',            cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
-  { id: 'EPI',       name: 'Epistemología',                        cr: 3,  fac: 'FQ',         grp: 'Complementarias' },
+  { id: 'EPI',       name: 'Epistemología',                        cr: 6,  fac: 'FQ',         grp: 'Complementarias' },
   { id: 'CIETECSOC', name: 'Ciencia Tecnología y Sociedad',        cr: 8,  fac: 'FING/DISI',  grp: 'Complementarias' },
   { id: 'REPGRAIND', name: 'Rep. Gráfica Ind. de Procesos',        cr: 4,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INTEVAGESA',name: 'Intro Evaluación Gestión Amb.',        cr: 8,  fac: 'FING/IMFIA', grp: 'Complementarias' },
@@ -1224,6 +1225,10 @@ const O2 = [
   { id: 'H2FUEENE',  name: 'H2: Fuente de Energía',               cr: 6,  fac: 'FQ',         grp: 'Esp. Ing. Química' },
   { id: 'HIDVERPRO', name: 'Hidrógeno Verde: Prod. y Usos',        cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'BATAPLMOV', name: 'Baterías Aplic. Movilidad Eléct.',     cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
+  { id: 'TRATAGUARES', name: 'Trat. y Val. Aguas Residuales',           cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
+  { id: 'TRATRESSOLID', name: 'Trat. y Val. Residuos Sólidos',          cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
+  { id: 'GESRRHH',    name: 'Gestión de RRHH en Prod. Bienes y Serv.', cr: 8,  fac: 'FING',       grp: 'Complementarias' },
+  { id: 'PRODAUDIOV', name: 'Iniciación Prod. Audiovisual y Multimedia',cr: 6,  fac: 'FING',       grp: 'Complementarias' },
   { id: 'TECSERIND2',name: 'Tec. y Serv. Industriales 2',          cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'FUNPROCEL', name: 'Fund. Prod. de Celulosa y Papel',      cr: 8,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'ENVPOLIND', name: 'Envases Poliméricos Ind. Alim.',       cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
@@ -1335,7 +1340,7 @@ function applyPlan(p) {
   plan = p;
   if (p === '2000') {
     OB_ACT = OB
-      .filter(s => s.id !== 'INGAMB')
+      .filter(s => s.id !== 'INGAMB')  // en plan 2000 INGAMB es electiva, no obligatoria
       .map(s => {
         if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
         if (s.id === 'QUIORG102I') return { ...s, name: 'Química Orgánica 102', cr: 6 };
@@ -1344,7 +1349,8 @@ function applyPlan(p) {
       });
     // TSI2: sacar de optativas, agregar a obligatorias
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
-    O2_ACT      = O2.filter(s => s.id !== 'TECSERIND2');
+    O2_ACT      = [...O2.filter(s => s.id !== 'TECSERIND2'),
+                   { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
     PV_ACT      = PV_2000;
     INIC_ACT    = INIC_2000;
     SEMESTRES_ACT = SEMESTRES_2000;
@@ -1362,6 +1368,7 @@ function applyPlan(p) {
   const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
   AREAS_ORDER_ACT = p === '2000' ? AREAS_ORDER_2000 : AREAS_ORDER_2021;
   AM_ACT       = p === '2000' ? AM_2000 : AM;
+  GRUPO_PADRE_ACT = p === '2000' ? GRUPO_PADRE_2000 : GRUPO_PADRE_2021;
 }
 
 // ══════════ ÁREAS ══════════
@@ -1373,43 +1380,125 @@ const AM = {
   'QUIGEN1':'Química','PRERIELAB':'Química','QUIGEN2':'Química','QUIORGT101':'Química',
   'QUIANA1':'Química','QUIANA2':'Química','QUIORG102I':'Química','QUIINO1':'Química','QUIORG103L':'Química',
   'FISQUI103':'Química','FISQUI104':'Química','LABQCAINO':'Química','QUIANA3':'Química',
-  'CATADS':'Química','HERELE':'Química','ENOBIOFER':'Química','PROTERBIO':'Química',
-  'QCATECGRA':'Química','TECPOL':'Química','QUIBIOINT':'Química','QUIBIOINP':'Química',
-  'QUIAMB':'Química','SINORGTRE':'Química','H2FUEENE':'Química','BIODIEST':'Química',
+  'CATADS':'Química','HERELE':'Química','ASEGCALANA':'Química','QCASOLACUA':'Química',
+  'QUIBIOINT':'Química','QUIBIOINP':'Química',
+  'QUIAMB':'Química','SINORGTRE':'Química',
   'INTINGBIO':'Biología','INTCIEBIO1':'Biología','BIO1':'Biología',
   'INTINGQUI':'Troncales','INTINGPRO':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
   'FLU':'Troncales','TRACALMA1':'Troncales','IRREAQUI1':'Troncales','TRACALMA2':'Troncales',
   'PROIND1':'Troncales','PROIND2':'Troncales','PAS':'Troncales',
   'TECSERIND1':'Avanzadas','IRREAQUI2':'Avanzadas','INGAMB':'Avanzadas','DINCONPRO':'Avanzadas',
   'INGBIOTRAE':'Avanzadas','DISPROQUI':'Avanzadas','ENEAPLIND':'Avanzadas','INDCAR':'Avanzadas',
-  'GESPROIND':'Avanzadas','DISPROELE':'Avanzadas','ANAFAL':'Avanzadas','CONCOR':'Avanzadas',
-  'HIDVERPRO':'Avanzadas','BATAPLMOV':'Avanzadas','TECSERIND2':'Avanzadas','FUNPROCEL':'Avanzadas','ENVPOLIND':'Avanzadas',
-  'ELE1':'Técnicas','MECAPL':'Técnicas','COM1':'Técnicas','INSIND':'Técnicas','MEDELEINGP':'Técnicas',
+  'INSIND':'Avanzadas','DISPROELE':'Avanzadas','ANAFAL':'Avanzadas','CONCOR':'Avanzadas',
+  'HIDVERPRO':'Avanzadas','BATAPLMOV':'Avanzadas','H2FUEENE':'Avanzadas','TECSERIND2':'Avanzadas','FUNPROCEL':'Avanzadas','ENVPOLIND':'Avanzadas',
+  'QCATECGRA':'Avanzadas','ENOBIOFER':'Avanzadas','PROTERBIO':'Avanzadas','BIODIEST':'Avanzadas','TALENCCRE':'Avanzadas','TECPOL':'Avanzadas',
+  'TRATAGUARES':'Avanzadas','TRATRESSOLID':'Avanzadas',
+  'ELE1':'Técnicas','MECAPL':'Técnicas','COM1':'Técnicas','MEDELEINGP':'Técnicas',
   'INTPRERIEL':'Técnicas','ADMGRAING':'Técnicas','ELEGESLOG':'Técnicas','SISGESCAL':'Técnicas',
-  'GESCAL':'Técnicas','REPGRAIND':'Técnicas','INTDISMON':'Técnicas','COSING':'Técnicas',
-  'CONCAL':'Técnicas','INTSISGES':'Técnicas','PRAADING':'Técnicas','TEORES':'Técnicas','ECO':'Técnicas',
+  'GESCAL':'Técnicas','GESPROIND':'Técnicas','REPGRAIND':'Complementarias','COSING':'Técnicas',
+  'CONCAL':'Técnicas','INTSISGES':'Técnicas','PRAADING':'Técnicas','TEORES':'Técnicas',
   'INGCIE':'Complementarias','TUTPAR':'Complementarias','TUTPARFQ':'Complementarias',
-  'EPI':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias',
-  'TALENCCRE':'Complementarias','TUTPARTEP':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
+  'EPI':'Complementarias','ECO':'Complementarias','INTDISMON':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias',
+  'TUTPARTEP':'Complementarias','GESRRHH':'Complementarias','PRODAUDIOV':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
 };
-// Plan 2021
-const AMIN_2021 = { Matemática: 70, Física: 30, Química: 80, Biología: 5, Troncales: 75, Avanzadas: 80, Técnicas: 30, Complementarias: 5 };
-const AREAS_ORDER_2021 = ['Matemática','Física','Química','Biología','Troncales','Avanzadas','Técnicas','Complementarias'];
+// ══════════ PLAN 2021 — ESTRUCTURA DE ÁREAS ══════════
+// Q1 (190 cr mín) → Q11 Mat(70), Q12 Fís(30), Q13 Quím(80), Q14 Bio(5)
+// Q2 (190 cr mín) → Q21 Troncales(75), Q22 Avanzadas(80)
+// Q3 (30 cr mín)  → Q31 Técnicas(30)
+// Q4 (5 cr mín)   → Q41 Complementarias(5)
 
-// Plan 2000 — áreas distintas según el plan original
-const AMIN_2000 = { Matemática: 70, Física: 30, Química: 80, Biología: 5, 'Ing. Proc. Físicos': 65, 'Ing. Proc. Q/B': 45, 'Act. Integradoras': 50, Técnicas: 25, Complementarias: 12 };
-const AREAS_ORDER_2000 = ['Matemática','Física','Química','Biología','Ing. Proc. Físicos','Ing. Proc. Q/B','Act. Integradoras','Técnicas','Complementarias'];
+const AMIN_2021 = {
+  'Matemática': 70, 'Física': 30, 'Química': 80, 'Biología': 5,
+  'Troncales': 75, 'Avanzadas': 80,
+  'Técnicas': 30, 'Complementarias': 5,
+  // grupos padre (calculados dinámicamente, mínimos del plan)
+  'Q1 — Form. Básica': 190, 'Q2 — Form. Específica IQ': 190,
+  'Q3 — Técnicas No Esp.': 30, 'Q4 — Complementarias': 5,
+};
+const AREAS_ORDER_2021 = [
+  'Q1 — Form. Básica',
+    'Matemática','Física','Química','Biología',
+  'Q2 — Form. Específica IQ',
+    'Troncales','Avanzadas',
+  'Q3 — Técnicas No Esp.',
+    'Técnicas',
+  'Q4 — Complementarias',
+    'Complementarias',
+];
+
+// Grupos padre 2021: qué áreas hijas los componen
+const GRUPO_PADRE_2021 = {
+  'Q1 — Form. Básica':       ['Matemática','Física','Química','Biología'],
+  'Q2 — Form. Específica IQ':['Troncales','Avanzadas'],
+  'Q3 — Técnicas No Esp.':   ['Técnicas'],
+  'Q4 — Complementarias':    ['Complementarias'],
+};
+
+// ══════════ PLAN 2000 — ESTRUCTURA DE ÁREAS ══════════
+// Materias Básicas (190 cr) → Mat(70), Inf(5), Bio(5), Fís(30), Quím(80)
+// Mat. Específicas IQ (120 cr) → Ing.Proc.Físicos(65), Ing.Proc.Q/B(45)
+// Act. Integradoras IQ (50 cr)
+// Mat. Técnicas No Esp. (25 cr) → Mec.Aplic(5), Electrotéc(5), Gestión Ind.(8)
+// Materias Complementarias (12 cr)
+
+const AMIN_2000 = {
+  'Matemática': 70, 'Informática': 5, 'Biología': 5, 'Física': 30, 'Química': 80,
+  'Ing. Proc. Físicos': 65, 'Ing. Proc. Q/B': 45,
+  'Act. Integradoras': 50,
+  'Mec. Aplicada': 5, 'Electrotécnica': 5, 'Gestión Industrial': 8,
+  'Complementarias': 12,
+  // grupos padre
+  'Materias Básicas': 190,
+  'Mat. Específicas IQ': 120,
+  'Act. Integradoras IQ': 50,
+  'Mat. Técnicas No Esp.': 25,
+  'Mat. Complementarias': 12,
+};
+const AREAS_ORDER_2000 = [
+  'Materias Básicas',
+    'Matemática','Informática','Biología','Física','Química',
+  'Mat. Específicas IQ',
+    'Ing. Proc. Físicos','Ing. Proc. Q/B',
+  'Act. Integradoras IQ',
+    'Act. Integradoras',
+  'Mat. Técnicas No Esp.',
+    'Mec. Aplicada','Electrotécnica','Gestión Industrial',
+  'Mat. Complementarias',
+    'Complementarias',
+];
+
+const GRUPO_PADRE_2000 = {
+  'Materias Básicas':     ['Matemática','Informática','Biología','Física','Química'],
+  'Mat. Específicas IQ':  ['Ing. Proc. Físicos','Ing. Proc. Q/B'],
+  'Act. Integradoras IQ':    ['Act. Integradoras'],
+  'Mat. Técnicas No Esp.':['Mec. Aplicada','Electrotécnica','Gestión Industrial'],
+  'Mat. Complementarias': ['Complementarias'],
+};
 
 // AM_2000: reasignar áreas específicas para el plan 2000
 const AM_2000 = { ...AM };
+// Básicas: Informática
+['COM1'].forEach(id => AM_2000[id] = 'Informática');
+// Ing. Proc. Físicos
 ['INTINGQUI','INTINGPRO','TERAPL','FENTRA','FLU','TRACALMA1','TRACALMA2'].forEach(id => AM_2000[id] = 'Ing. Proc. Físicos');
-['IRREAQUI1','IRREAQUI2','INGBIOTRAE','DINCONPRO'].forEach(id => AM_2000[id] = 'Ing. Proc. Q/B');
-['TECSERIND1','TECSERIND2','PROIND1','PROIND2','PAS','DISPROQUI'].forEach(id => AM_2000[id] = 'Act. Integradoras');
+// Ing. Proc. Q/B
+['IRREAQUI1','IRREAQUI2','INGBIOTRAE','DINCONPRO',
+ 'DISPROQUI','PROTERBIO','ENOBIOFER','INSIND',
+ 'DISPROELE','ANAFAL','CONCOR','BATAPLMOV','HIDVERPRO','H2FUEENE'].forEach(id => AM_2000[id] = 'Ing. Proc. Q/B');
+// Act. Integradoras
+['TECSERIND1','TECSERIND2','PROIND1','PROIND2','PAS',
+ 'ENEAPLIND','INDCAR','QCATECGRA','TECPOL',
+ 'TRATAGUARES','TRATRESSOLID','INGAMB','FUNPROCEL','ENVPOLIND','TALENCCRE','BIODIEST'].forEach(id => AM_2000[id] = 'Act. Integradoras');
+// Técnicas desglosadas
+['MECAPL'].forEach(id => AM_2000[id] = 'Mec. Aplicada');
+['ELE1','MEDELEINGP'].forEach(id => AM_2000[id] = 'Electrotécnica');
+// Gestión industrial
+['GESPROIND','ADMGRAING','COSING','CONCAL','GESCAL','SISGESCAL','INTSISGES','PRAADING','TEORES','ELEGESLOG','INTPRERIEL'].forEach(id => AM_2000[id] = 'Gestión Industrial');
+// Complementarias (en 2000 ECO, INTDISMON y REPGRAIND van a Complementarias, igual que en 2021)
 
 // Variables activas (se asignan en applyPlan)
-let AMIN_ACT, AREAS_ORDER_ACT, AM_ACT;
+let AMIN_ACT, AREAS_ORDER_ACT, AM_ACT, GRUPO_PADRE_ACT;
 
-const GROUPS_ORDER = ['Básicas','Esp. Ing. Química','Técnicas'];
 
 // ══════════ FRASES DE TOAST ══════════
 const FR = {
@@ -1436,7 +1525,7 @@ const TKF = [
 ];
 
 // ══════════ ESTADO GLOBAL ══════════
-let est = {}, bOp = null, dOp = null, aF = new Set(), areaF = '', grpF = '', qr = '', cel = false;
+let est = {}, bOp = null, dOp = null, aF = new Set(), areaF = '', qr = '', cel = false;
 let soundOn = true, toastsOn = !isMobile();
 let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 let _prevTab = 'princ';
@@ -1454,7 +1543,6 @@ function ld() {
     if (!d) return;
     est     = d.est   || {};
     bOp     = d.bOp   || null;
-  dOp     = d.dOp   || null;
     dOp     = d.dOp   || null;
     cel     = d.cel   || false;
     soundOn = d.soundOn  !== undefined ? d.soundOn  : true;
@@ -1699,8 +1787,8 @@ function rAll() {
   for (const [id, els] of Object.entries(CE)) {
     const show = (aF.size === 0 || aF.has(SN[gs(id)]))
       && (!q || BI[id]?.name?.toLowerCase().includes(q))
-      && (!areaF || AM[id] === areaF)
-      && (!grpF  || BI[id]?.grp === grpF);
+      && (!areaF || AM_ACT[id] === areaF)
+
     for (const el of els) { upCard(el, id); el.classList.toggle('hd', !show); }
   }
   document.querySelectorAll('.sect-label').forEach(lbl => {
@@ -1714,49 +1802,116 @@ function rAll() {
 }
 
 // ══════════ SIDEBAR ══════════
-let sbAreasOpen = false, sbGrpsOpen = false;
+let sbAreasOpen = false;
+let sbGrupoOpen = {}; // track qué grupos padre están abiertos
 
 function buildABSidebar() {
   const c = document.getElementById('ab-sidebar');
   c.innerHTML = '';
   const ac = acr();
-  // Header desplegable
+
+  function grpCr(hijas) { return hijas.reduce((s, h) => s + (ac[h] || 0), 0); }
+
+  // Header principal desplegable "Áreas"
   const hdr = document.createElement('button');
   hdr.className = 'nb sb-collapsible';
   hdr.innerHTML = `<span style="flex:1">Áreas</span><span style="font-size:.6rem;transition:transform .2s;display:inline-block;transform:rotate(${sbAreasOpen?'90':'0'}deg)">▶</span>`;
   hdr.addEventListener('click', () => { sbAreasOpen = !sbAreasOpen; buildABSidebar(); });
   c.appendChild(hdr);
   if (!sbAreasOpen) return;
+
+  const padres = GRUPO_PADRE_ACT;
+  let currentPadre = null;
+
   for (const area of AREAS_ORDER_ACT) {
-    const mn = AMIN_ACT[area], ea = ac[area] || 0, pt = Math.min(100, Math.round(ea / mn * 100));
-    const done = ea >= mn, active = areaF === area, barCol = done ? 'var(--gn)' : 'var(--ac)';
-    const b = document.createElement('button');
-    b.className  = 'nb' + (active ? ' on' : done ? ' done' : '');
-    b.dataset.area = area;
-    b.innerHTML  = `<div style="width:100%"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span>${area}${done ? ' ✓' : ''}</span><span style="font-family:'Space Mono',monospace;font-size:.56rem">${ea}/${mn}</span></div><div style="background:var(--bd);border-radius:100px;height:3px;overflow:hidden"><div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div></div></div>`;
-    b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
-    c.appendChild(b);
+    const mn = AMIN_ACT[area];
+    if (mn === undefined) continue;
+
+    const esPadre = !!padres[area];
+    const esHija  = !!(currentPadre && (padres[currentPadre] || []).includes(area));
+
+    if (esHija) {
+      // Solo mostrar si el padre está abierto
+      if (!sbGrupoOpen[currentPadre]) continue;
+
+      const ea = ac[area] || 0;
+      const pt = Math.min(100, Math.round(ea / mn * 100));
+      const done = ea >= mn;
+      const active = areaF === area;
+      const barCol = done ? 'var(--gn)' : 'var(--ac)';
+      const b = document.createElement('button');
+      b.className  = 'nb' + (active ? ' on' : done ? ' done' : '');
+      b.dataset.area = area;
+      b.style.paddingLeft = '20px';
+      b.innerHTML = `<div style="width:100%">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <span style="font-size:.65rem">${area}${done ? ' ✓' : ''}</span>
+          <span style="font-family:'Space Mono',monospace;font-size:.54rem">${ea}/${mn}</span>
+        </div>
+        <div style="background:var(--bd);border-radius:100px;height:2px;overflow:hidden">
+          <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
+        </div>
+      </div>`;
+      b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
+      c.appendChild(b);
+
+    } else if (esPadre) {
+      currentPadre = area;
+      const hijas = padres[area];
+      const ea = grpCr(hijas);
+      const pt = Math.min(100, Math.round(ea / mn * 100));
+      const done = ea >= mn;
+      const barCol = done ? 'var(--gn)' : 'var(--a2)';
+      const isOpen = !!sbGrupoOpen[area];
+      const arrow = isOpen ? '90' : '0';
+
+      const btn = document.createElement('button');
+      btn.className = 'nb';
+      btn.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
+      btn.innerHTML = `
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <span style="font-size:.68rem;font-weight:700;color:var(--tx);flex:1">${area}${done ? ' ✓' : ''}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:${done?'var(--gn)':'var(--a2)'};margin-right:6px">${ea}/${mn}</span>
+            <span style="font-size:.55rem;transition:transform .2s;display:inline-block;transform:rotate(${arrow}deg)">▶</span>
+          </div>
+          <div style="background:var(--bd);border-radius:100px;height:3px;overflow:hidden">
+            <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
+          </div>
+        </div>`;
+      btn.addEventListener('click', () => {
+        sbGrupoOpen[area] = !sbGrupoOpen[area];
+        buildABSidebar();
+      });
+      c.appendChild(btn);
+
+    } else {
+      // Área standalone: mismo diseño visual que padre pero clickeable como filtro
+      const ea = ac[area] || 0;
+      const pt = Math.min(100, Math.round(ea / mn * 100));
+      const done = ea >= mn;
+      const active = areaF === area;
+      const barCol = done ? 'var(--gn)' : 'var(--a2)';
+      const b = document.createElement('button');
+      b.className = 'nb' + (active ? ' on' : '');
+      b.dataset.area = area;
+      b.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
+      b.innerHTML = `
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <span style="font-size:.68rem;font-weight:700;color:var(--tx);flex:1">${area}${done ? ' ✓' : ''}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:${done?'var(--gn)':'var(--a2)'}">${ea}/${mn}</span>
+          </div>
+          <div style="background:var(--bd);border-radius:100px;height:3px;overflow:hidden">
+            <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
+          </div>
+        </div>`;
+      b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
+      c.appendChild(b);
+    }
   }
 }
 
-function buildGrpSidebar() {
-  const c = document.getElementById('grp-sidebar');
-  if (!c) return;
-  c.innerHTML = '';
-  const hdr = document.createElement('button');
-  hdr.className = 'nb sb-collapsible';
-  hdr.innerHTML = `<span style="flex:1">Grupos</span><span style="font-size:.6rem;transition:transform .2s;display:inline-block;transform:rotate(${sbGrpsOpen?'90':'0'}deg)">▶</span>`;
-  hdr.addEventListener('click', () => { sbGrpsOpen = !sbGrpsOpen; buildGrpSidebar(); });
-  c.appendChild(hdr);
-  if (!sbGrpsOpen) return;
-  for (const grp of GROUPS_ORDER) {
-    const b = document.createElement('button');
-    b.className = 'nb' + (grpF === grp ? ' on' : '');
-    b.textContent = grp;
-    b.addEventListener('click', () => setGrpF(grpF === grp ? '' : grp));
-    c.appendChild(b);
-  }
-}
 
 function upCr() {
   const { t } = cst();
@@ -1764,7 +1919,6 @@ function upCr() {
   document.getElementById('cpct').textContent        = Math.round(t / META * 100) + '%';
   document.getElementById('pbi').style.width         = Math.min(100, t / META * 100) + '%';
   buildABSidebar();
-  buildGrpSidebar();
 }
 
 function switchToTodas() {
@@ -1787,19 +1941,6 @@ function setAreaF(a) {
   rAll();
 }
 
-function setGrpF(g) {
-  grpF = g;
-  buildGrpSidebar();
-  if (g) {
-    const cur = document.querySelector('.nb[data-tab].on')?.dataset.tab || 'princ';
-    if (cur !== 'todas') _prevTab = cur;
-    switchToTodas();
-  } else {
-    switchTab(_prevTab);
-    return;
-  }
-  rAll();
-}
 
 // ══════════ TOPOLOGICAL SORT ══════════
 function topoSort(arr) {
@@ -1912,7 +2053,17 @@ function clearFilters() {
   rAll();
 }
 
-function applyS() { qr = document.getElementById('sq').value; rAll(); }
+function applyS() {
+  qr = document.getElementById('sq').value;
+  if (qr) {
+    const cur = document.querySelector('.nb[data-tab].on')?.dataset.tab || 'princ';
+    if (cur !== 'todas') _prevTab = cur;
+    switchToTodas();
+  } else {
+    switchTab(_prevTab);
+  }
+  rAll();
+}
 
 // ══════════ MODAL PREVIAS ══════════
 function showPP(id) {
@@ -2058,8 +2209,14 @@ function rebuildAllGrids() {
 
 function doReset() {
   est = {}; bOp = null; dOp = null; cel = false;
+  aF.clear(); areaF = ''; qr = ''; _prevTab = 'princ';
+  document.getElementById('sq').value = '';
+  document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
+  updateFilterBtn();
+  document.getElementById('fb-filters').classList.remove('open');
   rebuildAllGrids();
   rc(); rAll(); upCr(); sv(); closeReset();
+  switchTab('princ');
 }
 
 
@@ -2271,7 +2428,6 @@ document.addEventListener('keydown', e => {
     if (sq.value) { sq.value = ''; qr = ''; rAll(); return; }
     if (aF.size)  { clearFilters(); return; }
     if (areaF)    { setAreaF('');   return; }
-    if (grpF)     { setGrpF('');    return; }
   }
 });
 
