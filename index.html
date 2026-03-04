@@ -444,7 +444,10 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
   transition: transform .2s cubic-bezier(.34,1.56,.64,1);
   display: block;
 }
-#quimi:hover #quimi-img { transform: scale(1.08) translateY(-4px); }
+#quimi-img { transform: scaleX(-1); }
+#quimi { transition: opacity .2s; }
+body.modal-open #quimi { opacity: 0; pointer-events: none; }
+#quimi:hover #quimi-img { transform: scaleX(-1) scale(1.08) translateY(-4px); }
 #quimi-bubble {
   position: absolute;
   bottom: 98px;
@@ -494,18 +497,23 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 @keyframes quimi-jump    { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-18px) scale(1.07)} 70%{transform:translateY(-8px) scale(1.03)} 100%{transform:translateY(0) scale(1)} }
 @keyframes quimi-rock    { 0%{transform:rotate(-7deg) translateY(0)} 100%{transform:rotate(7deg) translateY(-8px)} }
 @keyframes quimi-wave    { 0%,100%{transform:rotate(0deg)} 30%{transform:rotate(-12deg) translateY(-4px)} 70%{transform:rotate(10deg)} }
+@keyframes quimi-breathe-f { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
+@keyframes quimi-bounce-f  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
+@keyframes quimi-jump-f    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
+@keyframes quimi-rock-f    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
 
-#quimi-img[data-mood="idle"]      { animation: quimi-breathe 3.5s ease-in-out infinite; }
-#quimi-img[data-mood="happy"]     { animation: quimi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
-#quimi-img[data-mood="exonerada"] { animation: quimi-jump .5s cubic-bezier(.34,1.56,.64,1); }
-#quimi-img[data-mood="celebrate"] { animation: quimi-rock .45s ease-in-out infinite alternate; }
+#quimi-img[data-mood="idle"]      { animation: quimi-breathe-f 3.5s ease-in-out infinite; }
+#quimi-img[data-mood="happy"]     { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="exonerada"] { animation: quimi-jump-f .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="celebrate"] { animation: quimi-rock-f .45s ease-in-out infinite alternate; }
 
 #cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
 
-.help-quimi { display: flex; align-items: center; gap: 10px; background: var(--sf2); border: 1px solid var(--bd); border-radius: 10px; padding: 10px 13px; margin-bottom: 14px; }
-.help-quimi img { width: 54px; height: 54px; object-fit: contain; flex-shrink: 0; }
-.help-quimi-text { font-size: .75rem; color: var(--tx); line-height: 1.5; }
-.help-quimi-text em { color: var(--ac); font-style: normal; font-weight: 700; }
+.help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-right: 1px solid var(--bd); }
+.help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
+.help-quimi-col p { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tx); line-height: 1.55; margin: 0; }
+.help-quimi-col p em { color: var(--ac); font-style: italic; }
+.help-md-body { flex: 1; min-width: 0; padding: 22px; overflow-y: auto; max-height: 90vh; }
 
 /* ══════════ MODALES ══════════ */
 .ov {
@@ -602,15 +610,34 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 }
 #splash.on { display: flex; }
 .splash-inner {
-  max-width: 520px;
+  max-width: 820px;
   width: 100%;
   background: var(--sf);
   border: 1px solid var(--bd);
   border-radius: 16px;
-  padding: 28px 24px 22px;
+  padding: 0;
   box-shadow: 0 24px 64px rgba(0,0,0,.7);
   animation: pop .5s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  overflow: hidden;
 }
+.splash-quimi-col {
+  width: 220px;
+  min-width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px 16px;
+  background: linear-gradient(160deg, rgba(42,157,143,.13), rgba(78,168,222,.07));
+  border-right: 1px solid var(--bd);
+}
+.splash-quimi-col img { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
+.splash-quimi-col p { text-align: center; font-size: .82rem; font-weight: 700; color: var(--tx); line-height: 1.5; margin: 0; }
+.splash-quimi-col p em { color: var(--ac); font-style: normal; }
+.splash-content-col { flex: 1; min-width: 0; padding: 28px 24px 22px; display: flex; flex-direction: column; }
 .splash-logo { font-size: 2.8rem; text-align: center; margin-bottom: 6px; }
 .splash-title {
   font-size: 1.9rem; font-weight: 800; text-align: center;
@@ -635,11 +662,15 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 .splash-plan-btn { flex: 1; padding: 11px; border-radius: 8px; border: 2px solid var(--bd); background: var(--sf2); color: var(--tm); font-family: 'Syne', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer; transition: all .2s; }
 .splash-plan-btn.selected { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--tx); }
 #splash-start-btn:disabled { opacity: .4; cursor: not-allowed; }
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .splash-inner { flex-direction: column; max-height: 95dvh; overflow-y: auto; }
+  .splash-quimi-col { width: 100%; min-width: unset; flex-direction: row; border-right: none; border-bottom: 1px solid var(--bd); padding: 14px 16px; gap: 14px; }
+  .splash-quimi-col img { width: 72px; height: 72px; }
+  .splash-quimi-col p { text-align: left; font-size: .74rem; }
+  .splash-content-col { padding: 16px 14px 14px; }
   .splash-title { font-size: 1.3rem; }
   .splash-logo  { font-size: 2rem; margin-bottom: 4px; }
   .splash-sub   { font-size: .65rem; margin-bottom: 14px; }
-  .splash-inner { padding: 16px 14px 14px; max-height: 95dvh; overflow-y: auto; }
   .splash-plan-sel { margin-bottom: 12px; }
   .splash-card  { padding: 10px; }
   .splash-card .sc-icon { font-size: 1.1rem; margin-bottom: 3px; }
@@ -895,64 +926,41 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <!-- ══ SPLASH BIENVENIDA ══ -->
 <div id="splash">
   <div class="splash-inner">
-    <img src="quimi_saludando.png" alt="Quimi saludando" style="width:110px;height:110px;object-fit:contain;margin:0 auto 4px;display:block;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5));animation:quimi-wave 1.2s ease-in-out infinite alternate"/>
-    <div class="splash-logo" style="font-size:1.5rem">🔬</div>
-    <div class="splash-title">QuimPath</div>
-    <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
-    <div class="splash-plan-sel">
-      <div class="splash-plan-label">¿Qué plan de estudios seguís?</div>
-      <div class="splash-plan-btns">
-        <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021</button>
-        <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000</button>
-      </div>
+    <div class="splash-quimi-col">
+      <img src="quimi_saludando.png" alt="Quimi saludando"/>
+      <p>¡Hola! Soy <em>Quimi</em> 🐾<br>Bienvenido/a a <em>QuimPath</em></p>
     </div>
-    <div class="splash-cards" id="splash-cards-pc">
-      <div class="splash-card">
-        <span class="sc-icon">🖱️</span>
-        <div class="sc-title">Clic izquierdo</div>
-        <div class="sc-desc">Avanzar estado:<br>Habilitada → Cursando → Aprobada → Exonerada</div>
+    <div class="splash-content-col">
+      <div class="splash-logo" style="font-size:1.5rem;text-align:center">🔬</div>
+      <div class="splash-title">QuimPath</div>
+      <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
+      <div class="splash-plan-sel">
+        <div class="splash-plan-label">¿Qué plan de estudios seguís?</div>
+        <div class="splash-plan-btns">
+          <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021</button>
+          <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000</button>
+        </div>
       </div>
-      <div class="splash-card">
-        <span class="sc-icon">🖱️</span>
-        <div class="sc-title">Clic derecho</div>
-        <div class="sc-desc">Retroceder el estado de la materia.</div>
+      <div class="splash-cards" id="splash-cards-pc">
+        <div class="splash-card"><span class="sc-icon">🖱️</span><div class="sc-title">Clic izquierdo</div><div class="sc-desc">Avanzar estado:<br>Habilitada → Cursando → Aprobada → Exonerada</div></div>
+        <div class="splash-card"><span class="sc-icon">🖱️</span><div class="sc-title">Clic derecho</div><div class="sc-desc">Retroceder el estado de la materia.</div></div>
+        <div class="splash-card"><span class="sc-icon">🔒</span><div class="sc-title">Materia bloqueada</div><div class="sc-desc">Hacé clic para ver qué previas te faltan cumplir.</div></div>
+        <div class="splash-card"><span class="sc-icon">⚙️</span><div class="sc-title">Configuración</div><div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el panel lateral.</div></div>
       </div>
-      <div class="splash-card">
-        <span class="sc-icon">🔒</span>
-        <div class="sc-title">Materia bloqueada</div>
-        <div class="sc-desc">Hacé clic para ver qué previas te faltan cumplir.</div>
+      <div class="splash-cards" id="splash-cards-mob" style="display:none;grid-template-columns:1fr">
+        <div class="splash-card"><span class="sc-icon">👆</span><div class="sc-title">Tocá una materia</div><div class="sc-desc">Avanza el estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
+        <div class="splash-card"><span class="sc-icon">🔒</span><div class="sc-title">Materia bloqueada</div><div class="sc-desc">Tocá para ver qué previas te faltan cumplir.</div></div>
+        <div class="splash-card"><span class="sc-icon">⚙️</span><div class="sc-title">Configuración</div><div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el menú lateral.</div></div>
       </div>
-      <div class="splash-card">
-        <span class="sc-icon">⚙️</span>
-        <div class="sc-title">Configuración</div>
-        <div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el panel lateral.</div>
+      <div class="splash-footer">
+        <span class="splash-hint">❓ Podés volver a ver esto y más desde Ayuda</span>
+        <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
       </div>
-    </div>
-    <div class="splash-cards" id="splash-cards-mob" style="display:none;grid-template-columns:1fr">
-      <div class="splash-card">
-        <span class="sc-icon">👆</span>
-        <div class="sc-title">Tocá una materia</div>
-        <div class="sc-desc">Avanza el estado: Habilitada → Cursando → Aprobada → Exonerada</div>
-      </div>
-      <div class="splash-card">
-        <span class="sc-icon">🔒</span>
-        <div class="sc-title">Materia bloqueada</div>
-        <div class="sc-desc">Tocá para ver qué previas te faltan cumplir.</div>
-      </div>
-      <div class="splash-card">
-        <span class="sc-icon">⚙️</span>
-        <div class="sc-title">Configuración</div>
-        <div class="sc-desc">Ajustá sonidos, notificaciones y plan de estudios desde el menú lateral.</div>
-      </div>
-    </div>
-    <div class="splash-footer">
-      <span class="splash-hint">❓ Podés volver a ver esto y más desde Ayuda</span>
-      <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
     </div>
   </div>
 </div>
 
-<!-- ══ QUIMI MASCOTA ══ -->
+<!-- ══ QUIMI<!-- ══ QUIMI MASCOTA ══ -->
 <div id="quimi">
   <div id="quimi-bubble"></div>
   <img id="quimi-img" src="quimi_estatico.png" data-mood="idle" alt="Quimi"/>
@@ -1059,15 +1067,16 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 </div></div>
 
 <!-- ══ MODAL: Ayuda ══ -->
-<div class="ov" id="ov-help"><div class="md">
+<div class="ov" id="ov-help"><div class="md" style="max-width:720px;display:flex;padding:0;gap:0;overflow:hidden">
+  <div class="help-quimi-col">
+    <img src="quimi_ensenando.png" alt="Quimi enseñando"/>
+    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso? 😏</p>
+  </div>
+  <div class="help-md-body">
   <h2>❓ Ayuda — QuimPath</h2>
   <p class="sub">Seguimiento curricular para Ingeniería Química (UdelaR) · Plan 2021 y Plan 2000</p>
-  <div class="help-quimi">
-    <img src="quimi_ensenando.png" alt="Quimi enseñando"/>
-    <div class="help-quimi-text">¡Hola! Soy <em>Quimi</em>, tu compañero de carrera 🐾<br>Estoy acá para celebrar cada materia que apruebes. ¡Haceme la cola menear!</div>
-  </div>
   <div class="sep"></div>
-  <div style="display:flex;gap:6px;margin-bottom:14px">
+  <div style="display:flex<div style="display:flex;gap:6px;margin-bottom:14px">
     <button class="toggle-btn on"  id="help-tab-pc"  onclick="switchHelpTab('pc')"  style="flex:1;text-align:center">🖥️ PC / Desktop</button>
     <button class="toggle-btn off" id="help-tab-mob" onclick="switchHelpTab('mob')" style="flex:1;text-align:center">📱 Mobile</button>
   </div>
@@ -1093,7 +1102,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
   <div class="sep"></div>
   <div class="ma"><button class="bpr" onclick="closeHelp()">Entendido</button></div>
-</div></div>
+</div></div></div>
 
 <!-- ══ PANTALLA CELEBRACIÓN ══ -->
 <div id="cel"><div class="celi">
@@ -2129,7 +2138,7 @@ function applyS() {
 // ══════════ MODAL PREVIAS ══════════
 function showPP(id) {
   const p = PV_ACT[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
-  if (!p) { ov.classList.remove('op'); return; }
+  if (!p) { ov.classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); return; }
   const g = (Array.isArray(p) ? p : [p])[0];
   let rows = '';
   if (id === 'PAS') {
@@ -2141,7 +2150,7 @@ function showPP(id) {
     rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
   }
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${rows}`;
-  ov.classList.add('op');
+  ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
 }
 
@@ -2151,7 +2160,7 @@ function ppOvClick(e) {
 
 function hidePP() {
   const ov = document.getElementById('ov-pp');
-  ov.classList.remove('op');
+  ov.classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
   ov.removeEventListener('click', ppOvClick);
 }
 function showPPBio() {
@@ -2164,7 +2173,7 @@ function showPPBio() {
     rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
   }
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BO[bOp].name}</div>${rows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openBio()">↩ Cambiar opción</div>`;
-  ov.classList.add('op');
+  ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
 }
 
@@ -2179,10 +2188,10 @@ function openFeedback() {
   document.getElementById('fb-msg').textContent  = '';
   document.getElementById('fb-msg').style.color  = '';
   document.getElementById('fb-send-btn').disabled = false;
-  document.getElementById('ov-fb').classList.add('op');
+  document.getElementById('ov-fb').classList.add('op'); setModalOpen(true);
 }
 
-function closeFeedback() { document.getElementById('ov-fb').classList.remove('op'); }
+function closeFeedback() { document.getElementById('ov-fb').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 function selectFbType(btn) {
   fbType = btn.dataset.type;
@@ -2271,8 +2280,8 @@ function toast(id, st) {
 function toastWip() {
   quimiSay(`<div class="qb-subject">Optativa</div>🚧 Próximamente disponible`, 'wip', 2800);
 }
-function openReset()  { document.getElementById('ov-r').classList.add('op'); }
-function closeReset() { document.getElementById('ov-r').classList.remove('op'); }
+function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
+function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 function rebuildAllGrids() {
   Object.keys(CE).forEach(k => delete CE[k]);
@@ -2300,13 +2309,13 @@ function openDin() {
   document.getElementById('din-back-btn').style.display       = 'none';
   document.getElementById('din-confirm-btn').style.display    = '';
   document.querySelectorAll('input[name="din"]').forEach(r => r.checked = r.value === dOp);
-  document.getElementById('ov-d').classList.add('op');
+  document.getElementById('ov-d').classList.add('op'); setModalOpen(true);
 }
 function dinBack() {
   document.getElementById('din-prereq-section').style.display = 'none';
   document.getElementById('din-back-btn').style.display       = 'none';
 }
-function closeDin() { document.getElementById('ov-d').classList.remove('op'); }
+function closeDin() { document.getElementById('ov-d').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 function confirmDin() {
   const s = document.querySelector('input[name="din"]:checked');
   if (!s) return;
@@ -2332,8 +2341,12 @@ function showPPDin() {
   const modal = document.getElementById('pp-modal');
   const ov    = document.getElementById('ov-pp');
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${DO[dOp].name}</div>${bestRows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openDin()">↩ Cambiar opción</div>`;
-  ov.classList.add('op');
+  ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
+}
+
+function setModalOpen(open) {
+  document.body.classList.toggle('modal-open', open);
 }
 
 function openBio() {
@@ -2341,7 +2354,7 @@ function openBio() {
   document.getElementById('bio-back-btn').style.display       = 'none';
   document.getElementById('bio-confirm-btn').style.display    = '';
   document.querySelectorAll('input[name="bio"]').forEach(r => r.checked = r.value === bOp);
-  document.getElementById('ov-b').classList.add('op');
+  document.getElementById('ov-b').classList.add('op'); setModalOpen(true);
 }
 
 function bioBack() {
@@ -2349,7 +2362,7 @@ function bioBack() {
   document.getElementById('bio-back-btn').style.display       = 'none';
 }
 
-function closeBio() { document.getElementById('ov-b').classList.remove('op'); }
+function closeBio() { document.getElementById('ov-b').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 function confirmBio() {
   const s = document.querySelector('input[name="bio"]:checked');
@@ -2365,18 +2378,18 @@ function openConfig() {
     document.getElementById(id).textContent = on ? '✔ On' : '✘ Off';
     document.getElementById(id).className   = 'toggle-btn ' + (on ? 'on' : 'off');
   });
-  document.getElementById('ov-cfg').classList.add('op');
+  document.getElementById('ov-cfg').classList.add('op'); setModalOpen(true);
   updateCfgPlanBtns();
 }
 
-function closeConfig() { document.getElementById('ov-cfg').classList.remove('op'); }
+function closeConfig() { document.getElementById('ov-cfg').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 function openHelp() {
-  document.getElementById('ov-help').classList.add('op');
+  document.getElementById('ov-help').classList.add('op'); setModalOpen(true);
   if (isMobile()) switchHelpTab('mob');
 }
 
-function closeHelp() { document.getElementById('ov-help').classList.remove('op'); }
+function closeHelp() { document.getElementById('ov-help').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 function switchHelpTab(tab) {
   ['pc','mob'].forEach(t => {
@@ -2416,13 +2429,13 @@ function chkCel() {
   if (cel) return;
   cel = true; sv(); sndCarrera();
   setTimeout(() => {
-    document.getElementById('cel').classList.add('on');
+    document.getElementById('cel').classList.add('on'); setModalOpen(true);
     launchConfetti();
     quimiSetMood('celebrate');
   }, 400);
 }
 
-function closeCel() { document.getElementById('cel').classList.remove('on'); stopConfetti(); }
+function closeCel() { document.getElementById('cel').classList.remove('on'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); stopConfetti(); }
 
 let confActive = false;
 const CC = ['#e63946','#f4a261','#2a9d8f','#4ea8de','#e9c46a','#c77dff','#f72585','#4cc9f0','#fff','#3fb950'];
@@ -2555,7 +2568,7 @@ function closeSplash() {
     rebuildAllGrids();
     rc(); rAll(); upCr();
   }
-  document.getElementById('splash').classList.remove('on');
+  document.getElementById('splash').classList.remove('on'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
   try { localStorage.setItem('qp_welcomed', '1'); } catch(e) {}
   sv();
 }
@@ -2569,9 +2582,9 @@ function maybeShowSplash() {
       const mob = isMobile();
       document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
       document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
-      document.getElementById('splash').classList.add('on');
+      document.getElementById('splash').classList.add('on'); setModalOpen(true);
     }
-  } catch(e) { document.getElementById('splash').classList.add('on'); }
+  } catch(e) { document.getElementById('splash').classList.add('on'); setModalOpen(true); }
 }
 
 // ══════════ CAMBIO DE PLAN ══════════
@@ -2591,6 +2604,7 @@ function updateCfgPlanBtns() {
 
 // ══════════ QUIMI — CLICK ══════════
 const QUIMI_MSGS = [
+  '¡Hola! Soy Quimi, tu compañero de carrera 🐾',
   '¡Vamos, vos podés! 💪',
   '¡Otro semestre y al título! 🎓',
   '¡La química te necesita! ⚗️',
