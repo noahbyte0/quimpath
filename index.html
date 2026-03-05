@@ -1830,7 +1830,7 @@ function crTotal() {
 }
 
 function cp(id) {
-  if (OPT_IDS.has(id)) return S.B;
+  if (OPT_IDS.has(id) && !PV_ACT[id]) return S.B;
   if (INIC_ACT.has(id)) return S.H;
   const p = PV_ACT[id];
   if (!p) return S.H;
