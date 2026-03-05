@@ -1215,6 +1215,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <div class="sep"></div>
     <div class="help-section"><h3>Créditos</h3>
       <div class="wlc-row"><span class="wlc-key">14 cr&nbsp;(12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
     </div>
   </div>
   <div id="help-mob" style="display:none">
@@ -1226,6 +1227,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <div class="sep"></div>
     <div class="help-section"><h3>Créditos</h3>
       <div class="wlc-row"><span class="wlc-key">14 cr&nbsp;(12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
     </div>
   </div>
   <div class="sep"></div>
@@ -1490,6 +1492,24 @@ const PV_2021 = {
   'IRREAQUI2': { 'IRREAQUI1': A },
   'TECSERIND2':{ 'TECSERIND1': A, 'TRACALMA1': A },
   'INGAMB':    { 'IRREAQUI1': A, 'FENTRA': E, 'FLU': A },
+  'BIO1':      { 'INTINGBIO': E },
+  'OPTICA':    { 'FIS102': E, 'MAT04': A },
+  'QUIAMB':    { 'QUIORGT101': A, 'QUIINO1': A },
+  'SINORGTRE': { 'QUIORG103L': A, 'QUIORG102I': A, 'QUIORGT101': A },
+  'DISPROELE': { 'FISQUI104': A, 'IRREAQUI1': A },
+  'CONCOR':    { 'FENTRA': A, 'FISQUI104': E },
+  'H2FUEENE':  { 'FISQUI103': A },
+  'HIDVERPRO': { 'FISQUI104': A },
+  'BATAPLMOV': { 'FISQUI104': A },
+  'FUNPROCEL': [{ 'FLU': E, 'IRREAQUI1': A, 'TRACALMA1': A }, { 'FLU': E, 'IRREAQUI1': A, 'TRACALMA2': A }],
+  'ENVPOLIND': { 'FENTRA': A, 'QUIORGT101': E },
+  'BIODIEST':  { 'FISQUI103': A, 'QUIORG102I': A },
+  'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
+  'CONCAL':    { 'MAT05': A },
+  'INIRINGR':  { 'MAT03': A },
+  'QUIANA3':   { 'QUIANA2': A, 'QUIANA1': A },
+  'CATADS':    { 'QUIANA2': A, 'QUIORG103L': A, 'FISQUI103': A },
+  'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': E },
   'DINCONPRO': [{ 'TRACALMA1': E, 'COM1': A, 'IRREAQUI1': A }, { 'TRACALMA1': E, 'MAT06': A, 'IRREAQUI1': A }],
   'INTINGBIO': { 'QUIORG102I': E, 'QUIORGT101': A, 'FISQUI103': A },
   'INGBIOTRAE':[{ 'INTINGBIO': A, 'IRREAQUI1': A, 'TRACALMA2': A }, { 'INTINGBIO': A, 'IRREAQUI1': A }],
@@ -1803,12 +1823,20 @@ function crBasicas() {
   return t;
 }
 
+function crTotal() {
+  let t = 0;
+  for (const s of ALL) t += gcr(s.id, gs(s.id));
+  return t;
+}
+
 function cp(id) {
   if (OPT_IDS.has(id)) return S.B;
   if (INIC_ACT.has(id)) return S.H;
   const p = PV_ACT[id];
   if (!p) return S.H;
   if (id === 'PAS' && crBasicas() < 190) return S.B;
+  if (id === 'COSING'    && crTotal() < 100) return S.B;
+  if (id === 'INTDISMON' && crTotal() < 200) return S.B;
   if (id === 'DINCONPRO') {
     // Chequear si al menos una opción tiene previas cumplidas
     const opts = Object.keys(PV_DIN);
@@ -1945,7 +1973,10 @@ function mkCard(s) {
       return;
     }
     if (gs(s.id) === S.B) {
-      if (OPT_IDS.has(s.id)) { toastWip(); return; }
+      if (OPT_IDS.has(s.id)) {
+        if (PV_ACT[s.id]) { showPP(s.id); return; }
+        toastWip(); return;
+      }
       showPP(s.id);
       return;
     }
