@@ -2180,22 +2180,23 @@ function setAreaF(a) {
 
 // ══════════ TOPOLOGICAL SORT ══════════
 function topoSort(arr) {
-  const ids = arr.map(s => s.id), idSet = new Set(ids), level = {};
-  for (const id of ids) level[id] = 0;
+  // Calcular nivel global de todas las materias (OB + optativas)
+  const allIds = ALL.map(s => s.id);
+  const globalLevel = {};
+  for (const id of allIds) globalLevel[id] = 0;
   let changed = true;
   while (changed) {
     changed = false;
-    for (const id of ids) {
+    for (const id of allIds) {
       const p = PV_ACT[id]; if (!p) continue;
       for (const g of (Array.isArray(p) ? p : [p]))
         for (const dep of Object.keys(g)) {
-          if (!idSet.has(dep)) continue;
-          const nl = (level[dep] ?? 0) + 1;
-          if (nl > level[id]) { level[id] = nl; changed = true; }
+          const nl = (globalLevel[dep] ?? 0) + 1;
+          if (nl > (globalLevel[id] ?? 0)) { globalLevel[id] = nl; changed = true; }
         }
     }
   }
-  return [...arr].sort((a, b) => (level[a.id] ?? 0) - (level[b.id] ?? 0));
+  return [...arr].sort((a, b) => (globalLevel[a.id] ?? 0) - (globalLevel[b.id] ?? 0));
 }
 
 // ══════════ GRIDS ══════════
