@@ -575,7 +575,10 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .help-quimi-col img.mirror { transform: scaleX(-1); }
 .help-quimi-col p { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tx); line-height: 1.55; margin: 0; }
 .help-quimi-col p em { color: var(--ac); font-style: italic; }
-.help-md-body { flex: 1; min-width: 0; padding: 22px; overflow-y: auto; max-height: 90vh; }
+.help-md-body { flex: 1; min-width: 0; padding: 22px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--bd) transparent; }
+.help-md-body::-webkit-scrollbar { width: 4px; }
+.help-md-body::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 2px; }
+.help-md-body::-webkit-scrollbar-track { background: transparent; }
 
 /* ══════════ MODALES ══════════ */
 .ov {
@@ -640,7 +643,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .help-section h3 { font-size: .8rem; font-weight: 700; color: var(--tx); margin-bottom: 8px; }
 .wlc-row {
   display: grid;
-  grid-template-columns: 110px 1fr;
+  grid-template-columns: 140px 1fr;
   gap: 10px;
   align-items: baseline;
   padding: 5px 0;
@@ -653,7 +656,8 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   font-size: .68rem;
   color: var(--ac);
   font-weight: 700;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 .wlc-val { color: var(--tm); line-height: 1.5; }
 
@@ -1213,8 +1217,8 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="wlc-row"><span class="wlc-key">Escape</span><span class="wlc-val">Cerrar modales, limpiar búsqueda o filtros.</span></div>
     </div>
     <div class="sep"></div>
-    <div class="help-section"><h3>Créditos</h3>
-      <div class="wlc-row"><span class="wlc-key">14 cr&nbsp;(12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+    <div class="help-section"><h3>Notas</h3>
+      <div class="wlc-row"><span class="wlc-key">14 créditos (12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
       <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
     </div>
   </div>
@@ -1225,8 +1229,8 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="wlc-row"><span class="wlc-key">Menú lateral</span><span class="wlc-val">Toca el ☰ para abrir.</span></div>
     </div>
     <div class="sep"></div>
-    <div class="help-section"><h3>Créditos</h3>
-      <div class="wlc-row"><span class="wlc-key">14 cr&nbsp;(12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+    <div class="help-section"><h3>Notas</h3>
+      <div class="wlc-row"><span class="wlc-key">14 créditos (12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
       <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
     </div>
   </div>
@@ -1235,7 +1239,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 </div>
   <div class="help-quimi-col">
     <img src="quimi_ensenando.png" alt="Quimi enseñando" class="mirror"/>
-    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso? 😏</p>
+    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso?</p>
   </div>
 </div></div>
 
@@ -1507,6 +1511,7 @@ const PV_2021 = {
   'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
   'CONCAL':    { 'MAT05': A },
   'INIRINGR':  { 'MAT03': A },
+  'CIETECSOC': {},
   'QUIANA3':   { 'QUIANA2': A, 'QUIANA1': A },
   'CATADS':    { 'QUIANA2': A, 'QUIORG103L': A, 'FISQUI103': A },
   'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': E },
