@@ -1512,6 +1512,15 @@ const PV_2021 = {
   'CONCAL':    { 'MAT05': A },
   'INIRINGR':  { 'MAT03': A },
   'CIETECSOC': {},
+  'QCASOLACUA':{ 'QUIINO1': A },
+  'INTCIEBIO1':{},
+  'INSIND':    { 'TERAPL': E, 'FENTRA': E, 'ELE1': E, 'MECAPL': A },
+  'ASEGCALANA':{ 'QUIANA3': A, 'MAT05': A },
+  'PROTERBIO': [{ 'FISQUI103': A }, { 'FISQUI101': A }],
+  'ENEAPLIND': { 'TRACALMA1': A, 'TERAPL': E },
+  'INDCAR':    { 'TECSERIND2': A, 'INTINGBIO': A },
+  'QCATECGRA': { 'FISQUI101': A, 'QUIORG102I': A, 'FISQUI103': A },
+  'TECPOL':    { 'FIS101': A, 'QUIORGT101': A },
   'QUIANA3':   { 'QUIANA2': A, 'QUIANA1': A },
   'CATADS':    { 'QUIANA2': A, 'QUIORG103L': A, 'FISQUI103': A },
   'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': E },
@@ -1593,6 +1602,7 @@ function applyPlan(p) {
   OPT_IDS      = new Set([...O1.map(s => s.id), ...O2_ACT.map(s => s.id)]);
   ALL          = [...OB_ACT, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
   BI           = Object.fromEntries(ALL.map(s => [s.id, s]));
+  buildSearchCache();
   AMIN_ACT     = p === '2000' ? AMIN_2000 : AMIN_2021;
   const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
   AREAS_ORDER_ACT = p === '2000' ? AREAS_ORDER_2000 : AREAS_ORDER_2021;
@@ -1925,14 +1935,9 @@ function setSt(id, ns, back) {
 
 function cycleBack(id) {
   const cur = gs(id);
-  if (cur === S.B) {
+  if (cur <= S.H) {
     if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
-    if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
-    return;
-  }
-  if (cur === S.H) {
-    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
-    if (id === 'DINCONPRO' && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'DINCONPRO'  && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
     return;
   }
   setSt(id, cur - 1, true);
@@ -1993,7 +1998,7 @@ function mkCard(s) {
 
   d.addEventListener('contextmenu', (e) => {
     e.preventDefault(); getAC();
-    if (OPT_IDS.has(s.id)) { toastWip(); return; }
+    if (OPT_IDS.has(s.id) && gs(s.id) <= S.H) { toastWip(); return; }
     hidePP(); cycleBack(s.id);
   });
 
@@ -2022,12 +2027,56 @@ function upCard(el, id) {
   }
 }
 
+// ══════════ BÚSQUEDA: expansión de abreviaturas ══════════
+const ABBREV_MAP = [
+  [/\bqca\b/gi,    'quimica'],
+  [/\bqco\b/gi,    'quimico'],
+  [/\btec\b\.?/gi, 'tecnologia'],
+  [/\btrat\b\.?/gi,'tratamiento'],
+  [/\bing\b\.?/gi, 'ingenieria'],
+  [/\blab\b\.?/gi, 'laboratorio'],
+  [/\baplic\b\.?/gi,'aplicada'],
+  [/\bprod\b\.?/gi, 'produccion'],
+  [/\bproc\b\.?/gi, 'procesos'],
+  [/\bind\b\.?/gi,  'industrial'],
+  [/\bintro\b/gi,   'introduccion'],
+  [/\brep\b\.?/gi,  'representacion'],
+  [/\bsint\b\.?/gi, 'sintesis'],
+  [/\bfund\b\.?/gi, 'fundamentos'],
+  [/\borg\b/gi,     'organica'],
+  [/\binorg\b/gi,   'inorganica'],
+  [/\bamb\b/gi,     'ambiental'],
+  [/\bval\b\.?/gi,  'valorizacion'],
+  [/\bgral\b\.?/gi, 'general'],
+  [/\baseg\b\.?/gi, 'aseguramiento'],
+  [/\bfisqui\b/gi,  'fisicoquimica'],
+  [/\bele\b/gi,     'electrotecnica'],
+  [/\bgest\b\.?/gi, 'gestion'],
+  [/\bcal\b/gi,     'calidad'],
+  [/\bflu\b/gi,     'fluidodinamica'],
+  [/\bfen\b/gi,     'fenomenos'],
+  [/\bter\b/gi,     'termodinamica'],
+  [/\bser\b/gi,     'servicios'],
+];
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+// Caché de texto de búsqueda — se regenera al cambiar de plan
+let SEARCH_CACHE = {};
+function buildSearchCache() {
+  SEARCH_CACHE = {};
+  for (const s of ALL) {
+    const base = norm(s.name);
+    let expanded = base;
+    for (const [re, full] of ABBREV_MAP) expanded = expanded.replace(re, full);
+    SEARCH_CACHE[s.id] = base + ' ' + expanded;
+  }
+}
+function searchText(id) { return SEARCH_CACHE[id] || norm(BI[id]?.name ?? ''); }
+
 function rAll() {
-  const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const q = norm(qr);
   for (const [id, els] of Object.entries(CE)) {
     const show = (aF.size === 0 || aF.has(SN[gs(id)]))
-      && (!q || norm(BI[id]?.name ?? '').includes(q))
+      && (!q || searchText(id).includes(q))
       && (!areaF || AM_ACT[id] === areaF)
 
     for (const el of els) { upCard(el, id); el.classList.toggle('hd', !show); }
@@ -2302,27 +2351,35 @@ function applyS() {
     const cur = document.querySelector('.nb[data-tab].on')?.dataset.tab || 'princ';
     if (cur !== 'todas') _prevTab = cur;
     switchToTodas();
+    rAll();
   } else {
-    switchTab(_prevTab);
+    switchTab(_prevTab); // switchTab ya llama rAll internamente
   }
-  rAll();
 }
 
 // ══════════ MODAL PREVIAS ══════════
 function showPP(id) {
   const p = PV_ACT[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
-  if (!p) { ov.classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); return; }
-  const g = (Array.isArray(p) ? p : [p])[0];
-  let rows = '';
-  if (id === 'PAS') {
-    const cb = crBasicas(), met = cb >= 190;
-    rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">190 créditos de materias Básicas exoneradas</span><span class="pr ${met ? 'ok' : 'bloqueada'}">${met ? '✓' : cb + '/190'}</span></div>`;
+  if (!p) { ov.classList.remove('op'); setModalOpen(false); return; }
+  // Encontrar el grupo más favorable (más previas cumplidas)
+  const groups = Array.isArray(p) ? p : [p];
+  let bestRows = '', bestMet = -1;
+  for (const g of groups) {
+    let rows = '', met = 0;
+    if (id === 'PAS') {
+      const cb = crBasicas(), ok = cb >= 190;
+      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">190 créditos de materias Básicas exoneradas</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : cb + '/190'}</span></div>`;
+      if (ok) met++;
+    }
+    for (const [pid, ms] of Object.entries(g)) {
+      const ok = gs(pid) >= ms;
+      if (ok) met++;
+      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+    }
+    if (met > bestMet) { bestMet = met; bestRows = rows; }
   }
-  for (const [pid, ms] of Object.entries(g)) {
-    const met = gs(pid) >= ms;
-    rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
-  }
-  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${rows}`;
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${bestRows}`;
+  ov.removeEventListener('click', ppOvClick);
   ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
 }
@@ -2346,6 +2403,7 @@ function showPPBio() {
     rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
   }
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BO[bOp].name}</div>${rows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openBio()">↩ Cambiar opción</div>`;
+  ov.removeEventListener('click', ppOvClick);
   ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
 }
@@ -2429,7 +2487,7 @@ function floatToast(msg, mood, dur) {
   const el = document.createElement('div');
   el.className = 'ft';
   el.dataset.mood = mood;
-  el.textContent = msg;
+  el.innerHTML = msg;
   c.appendChild(el);
   void el.offsetWidth;
   el.classList.add('on');
@@ -2507,7 +2565,12 @@ function toast(id, st) {
 
 // ══════════ TOAST "EN DESARROLLO" ══════════
 function toastWip() {
-  quimiSay(`<div class="qb-subject">Optativa</div>🚧 Próximamente disponible`, 'wip', 2800);
+  const msg = `<div class="qb-subject">Optativa</div>🚧 Próximamente disponible`;
+  if (quimiOn && !isMobile()) {
+    quimiSay(msg, 'wip', 2800);
+  } else {
+    floatToast(msg, 'wip', 2800);
+  }
 }
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
@@ -2570,6 +2633,7 @@ function showPPDin() {
   const modal = document.getElementById('pp-modal');
   const ov    = document.getElementById('ov-pp');
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${DO[dOp].name}</div>${bestRows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openDin()">↩ Cambiar opción</div>`;
+  ov.removeEventListener('click', ppOvClick);
   ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
 }
@@ -2628,28 +2692,27 @@ function switchHelpTab(tab) {
   });
 }
 
+function _toggleCfg(key, elId, onSide) {
+  const el = document.getElementById(elId);
+  const val = !onSide;
+  el.textContent = val ? '✔ On' : '✘ Off';
+  el.className   = 'toggle-btn ' + (val ? 'on' : 'off');
+  return val;
+}
 function toggleSound() {
   soundOn = !soundOn;
   if (soundOn) sndAdvance();
-  const el = document.getElementById('cfg-sound');
-  el.textContent = soundOn ? '✔ On' : '✘ Off';
-  el.className   = 'toggle-btn ' + (soundOn ? 'on' : 'off');
+  _toggleCfg('sound', 'cfg-sound', !soundOn);
   sv();
 }
-
 function toggleToasts() {
   toastsOn = !toastsOn;
-  const el = document.getElementById('cfg-toasts');
-  el.textContent = toastsOn ? '✔ On' : '✘ Off';
-  el.className   = 'toggle-btn ' + (toastsOn ? 'on' : 'off');
+  _toggleCfg('toasts', 'cfg-toasts', !toastsOn);
   sv();
 }
-
 function toggleQuimi() {
   quimiOn = !quimiOn;
-  const el = document.getElementById('cfg-quimi');
-  el.textContent = quimiOn ? '✔ On' : '✘ Off';
-  el.className   = 'toggle-btn ' + (quimiOn ? 'on' : 'off');
+  _toggleCfg('quimi', 'cfg-quimi', !quimiOn);
   applyQuimiVisibility();
   sv();
 }
