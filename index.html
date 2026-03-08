@@ -978,6 +978,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       </div>
       <button class="sbtn" onclick="openHelp()">❓ Ayuda</button>
       <button class="sbtn" onclick="reopenSplash()">👋 Bienvenida</button>
+      <button class="sbtn" onclick="openUpd()">🆕 Actualizaciones</button>
       <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
       <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
 
@@ -1132,6 +1133,51 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
 
 <!-- ══ MODAL: Reiniciar ══ -->
+<!-- ══ MODAL: Actualizaciones ══ -->
+<div class="ov" id="ov-upd">
+  <div class="md" style="max-width:480px">
+    <h2>🆕 Novedades de QuimPath</h2>
+    <p class="sub" style="margin-bottom:14px">Últimas actualizaciones del programa:</p>
+    <div style="display:flex;flex-direction:column;gap:4px;max-height:360px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔓 Previas agregadas</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Evaluación Gestión Amb.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op I (T+L)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op II (T)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Aguas Residuales</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Residuos Sólidos</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de RRHH en Prod. Bienes y Serv.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Taller Encararé: Crear</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inic. Entorno de Prog. R para Ing.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 01</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 04</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Fisicoquímica 101</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Práctica de Administración Ing.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Herramientas de Electroquímica</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Métodos Estadísticos Reg. y Clas.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sist. Gestión de Calidad Lab.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Instrumentación Industrial</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Prevención Riesgos Lab.</span></div>
+
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">✅ Materias habilitadas (sin previas)</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Economía</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inglés Científico</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Epistemología</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Iniciación Prod. Audiovisual y Multimedia</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro a los Sistemas de Gestión</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sensibilización e Intercambio</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Rep. Gráfica Ind. de Procesos</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de Calidad</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Ciencias Biológicas 1</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Ciencia Tecnología y Sociedad</span></div>
+
+    </div>
+    <div class="ma" style="margin-top:14px">
+      <button class="bpr" onclick="closeUpd()" style="width:100%">¡Entendido! 👍</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="ov-r"><div class="md">
   <h2>⚠️ Reiniciar progreso</h2>
   <p class="sub">¿Estás seguro? Se borrará todo tu progreso guardado. Esta acción no se puede deshacer.</p>
@@ -1410,12 +1456,14 @@ const O1 = [
   { id: 'SISGESCAL', name: 'Sist. Gestión de Calidad Lab.',        cr: 10, fac: 'FQ',         grp: 'Técnicas' },
   { id: 'GESCAL',    name: 'Gestión de Calidad',                   cr: 6,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INGCIE',    name: 'Inglés Científico',                    cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
-  { id: 'TUTPAR',    name: 'Tutorías entre Pares',                 cr: 8,  fac: 'UdelaR',     grp: 'Complementarias' },
-  { id: 'TUTPARFQ',  name: 'Tutorías entre Pares (FQ)',            cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
+  { id: 'TUTPARMAT1',  name: 'Tutoría entre Pares - Matemática 01',      cr: 4,  fac: 'UdelaR', grp: 'Complementarias' },
   { id: 'EPI',       name: 'Epistemología',                        cr: 6,  fac: 'FQ',         grp: 'Complementarias' },
   { id: 'CIETECSOC', name: 'Ciencia Tecnología y Sociedad',        cr: 8,  fac: 'FING/DISI',  grp: 'Complementarias' },
   { id: 'REPGRAIND', name: 'Rep. Gráfica Ind. de Procesos',        cr: 4,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INTEVAGESA',name: 'Intro Evaluación Gestión Amb.',        cr: 8,  fac: 'FING/IMFIA', grp: 'Complementarias' },
+  { id: 'TRATAGUARES', name: 'Trat. y Val. Aguas Residuales',      cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
+  { id: 'GESRRHH',    name: 'Gestión de RRHH en Prod. Bienes y Serv.', cr: 8, fac: 'FING',    grp: 'Complementarias' },
+  { id: 'PRODAUDIOV', name: 'Iniciación Prod. Audiovisual y Multimedia', cr: 6, fac: 'FING',  grp: 'Complementarias' },
 ];
 
 const O2 = [
@@ -1424,8 +1472,8 @@ const O2 = [
   { id: 'METESTREG', name: 'Métodos Estadísticos Reg. y Clas.',    cr: 6,  fac: 'FING/IMERL', grp: 'Básicas' },
   { id: 'BIO1',      name: 'Biocatálisis 1',                       cr: 4,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'OPTICA',    name: 'Óptica',                               cr: 10, fac: 'FING/IF',    grp: 'Básicas' },
-  { id: 'QUIBIOINT', name: 'Química Bioinorgánica (T)',            cr: 6,  fac: 'FQ',         grp: 'Básicas' },
-  { id: 'QUIBIOINP', name: 'Química Bioinorgánica (P)',            cr: 8,  fac: 'FQ',         grp: 'Básicas' },
+  { id: 'QUIBIOINT', name: 'Química Bioinorgánica Op I (T+L)',      cr: 6,  fac: 'FQ',         grp: 'Básicas' },
+  { id: 'QUIBIOINP', name: 'Química Bioinorgánica Op II (T)',       cr: 8,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'QUIAMB',    name: 'Química Ambiental',                    cr: 8,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'SINORGTRE', name: 'Sint. Org. Transf. Enzimática',        cr: 4,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'DISPROELE', name: 'Diseño Proc. Electroquímicos',         cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
@@ -1434,10 +1482,7 @@ const O2 = [
   { id: 'H2FUEENE',  name: 'H2: Fuente de Energía',               cr: 6,  fac: 'FQ',         grp: 'Esp. Ing. Química' },
   { id: 'HIDVERPRO', name: 'Hidrógeno Verde: Prod. y Usos',        cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'BATAPLMOV', name: 'Baterías Aplic. Movilidad Eléct.',     cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
-  { id: 'TRATAGUARES', name: 'Trat. y Val. Aguas Residuales',           cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'TRATRESSOLID', name: 'Trat. y Val. Residuos Sólidos',          cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
-  { id: 'GESRRHH',    name: 'Gestión de RRHH en Prod. Bienes y Serv.', cr: 8,  fac: 'FING',       grp: 'Complementarias' },
-  { id: 'PRODAUDIOV', name: 'Iniciación Prod. Audiovisual y Multimedia',cr: 6,  fac: 'FING',       grp: 'Complementarias' },
   { id: 'TECSERIND2',name: 'Tec. y Serv. Industriales 2',          cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'FUNPROCEL', name: 'Fund. Prod. de Celulosa y Papel',      cr: 8,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'ENVPOLIND', name: 'Envases Poliméricos Ind. Alim.',       cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
@@ -1451,9 +1496,10 @@ const O2 = [
   { id: 'TEORES',    name: 'Teoría de Restricciones',              cr: 6,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'ECO',       name: 'Economía',                             cr: 7,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INTDISMON', name: 'Int. Diseño y Montaje de Procesos',    cr: 5,  fac: 'FING/DISI',  grp: 'Técnicas' },
-  { id: 'TUTPARTEP', name: 'Tutorías entre Pares (TEP)',           cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
+  { id: 'TUTPARMAT4',  name: 'Tutoría entre Pares - Matemática 04',      cr: 4,  fac: 'UdelaR', grp: 'Complementarias' },
+  { id: 'TUTPARFQ101', name: 'Tutoría entre Pares - Fisicoquímica 101',  cr: 4,  fac: 'FQ',     grp: 'Complementarias' },
   { id: 'SENEINT',   name: 'Sensibilización e Intercambio',        cr: 2,  fac: 'FQ',         grp: 'Complementarias' },
-  { id: 'INIRINGR',  name: 'Iniciación a R para Ingeniería',       cr: 3,  fac: 'FING/UEFI',  grp: 'Complementarias' },
+  { id: 'INIRINGR',  name: 'Inic. Entorno de Prog. R para Ing.',   cr: 3,  fac: 'FING/UEFI',  grp: 'Complementarias' },
 ];
 
 // ══════════ IDs DE OPTATIVAS ══════════
@@ -1470,6 +1516,8 @@ const CR_REQ = {
   'INTDISMON':{ cr: 200, type: 'total',   label: 'créditos totales' },
   'GESPROIND':{ cr: 270, type: 'total',   label: 'créditos totales' },
   'ADMGRAING':{ cr: 140, type: 'total',   label: 'créditos totales' },
+  'GESRRHH':  { cr: 270, type: 'total',   label: 'créditos totales' },
+  'INTPRERIEL':{ cr: 270, type: 'total',  label: 'créditos totales' },
 };
 
 const PV_2021 = {
@@ -1520,15 +1568,38 @@ const PV_2021 = {
   'BIODIEST':  { 'FISQUI103': A, 'QUIORG102I': A },
   'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
   'CONCAL':    { 'MAT05': A },
-  'INIRINGR':  { 'MAT03': A },
+  'INIRINGR':  { 'MAT03': E },
+  'TUTPARMAT1':  { 'MAT01': E },
+  'TUTPARMAT4':  { 'MAT04': E },
+  'TUTPARFQ101': { 'FISQUI101': E },
+  'PRAADING':  { 'ADMGRAING': A },
+  'INTSISGES': {},
+  'TRATRESSOLID':{ 'INTINGBIO': A, 'IRREAQUI1': A },
   'CIETECSOC': {},
   'QCASOLACUA':{ 'QUIINO1': A },
   'INTCIEBIO1':{},
+  'ECO':       {},
+  'INGCIE':    {},
+  'EPI':       {},
+  'PRODAUDIOV':{},
+  'INTEVAGESA':{ 'INTINGBIO': A },
+  'QUIBIOINT': { 'QUIINO1': A, 'LABQCAINO': A },
+  'QUIBIOINP': { 'QUIINO1': A },
+  'TRATAGUARES':{ 'INGAMB': A, 'FLU': A, 'INTINGBIO': A },
+  'GESRRHH':   {},  // habilitada por créditos (≥270 cr totales)
+  'TALENCCRE': {},  // habilitada por créditos (según plan)
   'COSING':   {},  // habilitada por créditos (≥100 cr totales)
   'INTDISMON':{},  // habilitada por créditos (≥200 cr totales)
   'GESPROIND': {},  // habilitada por créditos (≥270 cr totales)
   'ADMGRAING': {},  // habilitada por créditos (≥140 cr totales)
-  'INSIND':    { 'TERAPL': E, 'FENTRA': E, 'ELE1': E, 'MECAPL': A },
+  'METESTREG': { 'MAT03': A, 'MAT04': A, 'MAT05': A },
+  'HERELE':    { 'FISQUI104': A },
+  'INSIND':    { 'ELE1': E, 'TERAPL': E, 'FENTRA': E, 'MECAPL': A },
+  'INTPRERIEL':{},  // habilitada por créditos (≥270 cr totales)
+  'GESCAL':    {},
+  'SENEINT':   {},
+  'SISGESCAL': { 'QUIANA3': A, 'GESCAL': A },
+  'REPGRAIND': {},
   'ASEGCALANA':{ 'QUIANA3': A, 'MAT05': A },
   'PROTERBIO': [{ 'FISQUI103': A }, { 'FISQUI101': A }],
   'ENEAPLIND': { 'TRACALMA1': A, 'TERAPL': E },
@@ -1571,6 +1642,8 @@ const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI'
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
+  p['QUIBIOINT']  = { 'QUIINO1': A };
+  p['QUIBIOINP']  = { 'QUIINO1': A };
   return p;
 })();
 
@@ -1652,9 +1725,9 @@ const AM = {
   'INTPRERIEL':'Técnicas','ADMGRAING':'Técnicas','ELEGESLOG':'Técnicas','SISGESCAL':'Técnicas',
   'GESCAL':'Técnicas','GESPROIND':'Técnicas','REPGRAIND':'Complementarias','COSING':'Técnicas',
   'CONCAL':'Técnicas','INTSISGES':'Técnicas','PRAADING':'Técnicas','TEORES':'Técnicas',
-  'INGCIE':'Complementarias','TUTPAR':'Complementarias','TUTPARFQ':'Complementarias',
+  'INGCIE':'Complementarias','TUTPARMAT1':'Complementarias','TUTPARMAT4':'Complementarias','TUTPARFQ101':'Complementarias',
   'EPI':'Complementarias','ECO':'Complementarias','INTDISMON':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias',
-  'TUTPARTEP':'Complementarias','GESRRHH':'Complementarias','PRODAUDIOV':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
+  'GESRRHH':'Complementarias','PRODAUDIOV':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
 };
 // ══════════ PLAN 2021 — ESTRUCTURA DE ÁREAS ══════════
 // Q1 (190 cr mín) → Q11 Mat(70), Q12 Fís(30), Q13 Quím(80), Q14 Bio(5)
@@ -1667,26 +1740,26 @@ const AMIN_2021 = {
   'Troncales': 75, 'Avanzadas': 80,
   'Técnicas': 30, 'Complementarias': 5,
   // grupos padre (calculados dinámicamente, mínimos del plan)
-  'Q1 — Form. Básica': 190, 'Q2 — Form. Específica IQ': 190,
-  'Q3 — Técnicas No Esp.': 30, 'Q4 — Complementarias': 5,
+  'Formación Básica': 190, 'Formación Específica IQ': 190,
+  'Técnicas No Esp.': 30, 'Complementarias (grupo)': 5,
 };
 const AREAS_ORDER_2021 = [
-  'Q1 — Form. Básica',
+  'Formación Básica',
     'Matemática','Física','Química','Biología',
-  'Q2 — Form. Específica IQ',
+  'Formación Específica IQ',
     'Troncales','Avanzadas',
-  'Q3 — Técnicas No Esp.',
+  'Técnicas No Esp.',
     'Técnicas',
-  'Q4 — Complementarias',
+  'Complementarias (grupo)',
     'Complementarias',
 ];
 
 // Grupos padre 2021: qué áreas hijas los componen
 const GRUPO_PADRE_2021 = {
-  'Q1 — Form. Básica':       ['Matemática','Física','Química','Biología'],
-  'Q2 — Form. Específica IQ':['Troncales','Avanzadas'],
-  'Q3 — Técnicas No Esp.':   ['Técnicas'],
-  'Q4 — Complementarias':    ['Complementarias'],
+  'Formación Básica':       ['Matemática','Física','Química','Biología'],
+  'Formación Específica IQ':['Troncales','Avanzadas'],
+  'Técnicas No Esp.':       ['Técnicas'],
+  'Complementarias (grupo)':['Complementarias'],
 };
 
 // ══════════ PLAN 2000 — ESTRUCTURA DE ÁREAS ══════════
@@ -1871,6 +1944,24 @@ function cp(id) {
     const actual = req.type === 'basicas' ? crBasicas() : crTotal();
     if (actual < req.cr) return S.B;
   }
+  // TALENCCRE: créditos requeridos distintos según plan
+  if (id === 'TALENCCRE') {
+    const reqs = plan === '2021'
+      ? [{ cr: 24, type: 'ing_proc_qb' }, { cr: 190, type: 'basicas' }, { cr: 20, type: 'act_int' }, { cr: 65, type: 'ing_proc_fis' }]
+      : [{ cr: 65, type: 'ing_proc_fis' }, { cr: 20, type: 'act_int' }, { cr: 190, type: 'basicas' }, { cr: 24, type: 'ing_proc_qb' }];
+    const tot = crTotal(), bas = crBasicas();
+    const crIngProcFis = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Físicos') t+=gcr(s.id,gs(s.id)); return t; })();
+    const crIngProcQB  = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Q/B')     t+=gcr(s.id,gs(s.id)); return t; })();
+    const crActInt     = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Act. Integradoras')  t+=gcr(s.id,gs(s.id)); return t; })();
+    const check = (r) => {
+      if (r.type==='basicas')      return bas   >= r.cr;
+      if (r.type==='ing_proc_fis') return crIngProcFis >= r.cr;
+      if (r.type==='ing_proc_qb')  return crIngProcQB  >= r.cr;
+      if (r.type==='act_int')      return crActInt     >= r.cr;
+      return false;
+    };
+    return reqs.every(check) ? S.H : S.B;
+  }
   if (id === 'DINCONPRO') {
     // Chequear si al menos una opción tiene previas cumplidas
     const opts = Object.keys(PV_DIN);
@@ -2002,6 +2093,7 @@ function mkCard(s) {
       return;
     }
     if (gs(s.id) === S.B) {
+      if (OPT_IDS.has(s.id) && !PV_ACT[s.id] && !(s.id in CR_REQ) && s.id !== 'TALENCCRE') { toastWip(); return; }
       showPP(s.id); return;
     }
     hidePP();
@@ -2264,7 +2356,26 @@ function topoSort(arr) {
         }
     }
   }
-  return [...arr].sort((a, b) => (globalLevel[a.id] ?? 0) - (globalLevel[b.id] ?? 0));
+  // Materias con requisito de créditos: asignar nivel proporcional al umbral
+  // (más créditos requeridos = más tarde en la carrera = nivel más alto)
+  const maxLevel = Math.max(...Object.values(globalLevel), 0);
+  for (const id of allIds) {
+    if (id in CR_REQ) {
+      const cr = CR_REQ[id].cr;
+      // Escalar: 100cr→25%, 140cr→35%, 200cr→50%, 270cr→67% del total de créditos (~400)
+      globalLevel[id] = Math.round(maxLevel * cr / 400);
+    }
+  }
+  // TALENCCRE: requiere créditos avanzados, lo ponemos cerca del final
+  if (globalLevel['TALENCCRE'] !== undefined) globalLevel['TALENCCRE'] = Math.round(maxLevel * 0.7);
+
+  // Las materias sin previas definidas (en desarrollo) van al final
+  const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
+  return [...arr].sort((a, b) => {
+    const wa = isWip(a.id), wb = isWip(b.id);
+    if (wa !== wb) return wa ? 1 : -1;
+    return (globalLevel[a.id] ?? 0) - (globalLevel[b.id] ?? 0);
+  });
 }
 
 // ══════════ GRIDS ══════════
@@ -2377,7 +2488,23 @@ function showPP(id) {
   if (!p) { ov.classList.remove('op'); setModalOpen(false); return; }
   // Requisito de créditos (si aplica)
   let creditRow = '';
-  if (id in CR_REQ) {
+  if (id === 'TALENCCRE') {
+    const labels = {
+      ing_proc_fis: { cr: 65,  label: 'cr. Ing. de Procesos Físicos' },
+      ing_proc_qb:  { cr: 24,  label: 'cr. Ing. de Proc. Q/B' },
+      act_int:      { cr: 20,  label: 'cr. Act. Integradoras' },
+      basicas:      { cr: 190, label: 'cr. Materias Básicas' },
+    };
+    const crIngProcFis = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Físicos') t+=gcr(s.id,gs(s.id)); return t; })();
+    const crIngProcQB  = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Q/B')     t+=gcr(s.id,gs(s.id)); return t; })();
+    const crActInt     = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Act. Integradoras')  t+=gcr(s.id,gs(s.id)); return t; })();
+    const bas = crBasicas();
+    const actuals = { ing_proc_fis: crIngProcFis, ing_proc_qb: crIngProcQB, act_int: crActInt, basicas: bas };
+    for (const [type, { cr, label }] of Object.entries(labels)) {
+      const actual = actuals[type], ok = actual >= cr;
+      creditRow += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${cr} ${label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + cr}</span></div>`;
+    }
+  } else if (id in CR_REQ) {
     const req = CR_REQ[id];
     const actual = req.type === 'basicas' ? crBasicas() : crTotal();
     const ok = actual >= req.cr;
@@ -2592,6 +2719,28 @@ function toastWip() {
 }
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+
+// ══════════ ACTUALIZACIONES ══════════
+const UPD_VERSION = 1;
+function closeUpd() {
+  document.getElementById('ov-upd').classList.remove('op');
+  setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  try { localStorage.setItem('qp_upd_ver', UPD_VERSION); } catch(e) {}
+}
+function openUpd() {
+  cSB();
+  document.getElementById('ov-upd').classList.add('op');
+  setModalOpen(true);
+}
+function maybeShowUpd() {
+  try {
+    const seen = parseInt(localStorage.getItem('qp_upd_ver') || '0');
+    if (seen < UPD_VERSION) {
+      document.getElementById('ov-upd').classList.add('op');
+      setModalOpen(true);
+    }
+  } catch(e) {}
+}
 
 function rebuildAllGrids() {
   Object.keys(CE).forEach(k => delete CE[k]);
@@ -2837,6 +2986,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Escape') {
     const modals = [
+      ['ov-upd', closeUpd],
       ['ov-pp',  hidePP],
       ['ov-cfg', closeConfig],
       ['ov-help',closeHelp],
@@ -3069,7 +3219,7 @@ function init() {
   if (!plan) plan = '2021';
   applyPlan(plan);
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
-  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash();
+  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
   applyMascot();
   applyQuimiVisibility();
   quimiSetMood('idle');
