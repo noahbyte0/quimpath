@@ -569,6 +569,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .ft[data-mood="exonerada"] { border-right-color: var(--ac); }
 .ft[data-mood="aprobada"]  { border-right-color: var(--a2); }
 .ft[data-mood="cursando"]  { border-right-color: #f4a261; }
+.ft[data-mood="wip"]       { border-right-color: var(--tm); }
 
 .help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-left: 1px solid var(--bd); }
 .help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
@@ -906,7 +907,6 @@ body.light .sect-label { color: #4a5568; border-bottom-color: #c5cdd8; }
   }
   #fb-filters.open { display: flex; }
   .clear-btn   { flex-shrink: 0; }
-  #mob-reset-btn:hover     { background: #2a1515; }
 }
 
 @media (max-width: 400px) { .gd { grid-template-columns: 1fr 1fr; } }
@@ -1457,11 +1457,12 @@ const O1 = [
   { id: 'GESCAL',    name: 'Gestión de Calidad',                   cr: 6,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INGCIE',    name: 'Inglés Científico',                    cr: 4,  fac: 'FQ',         grp: 'Complementarias' },
   { id: 'TUTPARMAT1',  name: 'Tutoría entre Pares - Matemática 01',      cr: 4,  fac: 'UdelaR', grp: 'Complementarias' },
-  { id: 'EPI',       name: 'Epistemología',                        cr: 6,  fac: 'FQ',         grp: 'Complementarias' },
+  { id: 'EPI',       name: 'Epistemología',                        cr: 3,  fac: 'FQ',         grp: 'Complementarias' },
   { id: 'CIETECSOC', name: 'Ciencia Tecnología y Sociedad',        cr: 8,  fac: 'FING/DISI',  grp: 'Complementarias' },
   { id: 'REPGRAIND', name: 'Rep. Gráfica Ind. de Procesos',        cr: 4,  fac: 'FING/DISI',  grp: 'Técnicas' },
   { id: 'INTEVAGESA',name: 'Intro Evaluación Gestión Amb.',        cr: 8,  fac: 'FING/IMFIA', grp: 'Complementarias' },
   { id: 'TRATAGUARES', name: 'Trat. y Val. Aguas Residuales',      cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
+  { id: 'TRATRESSOLID', name: 'Trat. y Val. Residuos Sólidos',    cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'GESRRHH',    name: 'Gestión de RRHH en Prod. Bienes y Serv.', cr: 8, fac: 'FING',    grp: 'Complementarias' },
   { id: 'PRODAUDIOV', name: 'Iniciación Prod. Audiovisual y Multimedia', cr: 6, fac: 'FING',  grp: 'Complementarias' },
 ];
@@ -1472,8 +1473,8 @@ const O2 = [
   { id: 'METESTREG', name: 'Métodos Estadísticos Reg. y Clas.',    cr: 6,  fac: 'FING/IMERL', grp: 'Básicas' },
   { id: 'BIO1',      name: 'Biocatálisis 1',                       cr: 4,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'OPTICA',    name: 'Óptica',                               cr: 10, fac: 'FING/IF',    grp: 'Básicas' },
-  { id: 'QUIBIOINT', name: 'Química Bioinorgánica Op I (T+L)',      cr: 6,  fac: 'FQ',         grp: 'Básicas' },
-  { id: 'QUIBIOINP', name: 'Química Bioinorgánica Op II (T)',       cr: 8,  fac: 'FQ',         grp: 'Básicas' },
+  { id: 'QUIBIOINT', name: 'Química Bioinorgánica Op I (T+L)',      cr: 8,  fac: 'FQ',         grp: 'Básicas' },
+  { id: 'QUIBIOINP', name: 'Química Bioinorgánica Op II (T)',       cr: 6,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'QUIAMB',    name: 'Química Ambiental',                    cr: 8,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'SINORGTRE', name: 'Sint. Org. Transf. Enzimática',        cr: 4,  fac: 'FQ',         grp: 'Básicas' },
   { id: 'DISPROELE', name: 'Diseño Proc. Electroquímicos',         cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
@@ -1482,7 +1483,6 @@ const O2 = [
   { id: 'H2FUEENE',  name: 'H2: Fuente de Energía',               cr: 6,  fac: 'FQ',         grp: 'Esp. Ing. Química' },
   { id: 'HIDVERPRO', name: 'Hidrógeno Verde: Prod. y Usos',        cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'BATAPLMOV', name: 'Baterías Aplic. Movilidad Eléct.',     cr: 4,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
-  { id: 'TRATRESSOLID', name: 'Trat. y Val. Residuos Sólidos',          cr: 5,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'TECSERIND2',name: 'Tec. y Serv. Industriales 2',          cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'FUNPROCEL', name: 'Fund. Prod. de Celulosa y Papel',      cr: 8,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
   { id: 'ENVPOLIND', name: 'Envases Poliméricos Ind. Alim.',       cr: 6,  fac: 'FING/IIQ',   grp: 'Esp. Ing. Química' },
@@ -1655,8 +1655,8 @@ const SEMESTRES_2000 = [
   { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
   { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
   { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
-  { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','INTINGBIO','MECAPL'] },
-  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DINCONPRO','DISPROQUI'] },
+  { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
   { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
 ];
 
@@ -2859,7 +2859,7 @@ function switchHelpTab(tab) {
   });
 }
 
-function _toggleCfg(key, elId, onSide) {
+function _toggleCfg(elId, onSide) {
   const el = document.getElementById(elId);
   const val = !onSide;
   el.textContent = val ? '✔ On' : '✘ Off';
@@ -2869,17 +2869,17 @@ function _toggleCfg(key, elId, onSide) {
 function toggleSound() {
   soundOn = !soundOn;
   if (soundOn) sndAdvance();
-  _toggleCfg('sound', 'cfg-sound', !soundOn);
+  _toggleCfg('cfg-sound', !soundOn);
   sv();
 }
 function toggleToasts() {
   toastsOn = !toastsOn;
-  _toggleCfg('toasts', 'cfg-toasts', !toastsOn);
+  _toggleCfg('cfg-toasts', !toastsOn);
   sv();
 }
 function toggleQuimi() {
   quimiOn = !quimiOn;
-  _toggleCfg('quimi', 'cfg-quimi', !quimiOn);
+  _toggleCfg('cfg-quimi', !quimiOn);
   applyQuimiVisibility();
   sv();
 }
