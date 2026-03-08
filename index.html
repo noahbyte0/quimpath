@@ -1333,7 +1333,7 @@ function updateAuthUI(user) {
 const S   = { B: 0, H: 1, C: 2, A: 3, E: 4 };
 const SN  = ['bloqueada', 'habilitada', 'cursando', 'aprobada', 'exonerada'];
 const SL  = ['Bloqueada', 'Habilitada', 'Cursando', 'Aprobada', 'Exonerada'];
-const A   = S.A, E = S.E;
+const A   = S.A, E = S.E, C = S.C;
 const META = 450;
 const SK  = 'qp_v3';
 
@@ -1458,10 +1458,20 @@ const O2 = [
 
 // ══════════ IDs DE OPTATIVAS ══════════
 // Plan-dynamic variables (set by applyPlan)
-let OPT_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O2_ACT;
+let OPT_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O1_ACT, O2_ACT;
 let plan = null;
 
 // ══════════ PREVIAS ══════════
+// ══════════ REQUISITOS DE CRÉDITOS ══════════
+// Materias cuya habilitación depende de acumulación de créditos
+const CR_REQ = {
+  'PAS':      { cr: 190, type: 'basicas', label: 'créditos de Básicas exoneradas' },
+  'COSING':   { cr: 100, type: 'total',   label: 'créditos totales' },
+  'INTDISMON':{ cr: 200, type: 'total',   label: 'créditos totales' },
+  'GESPROIND':{ cr: 270, type: 'total',   label: 'créditos totales' },
+  'ADMGRAING':{ cr: 140, type: 'total',   label: 'créditos totales' },
+};
+
 const PV_2021 = {
   'MAT04':     { 'MAT01': A, 'MAT03': A },
   'MAT05':     { 'MAT01': A, 'MAT03': A, 'MAT04': A },
@@ -1514,6 +1524,10 @@ const PV_2021 = {
   'CIETECSOC': {},
   'QCASOLACUA':{ 'QUIINO1': A },
   'INTCIEBIO1':{},
+  'COSING':   {},  // habilitada por créditos (≥100 cr totales)
+  'INTDISMON':{},  // habilitada por créditos (≥200 cr totales)
+  'GESPROIND': {},  // habilitada por créditos (≥270 cr totales)
+  'ADMGRAING': {},  // habilitada por créditos (≥140 cr totales)
   'INSIND':    { 'TERAPL': E, 'FENTRA': E, 'ELE1': E, 'MECAPL': A },
   'ASEGCALANA':{ 'QUIANA3': A, 'MAT05': A },
   'PROTERBIO': [{ 'FISQUI103': A }, { 'FISQUI101': A }],
@@ -1523,7 +1537,7 @@ const PV_2021 = {
   'TECPOL':    { 'FIS101': A, 'QUIORGT101': A },
   'QUIANA3':   { 'QUIANA2': A, 'QUIANA1': A },
   'CATADS':    { 'QUIANA2': A, 'QUIORG103L': A, 'FISQUI103': A },
-  'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': E },
+  'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': C },
   'DINCONPRO': [{ 'TRACALMA1': E, 'COM1': A, 'IRREAQUI1': A }, { 'TRACALMA1': E, 'MAT06': A, 'IRREAQUI1': A }],
   'INTINGBIO': { 'QUIORG102I': E, 'QUIORGT101': A, 'FISQUI103': A },
   'INGBIOTRAE':[{ 'INTINGBIO': A, 'IRREAQUI1': A, 'TRACALMA2': A }, { 'INTINGBIO': A, 'IRREAQUI1': A }],
@@ -1587,6 +1601,7 @@ function applyPlan(p) {
       });
     // TSI2: sacar de optativas, agregar a obligatorias
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
+    O1_ACT      = O1.filter(s => s.id !== 'LABQCAINO');  // LABQCAINO ya está incluido en QUIINO1 (T+Lab)
     O2_ACT      = [...O2.filter(s => s.id !== 'TECSERIND2'),
                    { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
     PV_ACT      = PV_2000;
@@ -1594,13 +1609,14 @@ function applyPlan(p) {
     SEMESTRES_ACT = SEMESTRES_2000;
   } else {
     OB_ACT      = OB;
+    O1_ACT      = O1;
     O2_ACT      = O2;
     PV_ACT      = PV_2021;
     INIC_ACT    = INIC_2021;
     SEMESTRES_ACT = SEMESTRES_2021;
   }
-  OPT_IDS      = new Set([...O1.map(s => s.id), ...O2_ACT.map(s => s.id)]);
-  ALL          = [...OB_ACT, ...O1.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
+  OPT_IDS      = new Set([...O1_ACT.map(s => s.id), ...O2_ACT.map(s => s.id)]);
+  ALL          = [...OB_ACT, ...O1_ACT.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
   BI           = Object.fromEntries(ALL.map(s => [s.id, s]));
   buildSearchCache();
   AMIN_ACT     = p === '2000' ? AMIN_2000 : AMIN_2021;
@@ -1849,9 +1865,12 @@ function cp(id) {
   if (INIC_ACT.has(id)) return S.H;
   const p = PV_ACT[id];
   if (!p) return S.H;
-  if (id === 'PAS' && crBasicas() < 190) return S.B;
-  if (id === 'COSING'    && crTotal() < 100) return S.B;
-  if (id === 'INTDISMON' && crTotal() < 200) return S.B;
+  // Chequear requisito de créditos si aplica
+  if (id in CR_REQ) {
+    const req = CR_REQ[id];
+    const actual = req.type === 'basicas' ? crBasicas() : crTotal();
+    if (actual < req.cr) return S.B;
+  }
   if (id === 'DINCONPRO') {
     // Chequear si al menos una opción tiene previas cumplidas
     const opts = Object.keys(PV_DIN);
@@ -1983,12 +2002,7 @@ function mkCard(s) {
       return;
     }
     if (gs(s.id) === S.B) {
-      if (OPT_IDS.has(s.id)) {
-        if (PV_ACT[s.id]) { showPP(s.id); return; }
-        toastWip(); return;
-      }
-      showPP(s.id);
-      return;
+      showPP(s.id); return;
     }
     hidePP();
     const cur = gs(s.id);
@@ -1998,7 +2012,7 @@ function mkCard(s) {
 
   d.addEventListener('contextmenu', (e) => {
     e.preventDefault(); getAC();
-    if (OPT_IDS.has(s.id) && gs(s.id) <= S.H) { toastWip(); return; }
+    if (OPT_IDS.has(s.id) && gs(s.id) <= S.H && !(s.id in CR_REQ)) { toastWip(); return; }
     hidePP(); cycleBack(s.id);
   });
 
@@ -2291,7 +2305,7 @@ function bldGrds() {
     blt.p = true;
   }
   if (!blt.o1) {
-    topoSort(O1).forEach(s => document.getElementById('g-o1').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    topoSort(O1_ACT).forEach(s => document.getElementById('g-o1').appendChild(mkCard({ ...s, name: s.name + ' *' })));
     blt.o1 = true;
   }
   if (!blt.o2) {
@@ -2361,16 +2375,19 @@ function applyS() {
 function showPP(id) {
   const p = PV_ACT[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
   if (!p) { ov.classList.remove('op'); setModalOpen(false); return; }
+  // Requisito de créditos (si aplica)
+  let creditRow = '';
+  if (id in CR_REQ) {
+    const req = CR_REQ[id];
+    const actual = req.type === 'basicas' ? crBasicas() : crTotal();
+    const ok = actual >= req.cr;
+    creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
+  }
   // Encontrar el grupo más favorable (más previas cumplidas)
   const groups = Array.isArray(p) ? p : [p];
   let bestRows = '', bestMet = -1;
   for (const g of groups) {
     let rows = '', met = 0;
-    if (id === 'PAS') {
-      const cb = crBasicas(), ok = cb >= 190;
-      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">190 créditos de materias Básicas exoneradas</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : cb + '/190'}</span></div>`;
-      if (ok) met++;
-    }
     for (const [pid, ms] of Object.entries(g)) {
       const ok = gs(pid) >= ms;
       if (ok) met++;
@@ -2378,6 +2395,7 @@ function showPP(id) {
     }
     if (met > bestMet) { bestMet = met; bestRows = rows; }
   }
+  bestRows = creditRow + bestRows;
   modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${bestRows}`;
   ov.removeEventListener('click', ppOvClick);
   ov.classList.add('op'); setModalOpen(true);
