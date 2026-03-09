@@ -355,6 +355,7 @@ body {
   grid-column: 1/-1;
 }
 .sect-label:first-child { margin-top: 0; }
+.sect-label:empty { border-bottom-color: rgba(var(--bd-rgb, 100,100,100),.35); margin: 10px 0 4px; }
 
 /* ══════════ CARDS ══════════ */
 .card {
@@ -415,6 +416,8 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 }
 .pp-modal h3    { font-size: .9rem; font-weight: 700; margin-bottom: 4px; color: var(--tx); display: flex; justify-content: space-between; align-items: center; }
 .pp-modal .pp-sub { font-size: .68rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 12px; }
+.pp-opt-label { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--a2); font-family: 'Space Mono', monospace; margin-top: 10px; margin-bottom: 2px; padding-bottom: 3px; border-bottom: 1px solid var(--bd); }
+.pp-opt-label.met { color: var(--gn); border-bottom-color: rgba(63,185,80,.3); }
 .pp-close { background: none; border: none; color: var(--tm); cursor: pointer; font-size: 1rem; padding: 0 2px; line-height: 1; }
 .pi { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--bd); font-size: .72rem; gap: 8px; }
 .pi:last-child  { border-bottom: none; }
@@ -676,8 +679,10 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   padding: 24px;
 }
 #splash.on { display: flex; }
+
+/* Cartel 1: angosto, solo el centro */
 .splash-inner {
-  max-width: 900px;
+  max-width: 480px;
   width: 100%;
   background: var(--sf);
   border: 1px solid var(--bd);
@@ -688,26 +693,62 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   display: flex;
   overflow: hidden;
 }
-/* Mascot cols (left = quimpi, right = quimi) */
-.splash-mascot-col {
-  width: 170px;
-  min-width: 150px;
-  flex-shrink: 0;
+
+/* Cartel 2: ancho del centro fijo, mascotas se superponen por fuera */
+.splash-inner-2 {
+  position: relative;
+  width: 480px;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+  display: none;
+  overflow: visible;
+}
+.splash-inner-2.active { display: block; }
+
+.splash-content-col {
+  width: 480px;
+  padding: 28px 24px 22px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 24px 14px;
-  transition: all .3s;
-  cursor: pointer;
-  opacity: .45;
-  filter: saturate(.3);
 }
-.splash-mascot-col:hover { opacity: .65; filter: saturate(.6); }
-.splash-mascot-col.chosen { opacity: 1; filter: saturate(1); background: linear-gradient(160deg, rgba(42,157,143,.13), rgba(78,168,222,.07)); }
-.splash-mascot-col.left  { border-right: 1px solid var(--bd); }
-.splash-mascot-col.right { border-left:  1px solid var(--bd); }
+
+/* Mascotas: posicionadas absolutamente fuera del cartel central */
+.splash-mascot-col {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 170px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 24px 14px;
+  cursor: pointer;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s .05s, transform .5s cubic-bezier(.34,1.15,.64,1), filter .4s .05s;
+  filter: saturate(.3);
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+}
+.splash-mascot-col.left  {
+  right: calc(100% + 12px);
+  transform: translateX(60px);
+}
+.splash-mascot-col.right {
+  left: calc(100% + 12px);
+  transform: translateX(-60px);
+}
+.splash-mascot-col.sp-visible {
+  opacity: .45;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.splash-mascot-col.sp-visible:hover { opacity: .65; filter: saturate(.6); }
+.splash-mascot-col.sp-visible.chosen { opacity: 1; filter: saturate(1); background: linear-gradient(160deg, rgba(42,157,143,.13) 0%, var(--sf) 60%); }
+
+/* Elementos internos de las mascotas */
 .splash-mascot-col img { width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
 .splash-mascot-col img.mirror { transform: scaleX(-1); }
 .splash-mascot-col .smc-name { font-size: .9rem; font-weight: 800; color: var(--tx); }
@@ -729,8 +770,15 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .splash-mascot-col.chosen .smc-bubble { opacity: 1; transform: translateY(0); }
 .splash-mascot-col.left  .smc-badge { font-size: .58rem; color: var(--a2); font-family: 'Space Mono', monospace; font-weight: 700; }
 .splash-mascot-col.right .smc-badge { font-size: .58rem; color: var(--ac); font-family: 'Space Mono', monospace; font-weight: 700; }
-
-.splash-content-col { flex: 1; min-width: 0; padding: 28px 24px 22px; display: flex; flex-direction: column; }
+.splash-mascot-col.left  { border-right: none; }
+.splash-mascot-col.right { border-left:  none; }
+.splash-mascot-col.left.sp-visible  { border-right: 1px solid var(--bd); }
+.splash-mascot-col.right.sp-visible { border-left:  1px solid var(--bd); }
+/* Step indicator */
+.sp-step-ind { font-size: .58rem; font-family: 'Space Mono', monospace; color: var(--tm); text-align: center; margin-bottom: 14px; letter-spacing: .06em; }
+/* Step 1 layout */
+#sp-step1 { display: flex; flex-direction: column; flex: 1; }
+#sp-step2 { flex: 1; }
 .splash-logo { font-size: 2.8rem; text-align: center; margin-bottom: 6px; }
 .splash-title {
   font-size: 1.9rem; font-weight: 800; text-align: center;
@@ -948,7 +996,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <aside id="sb">
     <div class="sl">
       <h1>🔬 QuimPath</h1>
-      <p>Ing. Química</p>
+      <p>Ing. Química / <span id="ingreso-badge">FQ</span></p>
       <div id="plan-badge"></div>
     </div>
 
@@ -1034,7 +1082,32 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
 <!-- ══ SPLASH BIENVENIDA ══ -->
 <div id="splash">
-  <div class="splash-inner">
+
+  <!-- ── Cartel 1: Elegir Facultad ── -->
+  <div class="splash-inner" id="sp-panel-1">
+    <div class="splash-content-col">
+      <div class="splash-logo" style="font-size:1.5rem;text-align:center">🔬</div>
+      <div class="splash-title">QuimPath</div>
+      <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
+      <div id="sp-step1">
+        <div class="sp-step-ind">Paso 1 de 2</div>
+        <div class="splash-plan-sel" style="margin-bottom:0">
+          <div class="splash-plan-label">¿Por dónde ingresaste a la carrera?</div>
+          <div class="splash-plan-btns">
+            <button class="splash-plan-btn" id="sp-btn-fq"   onclick="selectSplashIngreso('fq')">👩🏻‍🔬 Fac. de Química</button>
+            <button class="splash-plan-btn" id="sp-btn-fing" onclick="selectSplashIngreso('fing')">👷🏻‍♀️ Fac. de Ingeniería</button>
+          </div>
+        </div>
+        <div class="splash-footer" style="margin-top:auto">
+          <span class="splash-hint">🚧 En desarrollo — reportá cualquier error para seguir mejorando</span>
+          <button class="bpr" id="sp-next-btn" onclick="splashNextStep()" style="padding:8px 22px;font-size:.85rem" disabled>Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Cartel 2: Elegir Plan (con mascotas) ── -->
+  <div class="splash-inner-2" id="sp-panel-2">
     <!-- Quimi — izquierda -->
     <div class="splash-mascot-col left" id="sp-col-quimi" onclick="selectSplashPlan('2021')">
       <span class="smc-badge">Plan 2021</span>
@@ -1047,31 +1120,34 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="splash-logo" style="font-size:1.5rem;text-align:center">🔬</div>
       <div class="splash-title">QuimPath</div>
       <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
-      <div class="splash-plan-sel">
-        <div class="splash-plan-label">¿Qué plan de estudios seguís?<br><span class="smc-hint" style="font-size:.6rem;opacity:.7">(también elige tu compañero/a)</span></div>
-        <div class="splash-plan-btns">
-          <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021<span class="smc-hint"> · Quimi 🐾</span></button>
-          <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000<span class="smc-hint"> · Quimπ 🐱</span></button>
+      <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
+        <div class="sp-step-ind">Paso 2 de 2</div>
+        <div class="splash-plan-sel">
+          <div class="splash-plan-label">¿Qué plan de estudios seguís?<br><span class="smc-hint" style="font-size:.6rem;opacity:.7">(también elige tu compañero/a)</span></div>
+          <div class="splash-plan-btns">
+            <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021<span class="smc-hint"> · Quimi 🐾</span></button>
+            <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000<span class="smc-hint"> · Quimπ 🐱</span></button>
+          </div>
         </div>
-      </div>
-      <div id="splash-cards-pc" style="margin-bottom:18px">
-        <div class="splash-instructions">
-          <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
-          <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic derecho</span> — Retroceder el estado de la materia</div></div>
-          <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Clic para ver qué previas te faltan</div></div>
-          <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Ajustá sonidos, notificaciones y plan desde el panel lateral</div></div>
+        <div id="splash-cards-pc" style="margin-bottom:18px">
+          <div class="splash-instructions">
+            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
+            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic derecho</span> — Retroceder el estado de la materia</div></div>
+            <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Clic para ver qué previas te faltan</div></div>
+            <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Ajustá sonidos, notificaciones y plan desde el panel lateral</div></div>
+          </div>
         </div>
-      </div>
-      <div id="splash-cards-mob" style="display:none;margin-bottom:18px">
-        <div class="splash-instructions">
-          <div class="si-row"><span class="si-ic">👆</span><div><span class="si-title">Tocá una materia</span> — Avanza el estado en loop hasta Exonerada</div></div>
-          <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Tocá para ver qué previas te faltan</div></div>
-          <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Abrí el menú lateral con ☰</div></div>
+        <div id="splash-cards-mob" style="display:none;margin-bottom:18px">
+          <div class="splash-instructions">
+            <div class="si-row"><span class="si-ic">👆</span><div><span class="si-title">Tocá una materia</span> — Avanza el estado en loop hasta Exonerada</div></div>
+            <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Tocá para ver qué previas te faltan</div></div>
+            <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Abrí el menú lateral con ☰</div></div>
+          </div>
         </div>
-      </div>
-      <div class="splash-footer">
-        <span class="splash-hint">❓ Podés volver a ver esto y más desde Ayuda</span>
-        <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
+        <div class="splash-footer" style="margin-top:auto">
+          <button class="bsc" onclick="splashPrevStep()" style="padding:8px 16px;font-size:.82rem">← Atrás</button>
+          <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
+        </div>
       </div>
     </div>
     <!-- Quimπ — derecha -->
@@ -1082,6 +1158,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="smc-bubble">¡Hola! Soy Quimπ 🐱<br>¡Es un gusto tenerte aquí!</div>
     </div>
   </div>
+
 </div>
 
 <!-- ══ QUIMI<!-- ══ QUIMI MASCOTA ══ -->
@@ -1137,9 +1214,22 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <div class="ov" id="ov-upd">
   <div class="md" style="max-width:480px">
     <h2>🆕 Novedades de QuimPath</h2>
-    <p class="sub" style="margin-bottom:14px">Últimas actualizaciones del programa:</p>
-    <div style="display:flex;flex-direction:column;gap:4px;max-height:360px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+    <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="toggle-btn on" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
+    </div>
 
+    <!-- v2 — nueva versión -->
+    <div id="upd-v2" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🏫 Ingreso por FING</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se agregaron Matemática y Física del ingreso por Facultad de Ingeniería. Para activarlo, andá a ⚙️ Configuración → <strong>Ingreso por</strong> → FING.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 ¿De qué es previa?</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el cartel de previas de cualquier materia ahora podés ver para qué otras materias te sirve como previa.</span></div>
+    </div>
+
+    <!-- v1 — historial -->
+    <div id="upd-v1" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔓 Previas agregadas</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Evaluación Gestión Amb.</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op I (T+L)</span></div>
@@ -1158,7 +1248,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sist. Gestión de Calidad Lab.</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Instrumentación Industrial</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Prevención Riesgos Lab.</span></div>
-
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">✅ Materias habilitadas (sin previas)</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Economía</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inglés Científico</span></div>
@@ -1170,8 +1259,8 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de Calidad</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Ciencias Biológicas 1</span></div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Ciencia Tecnología y Sociedad</span></div>
-
     </div>
+
     <div class="ma" style="margin-top:14px">
       <button class="bpr" onclick="closeUpd()" style="width:100%">¡Entendido! 👍</button>
     </div>
@@ -1231,6 +1320,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <h2>⚙️ Configuración</h2>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">📋 Plan de estudios</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-plan-2021" onclick="changePlan('2021')">2021</button><button class="toggle-btn" id="cfg-plan-2000" onclick="changePlan('2000')">2000</button></div></div>
+  <div class="cfg-row"><span class="cfg-row-label">🏫 Ingreso por</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-ing-fq" onclick="changeIngreso('fq')">FQ</button><button class="toggle-btn" id="cfg-ing-fing" onclick="changeIngreso('fing')">FING</button></div></div>
   <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mascota</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mascot-quimi" onclick="changeMascot('quimi')">Quimi</button><button class="toggle-btn" id="cfg-mascot-quimpi" onclick="changeMascot('quimpi')">Quimπ</button></div></div>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
@@ -1647,6 +1737,109 @@ const PV_2000 = (() => {
   return p;
 })();
 
+// ══════════ INGRESO POR FING — DATOS ══════════
+
+// IDs de las materias de Matemática y Física cursadas en FQ (se reemplazan si ingreso='fing')
+const FQ_MATFIS_IDS = new Set(['MAT01','MAT03','MAT04','MAT05','MAT06','MAT07','MAT08','MAT09','FIS101','FIS102','FIS103LAB']);
+
+// Cursos de Matemática y Física cursados en FING (reemplazan a los de FQ)
+const FING_MATFIS = [
+  { id: 'CALC1',   name: 'Cálculo en Una Variable',            cr: 13, fac: 'FING', grp: 'Básicas' },
+  { id: 'GEOALG1', name: 'Geometría y Álgebra Lineal 1',       cr: 9,  fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS1F',   name: 'Física 1',                           cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'CALC2',   name: 'Cálculo en Varias Variables',        cr: 13, fac: 'FING', grp: 'Básicas' },
+  { id: 'GEOALG2', name: 'Geometría y Álgebra Lineal 2',       cr: 9,  fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS2F',   name: 'Física 2',                           cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'CALVEC',  name: 'Cálculo Vectorial',                  cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'PROBEST', name: 'Probabilidad y Estadística',         cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS3F',   name: 'Física 3',                           cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'ECUADIF', name: 'Int. a las Ec. Diferenciales',       cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'FISEXPF', name: 'Física Experimental 1',              cr: 5,  fac: 'FING', grp: 'Básicas' },
+];
+
+// Previas internas entre los cursos de FING (Math/Física)
+const PV_FING_MATFIS = {
+  'CALC2':   { 'CALC1':   A },
+  'GEOALG2': { 'GEOALG1': A },
+  'FIS2F':   { 'FIS1F':   A, 'CALC1': A },
+  'CALVEC':  { 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'PROBEST': { 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'FIS3F':   [{ 'CALC1': A, 'FIS1F': A, 'FIS2F': A }, { 'CALC1': A, 'FIS1F': E }],
+  'ECUADIF': { 'GEOALG2': E, 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'FISEXPF': { 'FIS1F': E, 'FIS2F': A },
+};
+
+// Tabla de traducción: ID de FQ → ID equivalente en FING (null = se descarta)
+const FQ_TO_FING_PV = {
+  'MAT01':     'CALC1',
+  'MAT03':     'GEOALG1',
+  'MAT04':     'CALC2',
+  'MAT05':     'CALVEC',
+  'MAT06':     'PROBEST',
+  'MAT07':     'ECUADIF',
+  'MAT08':     'ECUADIF',  // MAT07+MAT08 → ECUADIF (se fusionan)
+  'MAT09':     null,       // sin equivalente
+  'FIS101':    'FIS1F',
+  'FIS102':    'FIS2F',
+  'FIS103LAB': 'FISEXPF',
+};
+
+// Construye la tabla de previas para ingreso FING a partir de la tabla FQ
+function buildPVFing(pvBase) {
+  const pv = { ...PV_FING_MATFIS };
+  const translate = obj => {
+    const r = {};
+    for (const [pid, lv] of Object.entries(obj)) {
+      if (!(pid in FQ_TO_FING_PV)) { r[pid] = lv; }
+      else if (FQ_TO_FING_PV[pid] !== null) { r[FQ_TO_FING_PV[pid]] = lv; }
+    }
+    return r;
+  };
+  for (const [id, reqs] of Object.entries(pvBase)) {
+    if (FQ_MATFIS_IDS.has(id)) continue; // estos cursos no existen en FING
+    pv[id] = Array.isArray(reqs) ? reqs.map(g => translate(g)) : translate(reqs);
+  }
+  return pv;
+}
+
+const PV_2021_FING = buildPVFing(PV_2021);
+
+const PV_2000_FING = (() => {
+  const p = buildPVFing(PV_2021);
+  p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
+  p['QUIBIOINT']  = { 'QUIINO1': A };
+  p['QUIBIOINP']  = { 'QUIINO1': A };
+  return p;
+})();
+
+const INIC_FING = new Set(['CALC1', 'GEOALG1', 'FIS1F', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
+
+const SEMESTRES_2021_FING = [
+  { label: '1er Semestre',  ids: ['CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
+  { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
+  { label: '5to Semestre',  ids: ['FISEXPF','QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
+  { label: '6to Semestre',  ids: ['FISQUI104','FLU','TRACALMA1','COM1'] },
+  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
+  { label: '8vo Semestre',  ids: ['IRREAQUI2','INGAMB','DINCONPRO','INTINGBIO','MECAPL'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
+  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
+];
+
+const SEMESTRES_2000_FING = [
+  { label: '1er Semestre',  ids: ['CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
+  { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
+  { label: '5to Semestre',  ids: ['FISEXPF','QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
+  { label: '6to Semestre',  ids: ['FISQUI104','FLU','TRACALMA1','COM1'] },
+  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
+  { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
+  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
+];
+
 const SEMESTRES_2000 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
@@ -1663,30 +1856,35 @@ const SEMESTRES_2000 = [
 // ══════════ APLICAR PLAN ══════════
 function applyPlan(p) {
   plan = p;
+  const isFing = ingreso === 'fing';
+
+  // Base obligatorias: si ingreso FING, reemplazar cursos FQ de Mat/Fis por los de FING
+  let baseOB = isFing
+    ? [...FING_MATFIS, ...OB.filter(s => !FQ_MATFIS_IDS.has(s.id))]
+    : OB;
+
   if (p === '2000') {
-    OB_ACT = OB
-      .filter(s => s.id !== 'INGAMB')  // en plan 2000 INGAMB es electiva, no obligatoria
+    OB_ACT = baseOB
+      .filter(s => s.id !== 'INGAMB')
       .map(s => {
         if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
         if (s.id === 'QUIORG102I') return { ...s, name: 'Química Orgánica 102', cr: 6 };
-
         return s;
       });
-    // TSI2: sacar de optativas, agregar a obligatorias
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
-    O1_ACT      = O1.filter(s => s.id !== 'LABQCAINO');  // LABQCAINO ya está incluido en QUIINO1 (T+Lab)
+    O1_ACT      = O1.filter(s => s.id !== 'LABQCAINO');
     O2_ACT      = [...O2.filter(s => s.id !== 'TECSERIND2'),
                    { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
-    PV_ACT      = PV_2000;
-    INIC_ACT    = INIC_2000;
-    SEMESTRES_ACT = SEMESTRES_2000;
+    PV_ACT      = isFing ? PV_2000_FING : PV_2000;
+    INIC_ACT    = isFing ? INIC_FING : INIC_2000;
+    SEMESTRES_ACT = isFing ? SEMESTRES_2000_FING : SEMESTRES_2000;
   } else {
-    OB_ACT      = OB;
+    OB_ACT      = baseOB;
     O1_ACT      = O1;
     O2_ACT      = O2;
-    PV_ACT      = PV_2021;
-    INIC_ACT    = INIC_2021;
-    SEMESTRES_ACT = SEMESTRES_2021;
+    PV_ACT      = isFing ? PV_2021_FING : PV_2021;
+    INIC_ACT    = isFing ? INIC_FING : INIC_2021;
+    SEMESTRES_ACT = isFing ? SEMESTRES_2021_FING : SEMESTRES_2021;
   }
   OPT_IDS      = new Set([...O1_ACT.map(s => s.id), ...O2_ACT.map(s => s.id)]);
   ALL          = [...OB_ACT, ...O1_ACT.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
@@ -1694,6 +1892,7 @@ function applyPlan(p) {
   buildSearchCache();
   AMIN_ACT     = p === '2000' ? AMIN_2000 : AMIN_2021;
   const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
+  const ib = document.getElementById('ingreso-badge'); if (ib) ib.textContent = ingreso === 'fing' ? 'FING' : 'FQ';
   AREAS_ORDER_ACT = p === '2000' ? AREAS_ORDER_2000 : AREAS_ORDER_2021;
   AM_ACT       = p === '2000' ? AM_2000 : AM;
   GRUPO_PADRE_ACT = p === '2000' ? GRUPO_PADRE_2000 : GRUPO_PADRE_2021;
@@ -1704,7 +1903,12 @@ const AM = {
   'MAT01':'Matemática','MAT03':'Matemática','MAT04':'Matemática','MAT05':'Matemática',
   'MAT06':'Matemática','MAT07':'Matemática','MAT08':'Matemática','MAT09':'Matemática',
   'FUNOPT':'Matemática','METNUM':'Matemática','APLALGLIN':'Matemática','METESTREG':'Matemática',
+  // FING math
+  'CALC1':'Matemática','GEOALG1':'Matemática','CALC2':'Matemática','GEOALG2':'Matemática',
+  'CALVEC':'Matemática','PROBEST':'Matemática','ECUADIF':'Matemática',
   'FIS101':'Física','FIS102':'Física','FIS103LAB':'Física','FISQUI101':'Física','OPTICA':'Física',
+  // FING physics
+  'FIS1F':'Física','FIS2F':'Física','FIS3F':'Física','FISEXPF':'Física',
   'QUIGEN1':'Química','PRERIELAB':'Química','QUIGEN2':'Química','QUIORGT101':'Química',
   'QUIANA1':'Química','QUIANA2':'Química','QUIORG102I':'Química','QUIINO1':'Química','QUIORG103L':'Química',
   'FISQUI103':'Química','FISQUI104':'Química','LABQCAINO':'Química','QUIANA3':'Química',
@@ -1854,15 +2058,16 @@ const TKF = [
 
 // ══════════ ESTADO GLOBAL ══════════
 let est = {}, bOp = null, dOp = null, aF = new Set(), areaF = '', qr = '', cel = false;
+let ingreso = 'fq';  // 'fq' | 'fing'
 let soundOn = true, toastsOn = !isMobile(), quimiOn = true, mascot = 'quimi';
 let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
 function sv() {
-  const data = { est, bOp, dOp, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan };
+  const data = { est, bOp, dOp, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, dOp, cel, soundOn, quimiOn, mascot, theme, plan });
+  window.fbSave?.({ est, bOp, dOp, cel, soundOn, quimiOn, mascot, theme, plan, ingreso });
 }
 
 function ld() {
@@ -1879,6 +2084,7 @@ function ld() {
     mascot  = d.mascot   || 'quimi';
     if (d.theme) theme = d.theme;
     if (d.plan)  plan  = d.plan;
+    if (d.ingreso) ingreso = d.ingreso;
   } catch (e) {}
 }
 
@@ -2069,8 +2275,7 @@ function mkCard(s) {
       e.preventDefault(); e.stopPropagation();
       if (s.id === 'DINCONPRO')  { dOp ? showPPDin() : openDin(); return; }
       if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
-      if (PV_ACT[s.id]) { showPP(s.id); return; }
-      return;
+      showPP(s.id); return;
     }
     if (s.id === 'DINCONPRO') {
       hidePP();
@@ -2339,8 +2544,7 @@ function setAreaF(a) {
 
 
 // ══════════ TOPOLOGICAL SORT ══════════
-function topoSort(arr) {
-  // Calcular nivel global de todas las materias (OB + optativas)
+function computeGlobalLevels() {
   const allIds = ALL.map(s => s.id);
   const globalLevel = {};
   for (const id of allIds) globalLevel[id] = 0;
@@ -2356,20 +2560,19 @@ function topoSort(arr) {
         }
     }
   }
-  // Materias con requisito de créditos: asignar nivel proporcional al umbral
-  // (más créditos requeridos = más tarde en la carrera = nivel más alto)
   const maxLevel = Math.max(...Object.values(globalLevel), 0);
   for (const id of allIds) {
     if (id in CR_REQ) {
       const cr = CR_REQ[id].cr;
-      // Escalar: 100cr→25%, 140cr→35%, 200cr→50%, 270cr→67% del total de créditos (~400)
       globalLevel[id] = Math.round(maxLevel * cr / 400);
     }
   }
-  // TALENCCRE: requiere créditos avanzados, lo ponemos cerca del final
   if (globalLevel['TALENCCRE'] !== undefined) globalLevel['TALENCCRE'] = Math.round(maxLevel * 0.7);
+  return { globalLevel, maxLevel };
+}
 
-  // Las materias sin previas definidas (en desarrollo) van al final
+function topoSort(arr) {
+  const { globalLevel } = computeGlobalLevels();
   const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
   return [...arr].sort((a, b) => {
     const wa = isWip(a.id), wb = isWip(b.id);
@@ -2395,7 +2598,29 @@ const SEMESTRES_2021 = [
 let blt = {};
 function bldGrds() {
   if (!blt.t) {
-    topoSort(ALL).forEach(s => document.getElementById('g-ta').appendChild(mkCard(s)));
+    const { globalLevel } = computeGlobalLevels();
+    const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
+    // Agrupar materias por nivel, con umbral de agrupación para no crear demasiados grupos
+    const BUCKET = 2; // niveles contiguos se fusionan en un grupo
+    const sorted = topoSort(ALL);
+    const byBucket = new Map();
+    for (const s of sorted) {
+      const lv = isWip(s.id) ? 9999 : (globalLevel[s.id] ?? 0);
+      const b  = lv === 9999 ? 9999 : Math.floor(lv / BUCKET);
+      if (!byBucket.has(b)) byBucket.set(b, []);
+      byBucket.get(b).push(s);
+    }
+    const container = document.getElementById('g-ta');
+    const buckets = [...byBucket.keys()].sort((a,b) => a-b);
+    buckets.forEach((b, i) => {
+      if (i > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'sect-label';
+        sep.textContent = b === 9999 ? '— Sin previas definidas —' : '';
+        container.appendChild(sep);
+      }
+      byBucket.get(b).forEach(s => container.appendChild(mkCard(s)));
+    });
     blt.t = true;
   }
   if (!blt.p) {
@@ -2483,9 +2708,11 @@ function applyS() {
 }
 
 // ══════════ MODAL PREVIAS ══════════
-function showPP(id) {
-  const p = PV_ACT[id], ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
-  if (!p) { ov.classList.remove('op'); setModalOpen(false); return; }
+let _ppCurrentId = null;
+let _ppMode = 'req'; // 'req' | 'rev'
+
+function buildPPReqRows(id) {
+  const p = PV_ACT[id];
   // Requisito de créditos (si aplica)
   let creditRow = '';
   if (id === 'TALENCCRE') {
@@ -2510,20 +2737,69 @@ function showPP(id) {
     const ok = actual >= req.cr;
     creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
   }
-  // Encontrar el grupo más favorable (más previas cumplidas)
+  if (!p) return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
   const groups = Array.isArray(p) ? p : [p];
-  let bestRows = '', bestMet = -1;
-  for (const g of groups) {
-    let rows = '', met = 0;
-    for (const [pid, ms] of Object.entries(g)) {
+  let allRows = '';
+  if (groups.length === 1) {
+    for (const [pid, ms] of Object.entries(groups[0])) {
       const ok = gs(pid) >= ms;
-      if (ok) met++;
-      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+      allRows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
     }
-    if (met > bestMet) { bestMet = met; bestRows = rows; }
+  } else {
+    groups.forEach((g, i) => {
+      const allMet = Object.entries(g).every(([pid, ms]) => gs(pid) >= ms);
+      allRows += `<div class="pp-opt-label${allMet ? ' met' : ''}">Opción ${i + 1}${allMet ? ' ✓' : ''}</div>`;
+      for (const [pid, ms] of Object.entries(g)) {
+        const ok = gs(pid) >= ms;
+        allRows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+      }
+    });
   }
-  bestRows = creditRow + bestRows;
-  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BI[id]?.name || id}</div>${bestRows}`;
+  return creditRow + allRows;
+}
+
+function buildPPRevRows(id) {
+  // Buscar todas las materias para las que `id` es previa
+  const results = [];
+  for (const s of ALL) {
+    const p = PV_ACT[s.id];
+    if (!p) continue;
+    const groups = Array.isArray(p) ? p : [p];
+    let found = false;
+    for (const g of groups) { if (id in g) { found = true; break; } }
+    if (found) results.push(s);
+  }
+  if (results.length === 0) return '<div class="pi"><span class="pn" style="color:var(--tm)">No es previa de ninguna materia.</span></div>';
+  return results.map(s => {
+    const st = gs(s.id);
+    return `<div class="pi${st >= S.H ? ' met' : ''}"><span class="pn">${s.name}</span><span class="pr ${SN[st]}">${SL[st]}</span></div>`;
+  }).join('');
+}
+
+function renderPPModal(id) {
+  const modal = document.getElementById('pp-modal');
+  const isReq = _ppMode === 'req';
+  const rows = isReq ? buildPPReqRows(id) : buildPPRevRows(id);
+  modal.innerHTML = `
+    <h3>🔒 Previas <button class="pp-close" onclick="hidePP()">✕</button></h3>
+    <div class="pp-sub">${BI[id]?.name || id}</div>
+    <div style="display:flex;gap:5px;margin-bottom:8px">
+      <button class="toggle-btn ${isReq ? 'on' : 'off'}" style="flex:1;font-size:.65rem;padding:4px" onclick="switchPPMode('req')">Previas requeridas</button>
+      <button class="toggle-btn ${!isReq ? 'on' : 'off'}" style="flex:1;font-size:.65rem;padding:4px" onclick="switchPPMode('rev')">¿De qué es previa?</button>
+    </div>
+    ${rows}`;
+}
+
+function switchPPMode(mode) {
+  _ppMode = mode;
+  if (_ppCurrentId) renderPPModal(_ppCurrentId);
+}
+
+function showPP(id) {
+  const ov = document.getElementById('ov-pp');
+  _ppCurrentId = id;
+  _ppMode = PV_ACT[id] ? 'req' : 'rev';
+  renderPPModal(id);
   ov.removeEventListener('click', ppOvClick);
   ov.classList.add('op'); setModalOpen(true);
   ov.addEventListener('click', ppOvClick);
@@ -2721,7 +2997,13 @@ function openReset()  { document.getElementById('ov-r').classList.add('op'); set
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 // ══════════ ACTUALIZACIONES ══════════
-const UPD_VERSION = 1;
+const UPD_VERSION = 2;
+function switchUpdTab(tab) {
+  ['v1','v2'].forEach(t => {
+    document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
+    document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
+  });
+}
 function closeUpd() {
   document.getElementById('ov-upd').classList.remove('op');
   setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
@@ -2839,6 +3121,7 @@ function openConfig() {
     document.getElementById(id).className   = 'toggle-btn ' + (on ? 'on' : 'off');
   });
   updateCfgPlanBtns();
+  updateCfgIngresoBtns();
   updateCfgMascotBtns();
   document.getElementById('ov-cfg').classList.add('op'); setModalOpen(true);
 }
@@ -3029,6 +3312,7 @@ window._applyCloudData = function (d) {
   mascot  = d.mascot  || mascot;
   if (d.theme) theme = d.theme;
   if (d.plan && d.plan !== plan) { plan = d.plan; applyPlan(plan); rebuildAllGrids(); }
+  if (d.ingreso && d.ingreso !== ingreso) { ingreso = d.ingreso; applyPlan(plan); rebuildAllGrids(); }
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
   rc(); rAll(); upCr(); applyTheme(); applyMascot(); applyQuimiVisibility();
   try {
@@ -3038,21 +3322,66 @@ window._applyCloudData = function (d) {
 };
 
 // ══════════ SPLASH ══════════
-let splashPlan = null, splashMascot = null;
+let splashPlan = null, splashMascot = null, splashIngreso = null;
+let _splashStep = 1;
+
+function _setSplashStep(step) {
+  _splashStep = step;
+  const p1 = document.getElementById('sp-panel-1');
+  const p2 = document.getElementById('sp-panel-2');
+  const colQ  = document.getElementById('sp-col-quimi');
+  const colQP = document.getElementById('sp-col-quimpi');
+  if (step === 1) {
+    p1.style.display = 'flex';
+    p2.classList.remove('active');
+    colQ .classList.remove('sp-visible');
+    colQP.classList.remove('sp-visible');
+  } else {
+    p1.style.display = 'none';
+    p2.classList.add('active');
+    // Las mascotas se animan desde los lados
+    requestAnimationFrame(() => {
+      colQ .classList.add('sp-visible');
+      colQP.classList.add('sp-visible');
+    });
+  }
+}
+
+function splashNextStep() {
+  if (!splashIngreso) return;
+  _setSplashStep(2);
+}
+
+function splashPrevStep() {
+  _setSplashStep(1);
+}
+
+function selectSplashIngreso(i) {
+  splashIngreso = i;
+  ['fq','fing'].forEach(v => {
+    const btn = document.getElementById('sp-btn-' + v);
+    if (btn) btn.classList.toggle('selected', v === i);
+  });
+  const nb = document.getElementById('sp-next-btn');
+  if (nb) nb.disabled = false;
+}
+
 function selectSplashPlan(p) {
-  splashPlan  = p;
+  splashPlan   = p;
   splashMascot = p === '2021' ? 'quimi' : 'quimpi';
-  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + p));
-  // Highlight mascot cols
+  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-2"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + p));
   document.getElementById('sp-col-quimi') .classList.toggle('chosen', p === '2021');
   document.getElementById('sp-col-quimpi').classList.toggle('chosen', p === '2000');
   document.getElementById('splash-start-btn').disabled = false;
 }
+
 function closeSplash() {
-  if (!splashPlan) return;
+  if (!splashPlan || !splashIngreso) return;
   const isNewMascot = splashMascot !== mascot;
-  if (splashPlan !== plan) {
+  const changed = splashPlan !== plan || splashIngreso !== ingreso;
+  if (changed) {
     est = {}; bOp = null; cel = false;
+    ingreso = splashIngreso;
     applyPlan(splashPlan);
     rebuildAllGrids();
     rc(); rAll(); upCr();
@@ -3068,10 +3397,18 @@ function closeSplash() {
     setTimeout(() => quimiSay('¡Hola! Soy Quimi, tu compañero de carrera 🐾', 'happy', 3500), 600);
   }
 }
+
 function reopenSplash() {
-  splashPlan   = plan;
-  splashMascot = mascot;
-  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
+  splashPlan    = plan;
+  splashMascot  = mascot;
+  splashIngreso = ingreso;
+  // Ir directo al paso 2 con todo preseleccionado
+  _setSplashStep(2);
+  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-2"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
+  ['fq','fing'].forEach(v => {
+    const btn = document.getElementById('sp-btn-' + v);
+    if (btn) btn.classList.toggle('selected', v === ingreso);
+  });
   document.getElementById('sp-col-quimi') ?.classList.toggle('chosen', mascot === 'quimi');
   document.getElementById('sp-col-quimpi')?.classList.toggle('chosen', mascot === 'quimpi');
   document.getElementById('splash-start-btn').disabled = false;
@@ -3081,9 +3418,13 @@ function reopenSplash() {
   document.getElementById('splash').classList.add('on'); setModalOpen(true);
   cSB();
 }
+
 function maybeShowSplash() {
   try {
     if (!localStorage.getItem('qp_welcomed')) {
+      splashPlan    = null;
+      splashIngreso = null;
+      _setSplashStep(1);
       const mob = isMobile();
       document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
       document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
@@ -3119,6 +3460,20 @@ function updateCfgPlanBtns() {
   ['2021','2000'].forEach(p => {
     const btn = document.getElementById('cfg-plan-' + p);
     if (btn) btn.className = 'toggle-btn ' + (plan === p ? 'on' : 'off');
+  });
+}
+function changeIngreso(i) {
+  if (i === ingreso) return;
+  ingreso = i;
+  applyPlan(plan);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  updateCfgIngresoBtns();
+}
+function updateCfgIngresoBtns() {
+  ['fq','fing'].forEach(i => {
+    const btn = document.getElementById('cfg-ing-' + i);
+    if (btn) btn.className = 'toggle-btn ' + (ingreso === i ? 'on' : 'off');
   });
 }
 
@@ -3190,7 +3545,7 @@ const QUIMI_MSGS = [
   '¡El café y yo te bancamos! ☕',
   '¡Cada crédito cuenta! ⚖️',
   '¡No te rindas, campeón! 🏆',
-  '¿Perdido? El botón ❓ de arriba tiene todo lo que necesitás saber 😉',
+  '¿Perdido? El botón ❓ del panel lateral tiene todo lo que necesitás saber 😉',
   '¿Encontraste algo raro? ¡Avisame en "Reportar error" y lo arreglamos! 🐛',
 ];
 const QUIMPI_MSGS = [
@@ -3206,7 +3561,7 @@ const QUIMPI_MSGS = [
   'Estoy segura que serás ingeniero/a algún día 🐱',
   'Lo sé, vas a llegar. Confío en vos 🌟',
   'Tengo fe en que este semestre es el tuyo 🐱',
-  '¿Dudas? El botón ❓ de arriba tiene toda la ayuda que necesitás 😸',
+  '¿Dudas? El botón ❓ del panel lateral tiene toda la ayuda que necesitás 😸',
   '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
 ];
 document.getElementById('quimi').addEventListener('click', () => {
@@ -3217,6 +3572,7 @@ document.getElementById('quimi').addEventListener('click', () => {
 function init() {
   ld();
   if (!plan) plan = '2021';
+  if (!ingreso) ingreso = 'fq';
   applyPlan(plan);
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
   rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
