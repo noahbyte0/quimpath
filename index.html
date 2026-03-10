@@ -828,7 +828,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   margin-bottom: 4px;
 }
-.splash-sub { text-align: center; font-size: .72rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 22px; }
+.splash-sub { text-align: center; font-size: .72rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 10px; }
 .splash-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
 .splash-card { background: var(--sf2); border: 1px solid var(--bd); border-radius: 10px; padding: 12px 11px; }
 .splash-card .sc-icon  { font-size: 1.3rem; margin-bottom: 5px; display: block; }
@@ -836,7 +836,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .splash-card .sc-desc  { font-size: .63rem; color: var(--tm); font-family: 'Space Mono', monospace; line-height: 1.5; }
 .splash-footer {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  border-top: 1px solid var(--bd); padding-top: 16px;
+  padding-top: 16px;
 }
 .splash-hint { font-size: .58rem; color: var(--tm); font-family: 'Space Mono', monospace; }
 .splash-instructions { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--bd); border-radius: 10px; overflow: hidden; }
@@ -850,6 +850,8 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .splash-plan-btn { flex: 1; padding: 11px; border-radius: 8px; border: 2px solid var(--bd); background: var(--sf2); color: var(--tm); font-family: 'Syne', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer; transition: all .2s; }
 .splash-plan-btn.selected { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--tx); }
 #splash-start-btn:disabled { opacity: .4; cursor: not-allowed; }
+#sp-next-btn:disabled      { opacity: .4; cursor: not-allowed; }
+#sp-mi-next-btn:disabled   { opacity: .4; cursor: not-allowed; }
 @media (max-width: 700px) {
   .splash-inner { flex-direction: column; max-height: 95dvh; overflow-y: auto; }
   .splash-mascot-col { display: none; }
@@ -1068,7 +1070,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         <button class="sbtn" id="auth-btn" onclick="window.fbSignIn?.()">☁️ Iniciar sesión con Google</button>
       </div>
       <button class="sbtn" onclick="openHelp()">❓ Ayuda</button>
-      <button class="sbtn" onclick="reopenSplash()">👋 Bienvenida</button>
       <button class="sbtn" onclick="openUpd()">🆕 Actualizaciones</button>
       <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
       <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
@@ -1142,8 +1143,8 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
           </div>
         </div>
         <div class="splash-footer" style="margin-top:auto">
-          <span class="splash-hint">🚧 En desarrollo — reportá cualquier error para seguir mejorando</span>
-          <button class="bpr" id="sp-next-btn" onclick="splashNextStep()" style="padding:8px 22px;font-size:.85rem" disabled>Siguiente →</button>
+          <span class="splash-hint" style="align-self:flex-start">🚧 En desarrollo — reportá cualquier error</span>
+          <button class="bpr" id="sp-next-btn" onclick="splashNextStep()" style="padding:8px 28px;font-size:.85rem;white-space:nowrap" disabled>Siguiente →</button>
         </div>
       </div>
       <!-- Paso 1.5: Matemática Inicial (solo FING) -->
@@ -3449,7 +3450,7 @@ function _setSplashStep(step) {
     s1.style.display = 'flex';
     sMI.style.display = 'none';
     p2.classList.add('active');
-    if (ind2) ind2.textContent = splashIngreso === 'fing' ? 'Paso 3 de 3' : 'Paso 2 de 2';
+    if (ind2) ind2.textContent = 'Paso 2 de 2';
     requestAnimationFrame(() => {
       colQ .classList.add('sp-visible');
       colQP.classList.add('sp-visible');
@@ -3526,34 +3527,6 @@ function closeSplash() {
   }
 }
 
-function reopenSplash() {
-  splashPlan    = plan;
-  splashMascot  = mascot;
-  splashIngreso = ingreso;
-  splashMatIni  = matIni;
-  // Ir directo al paso 2 con todo preseleccionado
-  _setSplashStep(2);
-  document.querySelectorAll('.splash-plan-btn[id^="sp-btn-2"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
-  ['fq','fing'].forEach(v => {
-    const btn = document.getElementById('sp-btn-' + v);
-    if (btn) btn.classList.toggle('selected', v === ingreso);
-  });
-  if (matIni !== null) {
-    document.getElementById('sp-btn-mi-si')?.classList.toggle('selected', matIni === true);
-    document.getElementById('sp-btn-mi-no')?.classList.toggle('selected', matIni === false);
-    const nb = document.getElementById('sp-mi-next-btn');
-    if (nb) nb.disabled = false;
-  }
-  document.getElementById('sp-col-quimi') ?.classList.toggle('chosen', mascot === 'quimi');
-  document.getElementById('sp-col-quimpi')?.classList.toggle('chosen', mascot === 'quimpi');
-  document.getElementById('splash-start-btn').disabled = false;
-  const mob = isMobile();
-  document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
-  document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
-  document.getElementById('splash').classList.add('on'); setModalOpen(true);
-  cSB();
-}
-
 function maybeShowSplash() {
   try {
     if (!localStorage.getItem('qp_welcomed')) {
@@ -3601,6 +3574,7 @@ function changeIngreso(i) {
   if (i === ingreso) return;
   ingreso = i;
   if (i === 'fq') matIni = null;
+  if (i === 'fing' && matIni === null) matIni = false;
   applyPlan(plan);
   rebuildAllGrids();
   rc(); rAll(); upCr(); sv();
