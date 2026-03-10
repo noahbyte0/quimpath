@@ -2832,7 +2832,8 @@ function buildPPReqRows(id) {
     const ok = actual >= req.cr;
     creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
   }
-  if (!p) return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
+  if (!p || (typeof p === 'object' && !Array.isArray(p) && Object.keys(p).length === 0))
+    return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
   const groups = Array.isArray(p) ? p : [p];
   let allRows = '';
   if (groups.length === 1) {
