@@ -365,6 +365,9 @@ body {
   cursor: pointer;
   transition: all .18s cubic-bezier(.4,0,.2,1);
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
 }
 .card[data-st="bloqueada"]  { background: var(--c-bl); }
 .card[data-st="habilitada"] { background: var(--c-ha); border-color: rgba(255,255,255,0.18); border-width: 1.5px; }
@@ -373,15 +376,29 @@ body {
 .card[data-st="exonerada"]  { background: var(--c-ex); border-color: #1a6b5a; }
 .card.hd { display: none; }
 
-.ci { font-size: .78rem; margin-bottom: 5px; display: block; line-height: 1; }
-.card[data-st="bloqueada"]  .ci::before { content: '🔒'; }
-.card[data-st="habilitada"] .ci::before { content: ''; }
-.card[data-st="cursando"]   .ci::before { content: '📖'; }
-.card[data-st="aprobada"]   .ci::before { content: '✅'; }
-.card[data-st="exonerada"]  .ci::before { content: '🏆'; }
-body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
+/* Fila superior: emoji + badge */
+.ci {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 7px;
+}
+.ci-emoji { font-size: .82rem; line-height: 1; flex-shrink: 0; }
+.card[data-st="bloqueada"]  .ci-emoji::before { content: '🔒'; }
+.card[data-st="habilitada"] .ci-emoji::before { content: ''; }
+.card[data-st="cursando"]   .ci-emoji::before { content: '📖'; }
+.card[data-st="aprobada"]   .ci-emoji::before { content: '✅'; }
+.card[data-st="exonerada"]  .ci-emoji::before { content: '🏆'; }
+body.light .ci-emoji { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 
-.cn { font-size: .75rem; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+.cbg { font-size: .54rem; font-weight: 700; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+.card[data-st="bloqueada"]  .cbg { color: #484f58; }
+.card[data-st="habilitada"] .cbg { color: #9ea7b5; }
+.card[data-st="cursando"]   .cbg { color: #e05252; }
+.card[data-st="aprobada"]   .cbg { color: #4ea8de; }
+.card[data-st="exonerada"]  .cbg { color: #2a9d8f; }
+
+.cn { font-size: .75rem; font-weight: 700; line-height: 1.3; margin-bottom: 6px; flex: 1; }
 .card[data-st="bloqueada"]                            .cn { color: var(--t-bl); }
 .card[data-st="habilitada"] .cn,
 .card[data-st="cursando"]   .cn,
@@ -392,13 +409,38 @@ body.light .ci { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
 .cc  { font-family: 'Space Mono', monospace; font-size: .68rem; color: #c8d0d8; }
 .card[data-st="bloqueada"] .cc,
 .card[data-st="bloqueada"] .cf { color: #484f58; }
-.cbg { font-size: .54rem; font-weight: 700; padding: 1px 6px; border-radius: 100px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
-.card[data-st="bloqueada"]  .cbg { background: #060a0e; color: #484f58; }
-.card[data-st="habilitada"] .cbg { background: #2a2f38; color: #9ea7b5; }
-.card[data-st="cursando"]   .cbg { background: #1a0a0a; color: #e05252; }
-.card[data-st="aprobada"]   .cbg { background: #06101c; color: #4ea8de; }
-.card[data-st="exonerada"]  .cbg { background: #040e0d; color: #2a9d8f; }
-.cf  { font-size: .53rem; font-family: 'Space Mono', monospace; color: #c8d0d8; margin-top: 3px; }
+
+/* Fila inferior: facultad + botón previas */
+.cf  { font-size: .53rem; font-family: 'Space Mono', monospace; color: #c8d0d8; }
+.cf-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+.pp-peek-btn {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  font-family: 'Syne', sans-serif;
+  font-size: .6rem;
+  font-weight: 600;
+  color: var(--tm);
+  cursor: pointer;
+  padding: 3px 7px;
+  transition: color .15s, border-color .15s, background .15s;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.pp-peek-btn::before { content: '🔍'; font-size: .52rem; }
+.pp-peek-btn:hover { color: var(--tx); border-color: var(--tm); background: rgba(255,255,255,.05); }
+.card[data-st="habilitada"] .pp-peek-btn,
+.card[data-st="cursando"]   .pp-peek-btn,
+.card[data-st="aprobada"]   .pp-peek-btn,
+.card[data-st="exonerada"]  .pp-peek-btn { display: inline-flex; }
+.card[data-st="bloqueada"]  .pp-peek-btn { display: none; }
 
 /* ══════════ MODAL PREVIAS ══════════ */
 #ov-pp { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 700; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
@@ -893,8 +935,7 @@ body.light #quimi-bubble     { background: #1a2744; border-color: #2d3d6b; color
 body.light #quimi-bubble::after { background: #1a2744; border-color: #2d3d6b; }
 body.light .fb-toggle { color: #1a202c; border-color: #a0abb5; }
 body.light .card[data-st="bloqueada"]  { background: #b0bac5; border-color: #a0abb5; }
-body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }
-body.light .card[data-st="bloqueada"]  .cn,
+body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }body.light .card[data-st="bloqueada"]  .cn,
 body.light .card[data-st="bloqueada"]  .cc,
 body.light .card[data-st="bloqueada"]  .cf  { color: #4a5568; }
 body.light .card[data-st="habilitada"] .cn,
@@ -909,6 +950,8 @@ body.light .card[data-st="aprobada"]   .cc,
 body.light .card[data-st="aprobada"]   .cf,
 body.light .card[data-st="exonerada"]  .cc,
 body.light .card[data-st="exonerada"]  .cf  { color: #1a202c; }
+body.light .pp-peek-btn              { color: #4a5568; border-color: #1a202c; }
+body.light .pp-peek-btn:hover        { color: #000; background: rgba(0,0,0,.08); border-color: #000; }
 body.light .sect-label { color: #4a5568; border-bottom-color: #c5cdd8; }
 
 /* ══════════ MOBILE ══════════ */
@@ -1090,7 +1133,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="splash-title">QuimPath</div>
       <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
       <div id="sp-step1">
-        <div class="sp-step-ind">Paso 1 de 2</div>
+        <div class="sp-step-ind" id="sp-step-ind-1">Paso 1 de 2</div>
         <div class="splash-plan-sel" style="margin-bottom:0">
           <div class="splash-plan-label">¿Por dónde ingresaste a la carrera?</div>
           <div class="splash-plan-btns">
@@ -1101,6 +1144,21 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         <div class="splash-footer" style="margin-top:auto">
           <span class="splash-hint">🚧 En desarrollo — reportá cualquier error para seguir mejorando</span>
           <button class="bpr" id="sp-next-btn" onclick="splashNextStep()" style="padding:8px 22px;font-size:.85rem" disabled>Siguiente →</button>
+        </div>
+      </div>
+      <!-- Paso 1.5: Matemática Inicial (solo FING) -->
+      <div id="sp-step-mi" style="display:none;flex-direction:column;flex:1">
+        <div class="sp-step-ind">Paso 1½ · Solo para FING</div>
+        <div class="splash-plan-sel" style="margin-bottom:0">
+          <div class="splash-plan-label">¿Cursaste Matemática Inicial?</div>
+          <div class="splash-plan-btns">
+            <button class="splash-plan-btn" id="sp-btn-mi-si" onclick="selectSplashMatIni(true)">✅ Sí la cursé<span class="smc-hint" style="display:block;font-size:.6rem;margin-top:3px;opacity:.7">4 créditos · previa de Cálculo 1</span></button>
+            <button class="splash-plan-btn" id="sp-btn-mi-no" onclick="selectSplashMatIni(false)">➡️ No la cursé<span class="smc-hint" style="display:block;font-size:.6rem;margin-top:3px;opacity:.7">Cálculo 1 queda habilitada directo</span></button>
+          </div>
+        </div>
+        <div class="splash-footer" style="margin-top:auto">
+          <button class="bsc" onclick="splashMIPrevStep()" style="padding:8px 16px;font-size:.82rem">← Atrás</button>
+          <button class="bpr" id="sp-mi-next-btn" onclick="splashMINextStep()" style="padding:8px 22px;font-size:.85rem" disabled>Siguiente →</button>
         </div>
       </div>
     </div>
@@ -1121,7 +1179,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="splash-title">QuimPath</div>
       <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. Química</div>
       <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
-        <div class="sp-step-ind">Paso 2 de 2</div>
+        <div class="sp-step-ind" id="sp-step-ind-2">Paso 2 de 2</div>
         <div class="splash-plan-sel">
           <div class="splash-plan-label">¿Qué plan de estudios seguís?<br><span class="smc-hint" style="font-size:.6rem;opacity:.7">(también elige tu compañero/a)</span></div>
           <div class="splash-plan-btns">
@@ -1216,12 +1274,23 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <h2>🆕 Novedades de QuimPath</h2>
     <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2 — Actual</button>
+      <button class="toggle-btn on" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
       <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
     </div>
 
-    <!-- v2 — nueva versión -->
-    <div id="upd-v2" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+    <!-- v3 — nueva versión -->
+    <div id="upd-v3" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Proyecto Industrial 1 y 2 y Pasantía movidos al área correcta (Avanzadas) en Plan 2021.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 Botón "Previas" en cards</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Las materias habilitadas, cursando, aprobadas y exoneradas ahora muestran un botón Previas. Shift+Click sigue funcionando como atajo.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">📐 Matemática Inicial (ingreso FING)</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se añadió la posibilidad de activar Matemática Inicial. Desde ⚙️ Configuración podés activarla.</span></div>
+    </div>
+
+    <!-- v2 — historial -->
+    <div id="upd-v2" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🏫 Ingreso por FING</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se agregaron Matemática y Física del ingreso por Facultad de Ingeniería. Para activarlo, andá a ⚙️ Configuración → <strong>Ingreso por</strong> → FING.</span></div>
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 ¿De qué es previa?</div>
@@ -1321,6 +1390,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">📋 Plan de estudios</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-plan-2021" onclick="changePlan('2021')">2021</button><button class="toggle-btn" id="cfg-plan-2000" onclick="changePlan('2000')">2000</button></div></div>
   <div class="cfg-row"><span class="cfg-row-label">🏫 Ingreso por</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-ing-fq" onclick="changeIngreso('fq')">FQ</button><button class="toggle-btn" id="cfg-ing-fing" onclick="changeIngreso('fing')">FING</button></div></div>
+  <div class="cfg-row" id="cfg-row-matini" style="display:none"><span class="cfg-row-label">📐 Matemática Inicial</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mi-si" onclick="changeMatIni(true)">Sí</button><button class="toggle-btn" id="cfg-mi-no" onclick="changeMatIni(false)">No</button></div></div>
   <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mascota</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mascot-quimi" onclick="changeMascot('quimi')">Quimi</button><button class="toggle-btn" id="cfg-mascot-quimpi" onclick="changeMascot('quimpi')">Quimπ</button></div></div>
   <div class="sep"></div>
   <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
@@ -1744,6 +1814,7 @@ const FQ_MATFIS_IDS = new Set(['MAT01','MAT03','MAT04','MAT05','MAT06','MAT07','
 
 // Cursos de Matemática y Física cursados en FING (reemplazan a los de FQ)
 const FING_MATFIS = [
+  { id: 'MATINI',  name: 'Matemática Inicial',                  cr: 4,  fac: 'FING', grp: 'Básicas' },
   { id: 'CALC1',   name: 'Cálculo en Una Variable',            cr: 13, fac: 'FING', grp: 'Básicas' },
   { id: 'GEOALG1', name: 'Geometría y Álgebra Lineal 1',       cr: 9,  fac: 'FING', grp: 'Básicas' },
   { id: 'FIS1F',   name: 'Física 1',                           cr: 10, fac: 'FING', grp: 'Básicas' },
@@ -1759,6 +1830,7 @@ const FING_MATFIS = [
 
 // Previas internas entre los cursos de FING (Math/Física)
 const PV_FING_MATFIS = {
+  'CALC1':   [{ 'MATINI': E }, {}],  // sin previa si no cursó Matemática Inicial
   'CALC2':   { 'CALC1':   A },
   'GEOALG2': { 'GEOALG1': A },
   'FIS2F':   { 'FIS1F':   A, 'CALC1': A },
@@ -1815,7 +1887,7 @@ const PV_2000_FING = (() => {
 const INIC_FING = new Set(['CALC1', 'GEOALG1', 'FIS1F', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
 
 const SEMESTRES_2021_FING = [
-  { label: '1er Semestre',  ids: ['CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '1er Semestre',  ids: ['MATINI','CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
   { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
@@ -1828,7 +1900,7 @@ const SEMESTRES_2021_FING = [
 ];
 
 const SEMESTRES_2000_FING = [
-  { label: '1er Semestre',  ids: ['CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '1er Semestre',  ids: ['MATINI','CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
   { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
@@ -1863,6 +1935,9 @@ function applyPlan(p) {
     ? [...FING_MATFIS, ...OB.filter(s => !FQ_MATFIS_IDS.has(s.id))]
     : OB;
 
+  // Si ingreso FING y el usuario dijo que NO cursó Matemática Inicial, quitarla
+  if (isFing && matIni === false) baseOB = baseOB.filter(s => s.id !== 'MATINI');
+
   if (p === '2000') {
     OB_ACT = baseOB
       .filter(s => s.id !== 'INGAMB')
@@ -1896,6 +1971,24 @@ function applyPlan(p) {
   AREAS_ORDER_ACT = p === '2000' ? AREAS_ORDER_2000 : AREAS_ORDER_2021;
   AM_ACT       = p === '2000' ? AM_2000 : AM;
   GRUPO_PADRE_ACT = p === '2000' ? GRUPO_PADRE_2000 : GRUPO_PADRE_2021;
+  // Ajustar INIC y previas de CALC1 según Matemática Inicial
+  if (isFing) {
+    INIC_ACT = new Set(matIni === false
+      ? ['CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB','INTINGQUI']
+      : ['MATINI','GEOALG1','FIS1F','QUIGEN1','PRERIELAB','INTINGQUI']);
+    // CALC1: si cursó MatIni necesita exonerarla, si no la cursó no tiene previa
+    PV_ACT['CALC1'] = matIni === true  ? { 'MATINI': E }
+                    : matIni === false ? {}
+                    : [{ 'MATINI': E }, {}];
+    // Si cursó MatIni: CALC1 pasa al 2do semestre (bloqueada hasta exonerar MatIni)
+    SEMESTRES_ACT = SEMESTRES_ACT.map((sem, i) => {
+      if (matIni === true) {
+        if (i === 0) return { ...sem, ids: sem.ids.filter(id => id !== 'CALC1') };
+        if (i === 1) return { ...sem, ids: ['CALC1', ...sem.ids] };
+      }
+      return sem;
+    });
+  }
 }
 
 // ══════════ ÁREAS ══════════
@@ -1904,7 +1997,7 @@ const AM = {
   'MAT06':'Matemática','MAT07':'Matemática','MAT08':'Matemática','MAT09':'Matemática',
   'FUNOPT':'Matemática','METNUM':'Matemática','APLALGLIN':'Matemática','METESTREG':'Matemática',
   // FING math
-  'CALC1':'Matemática','GEOALG1':'Matemática','CALC2':'Matemática','GEOALG2':'Matemática',
+  'MATINI':'Matemática','CALC1':'Matemática','GEOALG1':'Matemática','CALC2':'Matemática','GEOALG2':'Matemática',
   'CALVEC':'Matemática','PROBEST':'Matemática','ECUADIF':'Matemática',
   'FIS101':'Física','FIS102':'Física','FIS103LAB':'Física','FISQUI101':'Física','OPTICA':'Física',
   // FING physics
@@ -1918,7 +2011,7 @@ const AM = {
   'INTINGBIO':'Biología','INTCIEBIO1':'Biología','BIO1':'Biología',
   'INTINGQUI':'Troncales','INTINGPRO':'Troncales','FENTRA':'Troncales','TERAPL':'Troncales',
   'FLU':'Troncales','TRACALMA1':'Troncales','IRREAQUI1':'Troncales','TRACALMA2':'Troncales',
-  'PROIND1':'Troncales','PROIND2':'Troncales','PAS':'Troncales',
+  'PROIND1':'Avanzadas','PROIND2':'Avanzadas','PAS':'Avanzadas',
   'TECSERIND1':'Avanzadas','IRREAQUI2':'Avanzadas','INGAMB':'Avanzadas','DINCONPRO':'Avanzadas',
   'INGBIOTRAE':'Avanzadas','DISPROQUI':'Avanzadas','ENEAPLIND':'Avanzadas','INDCAR':'Avanzadas',
   'INSIND':'Avanzadas','DISPROELE':'Avanzadas','ANAFAL':'Avanzadas','CONCOR':'Avanzadas',
@@ -2057,7 +2150,7 @@ const TKF = [
 ];
 
 // ══════════ ESTADO GLOBAL ══════════
-let est = {}, bOp = null, dOp = null, aF = new Set(), areaF = '', qr = '', cel = false;
+let est = {}, bOp = null, dOp = null, matIni = null, aF = new Set(), areaF = '', qr = '', cel = false;
 let ingreso = 'fq';  // 'fq' | 'fing'
 let soundOn = true, toastsOn = !isMobile(), quimiOn = true, mascot = 'quimi';
 let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
@@ -2065,9 +2158,9 @@ let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
 function sv() {
-  const data = { est, bOp, dOp, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
+  const data = { est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, dOp, cel, soundOn, quimiOn, mascot, theme, plan, ingreso });
+  window.fbSave?.({ est, bOp, dOp, matIni, cel, soundOn, quimiOn, mascot, theme, plan, ingreso });
 }
 
 function ld() {
@@ -2077,6 +2170,7 @@ function ld() {
     est     = d.est   || {};
     bOp     = d.bOp   || null;
     dOp     = d.dOp   || null;
+    matIni  = d.matIni !== undefined ? d.matIni : null;
     cel     = d.cel   || false;
     soundOn = d.soundOn  !== undefined ? d.soundOn  : true;
     toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
@@ -2266,7 +2360,10 @@ function mkCard(s) {
   const d = document.createElement('div');
   d.className   = 'card';
   d.dataset.id  = s.id;
-  d.innerHTML   = `<span class="ci"></span><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span><span class="cbg"></span></div><div class="cf">${s.fac}</div>`;
+  const peekFn = s.id === 'DINCONPRO'  ? `dOp?showPPDin():showPP('${s.id}')` :
+                 s.id === 'INGBIOTRAE' ? `bOp?showPPBio():showPP('${s.id}')` :
+                 `showPP('${s.id}')`;
+  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
 
   d.addEventListener('click', (e) => {
     getAC();
@@ -2995,9 +3092,9 @@ function openReset()  { document.getElementById('ov-r').classList.add('op'); set
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 // ══════════ ACTUALIZACIONES ══════════
-const UPD_VERSION = 2;
+const UPD_VERSION = 3;
 function switchUpdTab(tab) {
-  ['v1','v2'].forEach(t => {
+  ['v1','v2','v3'].forEach(t => {
     document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
     document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
   });
@@ -3030,7 +3127,7 @@ function rebuildAllGrids() {
 }
 
 function doReset() {
-  est = {}; bOp = null; dOp = null; cel = false;
+  est = {}; bOp = null; dOp = null; matIni = null; cel = false;
   aF.clear(); areaF = ''; qr = ''; _prevTab = 'princ';
   document.getElementById('sq').value = '';
   document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
@@ -3121,6 +3218,7 @@ function openConfig() {
   updateCfgPlanBtns();
   updateCfgIngresoBtns();
   updateCfgMascotBtns();
+  updateCfgMatIniBtns();
   document.getElementById('ov-cfg').classList.add('op'); setModalOpen(true);
 }
 
@@ -3320,24 +3418,38 @@ window._applyCloudData = function (d) {
 };
 
 // ══════════ SPLASH ══════════
-let splashPlan = null, splashMascot = null, splashIngreso = null;
+let splashPlan = null, splashMascot = null, splashIngreso = null, splashMatIni = null;
 let _splashStep = 1;
 
 function _setSplashStep(step) {
   _splashStep = step;
-  const p1 = document.getElementById('sp-panel-1');
-  const p2 = document.getElementById('sp-panel-2');
+  const p1   = document.getElementById('sp-panel-1');
+  const p2   = document.getElementById('sp-panel-2');
+  const sMI  = document.getElementById('sp-step-mi');
+  const s1   = document.getElementById('sp-step1');
   const colQ  = document.getElementById('sp-col-quimi');
   const colQP = document.getElementById('sp-col-quimpi');
+  const ind2  = document.getElementById('sp-step-ind-2');
   if (step === 1) {
     p1.style.display = 'flex';
     p2.classList.remove('active');
+    s1.style.display = 'flex';
+    sMI.style.display = 'none';
+    colQ .classList.remove('sp-visible');
+    colQP.classList.remove('sp-visible');
+  } else if (step === 1.5) {
+    p1.style.display = 'flex';
+    p2.classList.remove('active');
+    s1.style.display = 'none';
+    sMI.style.display = 'flex';
     colQ .classList.remove('sp-visible');
     colQP.classList.remove('sp-visible');
   } else {
     p1.style.display = 'none';
+    s1.style.display = 'flex';
+    sMI.style.display = 'none';
     p2.classList.add('active');
-    // Las mascotas se animan desde los lados
+    if (ind2) ind2.textContent = splashIngreso === 'fing' ? 'Paso 3 de 3' : 'Paso 2 de 2';
     requestAnimationFrame(() => {
       colQ .classList.add('sp-visible');
       colQP.classList.add('sp-visible');
@@ -3347,15 +3459,32 @@ function _setSplashStep(step) {
 
 function splashNextStep() {
   if (!splashIngreso) return;
+  if (splashIngreso === 'fing') { _setSplashStep(1.5); return; }
   _setSplashStep(2);
 }
 
 function splashPrevStep() {
+  if (splashIngreso === 'fing') { _setSplashStep(1.5); return; }
   _setSplashStep(1);
+}
+
+function splashMIPrevStep() { _setSplashStep(1); }
+
+function splashMINextStep() {
+  if (splashMatIni === null) return;
+  _setSplashStep(2);
+}
+
+function selectSplashMatIni(val) {
+  splashMatIni = val;
+  document.getElementById('sp-btn-mi-si').classList.toggle('selected', val === true);
+  document.getElementById('sp-btn-mi-no').classList.toggle('selected', val === false);
+  document.getElementById('sp-mi-next-btn').disabled = false;
 }
 
 function selectSplashIngreso(i) {
   splashIngreso = i;
+  if (i === 'fq') splashMatIni = null;
   ['fq','fing'].forEach(v => {
     const btn = document.getElementById('sp-btn-' + v);
     if (btn) btn.classList.toggle('selected', v === i);
@@ -3375,10 +3504,11 @@ function selectSplashPlan(p) {
 
 function closeSplash() {
   if (!splashPlan || !splashIngreso) return;
+  if (splashIngreso === 'fing' && splashMatIni === null) return;
   const isNewMascot = splashMascot !== mascot;
-  const changed = splashPlan !== plan || splashIngreso !== ingreso;
+  const changed = splashPlan !== plan || splashIngreso !== ingreso || splashMatIni !== matIni;
   if (changed) {
-    est = {}; bOp = null; cel = false;
+    est = {}; bOp = null; matIni = splashMatIni; cel = false;
     ingreso = splashIngreso;
     applyPlan(splashPlan);
     rebuildAllGrids();
@@ -3400,6 +3530,7 @@ function reopenSplash() {
   splashPlan    = plan;
   splashMascot  = mascot;
   splashIngreso = ingreso;
+  splashMatIni  = matIni;
   // Ir directo al paso 2 con todo preseleccionado
   _setSplashStep(2);
   document.querySelectorAll('.splash-plan-btn[id^="sp-btn-2"]').forEach(b => b.classList.toggle('selected', b.id === 'sp-btn-' + plan));
@@ -3407,6 +3538,12 @@ function reopenSplash() {
     const btn = document.getElementById('sp-btn-' + v);
     if (btn) btn.classList.toggle('selected', v === ingreso);
   });
+  if (matIni !== null) {
+    document.getElementById('sp-btn-mi-si')?.classList.toggle('selected', matIni === true);
+    document.getElementById('sp-btn-mi-no')?.classList.toggle('selected', matIni === false);
+    const nb = document.getElementById('sp-mi-next-btn');
+    if (nb) nb.disabled = false;
+  }
   document.getElementById('sp-col-quimi') ?.classList.toggle('chosen', mascot === 'quimi');
   document.getElementById('sp-col-quimpi')?.classList.toggle('chosen', mascot === 'quimpi');
   document.getElementById('splash-start-btn').disabled = false;
@@ -3463,10 +3600,28 @@ function updateCfgPlanBtns() {
 function changeIngreso(i) {
   if (i === ingreso) return;
   ingreso = i;
+  if (i === 'fq') matIni = null;
   applyPlan(plan);
   rebuildAllGrids();
   rc(); rAll(); upCr(); sv();
   updateCfgIngresoBtns();
+  updateCfgMatIniBtns();
+}
+function changeMatIni(val) {
+  if (matIni === val) return;
+  matIni = val;
+  applyPlan(plan);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  updateCfgMatIniBtns();
+}
+function updateCfgMatIniBtns() {
+  const row = document.getElementById('cfg-row-matini');
+  if (row) row.style.display = ingreso === 'fing' ? '' : 'none';
+  [true, false].forEach(v => {
+    const btn = document.getElementById('cfg-mi-' + (v ? 'si' : 'no'));
+    if (btn) btn.className = 'toggle-btn ' + (matIni === v ? 'on' : 'off');
+  });
 }
 function updateCfgIngresoBtns() {
   ['fq','fing'].forEach(i => {
