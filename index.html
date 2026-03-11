@@ -1346,6 +1346,17 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
 </div></div>
 
+<!-- ══ MODAL: Aviso Matemática Inicial ══ -->
+<div class="ov" id="ov-matini-warn" style="background:none;pointer-events:none"><div class="md" style="pointer-events:all">
+  <h2>📐 Currícula con Matemática Inicial</h2>
+  <p class="sub">Todavía no tengo el orden sugerido de la currícula para quienes ingresaron por FING con Matemática Inicial.</p>
+  <p class="sub" style="margin-top:10px">Si tenés esa información, ¡me sería de mucha ayuda! Podés compartirla a través del botón <strong>Reportar error</strong> en el menú lateral 🙏</p>
+  <p class="sub" style="margin-top:8px;font-size:.72rem;color:var(--tm)">Mientras tanto, las materias aparecerán sin un orden semestral definido.</p>
+  <div class="ma">
+    <button class="bpr" onclick="closeMatIniWarn()">Entendido</button>
+  </div>
+</div></div>
+
 <!-- ══ MODAL: Orientación Bioquímica ══ -->
 <div class="ov" id="ov-b"><div class="md">
   <h2>🧬 Elegí una orientación</h2>
@@ -1888,7 +1899,7 @@ const PV_2000_FING = (() => {
 const INIC_FING = new Set(['CALC1', 'GEOALG1', 'FIS1F', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
 
 const SEMESTRES_2021_FING = [
-  { label: '1er Semestre',  ids: ['MATINI','CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '1er Semestre',  ids: ['MATINI','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
   { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
@@ -1901,7 +1912,7 @@ const SEMESTRES_2021_FING = [
 ];
 
 const SEMESTRES_2000_FING = [
-  { label: '1er Semestre',  ids: ['MATINI','CALC1','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
+  { label: '1er Semestre',  ids: ['MATINI','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
   { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
@@ -1983,9 +1994,13 @@ function applyPlan(p) {
                     : [{ 'MATINI': E }, {}];
     // Si cursó MatIni: CALC1 pasa al 2do semestre (bloqueada hasta exonerar MatIni)
     SEMESTRES_ACT = SEMESTRES_ACT.map((sem, i) => {
-      if (matIni === true) {
-        if (i === 0) return { ...sem, ids: sem.ids.filter(id => id !== 'CALC1') };
-        if (i === 1) return { ...sem, ids: ['CALC1', ...sem.ids] };
+      if (i === 0) {
+        const ids = sem.ids.filter(id => id !== 'CALC1');
+        return { ...sem, ids: matIni === false ? ['CALC1', ...ids] : ids };
+      }
+      if (i === 1) {
+        const ids = sem.ids.filter(id => id !== 'CALC1');
+        return { ...sem, ids: matIni === true ? ['CALC1', ...ids] : ids };
       }
       return sem;
     });
@@ -3090,6 +3105,9 @@ function toastWip() {
     floatToast(msg, 'wip', 2800);
   }
 }
+function openMatIniWarn()  { document.getElementById('ov-matini-warn').classList.add('op'); setModalOpen(true); }
+function closeMatIniWarn() { document.getElementById('ov-matini-warn').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
@@ -3129,7 +3147,7 @@ function rebuildAllGrids() {
 }
 
 function doReset() {
-  est = {}; bOp = null; dOp = null; matIni = null; cel = false;
+  est = {}; bOp = null; dOp = null; cel = false;
   aF.clear(); areaF = ''; qr = ''; _prevTab = 'princ';
   document.getElementById('sq').value = '';
   document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
@@ -3224,7 +3242,10 @@ function openConfig() {
   document.getElementById('ov-cfg').classList.add('op'); setModalOpen(true);
 }
 
-function closeConfig() { document.getElementById('ov-cfg').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeConfig() {
+  document.getElementById('ov-cfg').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  if (ingreso === 'fing' && matIni === true) setTimeout(() => openMatIniWarn(), 300);
+}
 
 function openHelp() {
   document.getElementById('ov-help').classList.add('op'); setModalOpen(true);
@@ -3375,6 +3396,7 @@ document.addEventListener('keydown', e => {
       ['ov-r',   closeReset],
       ['ov-b',   closeBio],
       ['ov-d',   closeDin],
+      ['ov-matini-warn', closeMatIniWarn],
     ];
     for (const [id, fn] of modals)
       if (document.getElementById(id).classList.contains('op')) { fn(); return; }
@@ -3521,6 +3543,7 @@ function closeSplash() {
   document.getElementById('splash').classList.remove('on'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
   try { localStorage.setItem('qp_welcomed', '1'); } catch(e) {}
   sv();
+  if (splashIngreso === 'fing' && splashMatIni === true) setTimeout(() => openMatIniWarn(), 300);
   if (isNewMascot && mascot === 'quimpi') {
     setTimeout(() => quimiSay('¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱', 'happy', 4000), 600);
   } else if (isNewMascot && mascot === 'quimi') {
