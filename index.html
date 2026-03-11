@@ -3113,8 +3113,14 @@ function toastWip() {
     floatToast(msg, 'wip', 2800);
   }
 }
-function openMatIniWarn()  { document.getElementById('ov-matini-warn').classList.add('op'); setModalOpen(true); }
-function closeMatIniWarn() { document.getElementById('ov-matini-warn').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function openMatIniWarn()  {
+  try { if (localStorage.getItem('qp_matini_warn_seen')) return; } catch(e) {}
+  document.getElementById('ov-matini-warn').classList.add('op'); setModalOpen(true);
+}
+function closeMatIniWarn() {
+  document.getElementById('ov-matini-warn').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  try { localStorage.setItem('qp_matini_warn_seen', '1'); } catch(e) {}
+}
 
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
