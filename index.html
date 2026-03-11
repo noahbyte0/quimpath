@@ -1275,13 +1275,21 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <h2>🆕 Novedades de QuimPath</h2>
     <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3 — Actual</button>
+      <button class="toggle-btn on" id="upd-tab-v4" onclick="switchUpdTab('v4')" style="flex:1;text-align:center">v1.4 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3</button>
       <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
       <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
     </div>
 
-    <!-- v3 — nueva versión -->
-    <div id="upd-v3" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+    <!-- v4 — nueva versión -->
+    <div id="upd-v4" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron las previas de Intro a la Ing. de Procesos (examen de Química General 2, examen de Matemática 01 y aprobado de Física 101).</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores.</span></div>
+    </div>
+
+    <!-- v3 — historial -->
+    <div id="upd-v3" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Proyecto Industrial 1 y 2 y Pasantía movidos al área correcta (Avanzadas) en Plan 2021.</span></div>
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 Botón "Previas" en cards</div>
@@ -1714,7 +1722,7 @@ const PV_2021 = {
   'FISQUI101': { 'MAT04': A, 'QUIANA1': A },
   'FISQUI103': { 'FISQUI101': A },
   'FISQUI104': { 'FISQUI103': A },
-  'INTINGPRO': { 'MAT01': A, 'FIS101': A, 'QUIGEN2': A },
+  'INTINGPRO': { 'QUIGEN2': E, 'MAT01': E, 'FIS101': A },
   'COM1':      { 'MAT01': A, 'MAT03': E, 'MAT04': A },
   'FENTRA':    [{ 'MAT01': E, 'MAT03': E, 'MAT04': E, 'MAT07': A, 'MAT08': A, 'FIS101': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A }],
   'TERAPL':    [{ 'MAT01': E, 'MAT03': E, 'MAT04': E, 'MAT07': A, 'MAT08': A, 'FIS101': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A }],
@@ -3112,9 +3120,9 @@ function openReset()  { document.getElementById('ov-r').classList.add('op'); set
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
 
 // ══════════ ACTUALIZACIONES ══════════
-const UPD_VERSION = 3;
+const UPD_VERSION = 4;
 function switchUpdTab(tab) {
-  ['v1','v2','v3'].forEach(t => {
+  ['v1','v2','v3','v4'].forEach(t => {
     document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
     document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
   });
