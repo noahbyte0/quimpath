@@ -1698,6 +1698,7 @@ const CR_REQ = {
   'ADMGRAING':{ cr: 140, type: 'total',   label: 'créditos totales' },
   'GESRRHH':  { cr: 270, type: 'total',   label: 'créditos totales' },
   'INTPRERIEL':{ cr: 270, type: 'total',  label: 'créditos totales' },
+  'TUTPAR':    { cr: 55,  type: 'total',  label: 'créditos totales' },
 };
 
 const PV_2021 = {
@@ -1723,7 +1724,7 @@ const PV_2021 = {
   'FISQUI103': { 'FISQUI101': A },
   'FISQUI104': { 'FISQUI103': A },
   'INTINGPRO': { 'QUIGEN2': E, 'MAT01': E, 'FIS101': A },
-  'COM1':      { 'MAT01': A, 'MAT03': E, 'MAT04': A },
+  'COM1':      { 'MAT01': E, 'MAT03': E, 'MAT04': E },
   'FENTRA':    [{ 'MAT01': E, 'MAT03': E, 'MAT04': E, 'MAT07': A, 'MAT08': A, 'FIS101': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A }],
   'TERAPL':    [{ 'MAT01': E, 'MAT03': E, 'MAT04': E, 'MAT07': A, 'MAT08': A, 'FIS101': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A }],
   'FLU':       [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }],
@@ -1735,7 +1736,7 @@ const PV_2021 = {
   'TECSERIND2':{ 'TECSERIND1': A, 'TRACALMA1': A },
   'INGAMB':    { 'IRREAQUI1': A, 'FENTRA': E, 'FLU': A },
   'BIO1':      { 'INTINGBIO': E },
-  'OPTICA':    { 'FIS102': E, 'MAT04': A },
+  'OPTICA':    { 'FIS102': E, 'MAT04': A }, // FING override: FIS3F E, CALVEC A
   'QUIAMB':    { 'QUIORGT101': A, 'QUIINO1': A },
   'SINORGTRE': { 'QUIORG103L': A, 'QUIORG102I': A, 'QUIORGT101': A },
   'DISPROELE': { 'FISQUI104': A, 'IRREAQUI1': A },
@@ -1748,10 +1749,11 @@ const PV_2021 = {
   'BIODIEST':  { 'FISQUI103': A, 'QUIORG102I': A },
   'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
   'CONCAL':    { 'MAT05': A },
-  'INIRINGR':  { 'MAT03': E },
+  'INIRINGR':  { 'MAT03': A },
   'TUTPARMAT1':  { 'MAT01': E },
   'TUTPARMAT4':  { 'MAT04': E },
   'TUTPARFQ101': { 'FISQUI101': E },
+  'TUTPAR':      {},
   'PRAADING':  { 'ADMGRAING': A },
   'INTSISGES': {},
   'TRATRESSOLID':{ 'INTINGBIO': A, 'IRREAQUI1': A },
@@ -1862,6 +1864,9 @@ const PV_FING_MATFIS = {
 };
 
 // Tabla de traducción: ID de FQ → ID equivalente en FING (null = se descarta)
+// Solo se incluyen IDs cuya traducción es correcta para TODAS las materias.
+// FIS102 y FIS103LAB se excluyen: en algunos cursos FING necesitan FIS3F u otras,
+// por lo que se manejan siempre via override explícito.
 const FQ_TO_FING_PV = {
   'MAT01':     'CALC1',
   'MAT03':     'GEOALG1',
@@ -1872,8 +1877,8 @@ const FQ_TO_FING_PV = {
   'MAT08':     'ECUADIF',  // MAT07+MAT08 → ECUADIF (se fusionan)
   'MAT09':     null,       // sin equivalente
   'FIS101':    'FIS1F',
-  'FIS102':    'FIS2F',
-  'FIS103LAB': 'FISEXPF',
+  'FIS102':    null,       // excluido: cada materia FING define su física correcta via override
+  'FIS103LAB': null,       // excluido: cada materia FING define su física correcta via override
 };
 
 // Construye la tabla de previas para ingreso FING a partir de la tabla FQ
@@ -1894,10 +1899,59 @@ function buildPVFing(pvBase) {
   return pv;
 }
 
-const PV_2021_FING = buildPVFing(PV_2021);
+const PV_2021_FING = (() => {
+  const p = buildPVFing(PV_2021);
+  // Override TERAPL para FING: según reglamento usa GEOALG2 (no GEOALG1) y CALVEC en lugar de MAT04
+  p['TERAPL'] = [{ 'ECUADIF': A, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A, 'CALC2': E, 'GEOALG2': E, 'CALVEC': E, 'FIS1F': E }];
+  // Override FLU para FING: usa Física 3 (FIS3F) no Física 2
+  p['FLU'] = [{ 'FIS3F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  // Override COM1 para FING
+  p['COM1'] = { 'CALC1': E, 'GEOALG1': E, 'CALC2': E, 'GEOALG2': E };
+  // Override IRREAQUI1 para FING
+  p['IRREAQUI1'] = [{ 'FLU': A, 'QUIANA1': E, 'QUIANA2': E, 'FISQUI103': E, 'PROBEST': E, 'ECUADIF': E, 'FENTRA': E, 'TERAPL': E }];
+  // Override ELE1 para FING
+  p['ELE1'] = { 'CALC2': A, 'FIS3F': E };
+  // Overrides para materias con FIS102/FIS103LAB (excluidos de traducción automática)
+  p['MECAPL']     = { 'CALC2': A, 'FIS2F': E, 'FISEXPF': A };
+  p['TRACALMA1']  = [{ 'FIS2F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['MEDELEINGP'] = { 'FIS3F': E, 'FISEXPF': A, 'FLU': A };
+  // Overrides optativas para FING
+  p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
+  p['CONCAL']     = { 'PROBEST': A };
+  p['INIRINGR']   = { 'GEOALG1': A };
+  p['METESTREG']  = { 'GEOALG2': A, 'CALC2': A, 'PROBEST': A };
+  p['ASEGCALANA'] = { 'QUIANA3': A, 'PROBEST': A };
+  p['TECPOL']     = { 'FIS3F': E, 'QUIORGT101': A };
+  // TUTPAR unificada para FING (lógica especial en cp() y buildPPReqRows())
+  p['TUTPAR']     = {};
+  return p;
+})();
 
 const PV_2000_FING = (() => {
   const p = buildPVFing(PV_2021);
+  // Override TERAPL para FING: según reglamento usa GEOALG2 (no GEOALG1) y CALVEC en lugar de MAT04
+  p['TERAPL'] = [{ 'ECUADIF': A, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A, 'CALC2': E, 'GEOALG2': E, 'CALVEC': E, 'FIS1F': E }];
+  // Override FLU para FING: usa Física 3 (FIS3F) no Física 2
+  p['FLU'] = [{ 'FIS3F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  // Override COM1 para FING
+  p['COM1'] = { 'CALC1': E, 'GEOALG1': E, 'CALC2': E, 'GEOALG2': E };
+  // Override IRREAQUI1 para FING
+  p['IRREAQUI1'] = [{ 'FLU': A, 'QUIANA1': E, 'QUIANA2': E, 'FISQUI103': E, 'PROBEST': E, 'ECUADIF': E, 'FENTRA': E, 'TERAPL': E }];
+  // Override ELE1 para FING
+  p['ELE1'] = { 'CALC2': A, 'FIS3F': E };
+  // Overrides para materias con FIS102/FIS103LAB (excluidos de traducción automática)
+  p['MECAPL']     = { 'CALC2': A, 'FIS2F': E, 'FISEXPF': A };
+  p['TRACALMA1']  = [{ 'FIS2F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['MEDELEINGP'] = { 'FIS3F': E, 'FISEXPF': A, 'FLU': A };
+  // Overrides optativas para FING
+  p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
+  p['CONCAL']     = { 'PROBEST': A };
+  p['INIRINGR']   = { 'GEOALG1': A };
+  p['METESTREG']  = { 'GEOALG2': A, 'CALC2': A, 'PROBEST': A };
+  p['ASEGCALANA'] = { 'QUIANA3': A, 'PROBEST': A };
+  p['TECPOL']     = { 'FIS3F': E, 'QUIORGT101': A };
+  // TUTPAR unificada para FING (lógica especial en cp() y buildPPReqRows())
+  p['TUTPAR']     = {};
   p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
@@ -1967,16 +2021,25 @@ function applyPlan(p) {
         return s;
       });
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
-    O1_ACT      = O1.filter(s => s.id !== 'LABQCAINO');
-    O2_ACT      = [...O2.filter(s => s.id !== 'TECSERIND2'),
-                   { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
+    const TUTPAR_IDS = new Set(['TUTPARMAT1','TUTPARMAT4','TUTPARFQ101']);
+    O1_ACT = isFing ? O1.filter(s => s.id !== 'LABQCAINO' && !TUTPAR_IDS.has(s.id)) : O1.filter(s => s.id !== 'LABQCAINO');
+    O2_ACT = isFing
+      ? [...O2.filter(s => s.id !== 'TECSERIND2' && !TUTPAR_IDS.has(s.id)),
+         { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' },
+         { id: 'TUTPAR', name: 'Tutorías entre Pares', cr: 4, fac: 'UdelaR', grp: 'Complementarias' }]
+      : [...O2.filter(s => s.id !== 'TECSERIND2'),
+         { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
     PV_ACT      = isFing ? PV_2000_FING : PV_2000;
     INIC_ACT    = isFing ? INIC_FING : INIC_2000;
     SEMESTRES_ACT = isFing ? SEMESTRES_2000_FING : SEMESTRES_2000;
   } else {
     OB_ACT      = baseOB;
-    O1_ACT      = O1;
-    O2_ACT      = O2;
+    const TUTPAR_IDS = new Set(['TUTPARMAT1','TUTPARMAT4','TUTPARFQ101']);
+    O1_ACT      = isFing ? O1.filter(s => !TUTPAR_IDS.has(s.id)) : O1;
+    O2_ACT      = isFing
+      ? [...O2.filter(s => !TUTPAR_IDS.has(s.id)),
+         { id: 'TUTPAR', name: 'Tutorías entre Pares', cr: 4, fac: 'UdelaR', grp: 'Complementarias' }]
+      : O2;
     PV_ACT      = isFing ? PV_2021_FING : PV_2021;
     INIC_ACT    = isFing ? INIC_FING : INIC_2021;
     SEMESTRES_ACT = isFing ? SEMESTRES_2021_FING : SEMESTRES_2021;
@@ -2046,7 +2109,7 @@ const AM = {
   'INTPRERIEL':'Técnicas','ADMGRAING':'Técnicas','ELEGESLOG':'Técnicas','SISGESCAL':'Técnicas',
   'GESCAL':'Técnicas','GESPROIND':'Técnicas','REPGRAIND':'Complementarias','COSING':'Técnicas',
   'CONCAL':'Técnicas','INTSISGES':'Técnicas','PRAADING':'Técnicas','TEORES':'Técnicas',
-  'INGCIE':'Complementarias','TUTPARMAT1':'Complementarias','TUTPARMAT4':'Complementarias','TUTPARFQ101':'Complementarias',
+  'INGCIE':'Complementarias','TUTPARMAT1':'Complementarias','TUTPARMAT4':'Complementarias','TUTPARFQ101':'Complementarias','TUTPAR':'Complementarias',
   'EPI':'Complementarias','ECO':'Complementarias','INTDISMON':'Complementarias','CIETECSOC':'Complementarias','INTEVAGESA':'Complementarias',
   'GESRRHH':'Complementarias','PRODAUDIOV':'Complementarias','SENEINT':'Complementarias','INIRINGR':'Complementarias',
 };
@@ -2308,6 +2371,15 @@ function cp(id) {
     }
     return S.B;
   }
+  if (id === 'TUTPAR') {
+    // Opción 1: Física 1 exonerada
+    if (gs('FIS1F') >= E) return S.H;
+    // Opción 2: GEOALG1 exonerada Y GEOALG2 aprobada
+    if (gs('GEOALG1') >= E && gs('GEOALG2') >= A) return S.H;
+    // Opción 3: CALC1 exonerada Y CALC2 aprobada
+    if (gs('CALC1') >= E && gs('CALC2') >= A) return S.H;
+    return S.B;
+  }
   for (const g of (Array.isArray(p) ? p : [p])) {
     let ok = true;
     for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
@@ -2387,7 +2459,10 @@ function mkCard(s) {
   const peekFn = s.id === 'DINCONPRO'  ? `dOp?showPPDin():showPP('${s.id}')` :
                  s.id === 'INGBIOTRAE' ? `bOp?showPPBio():showPP('${s.id}')` :
                  `showPP('${s.id}')`;
-  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
+  const o1Ids = new Set(O1_ACT.map(x => x.id));
+  const o2Ids = new Set(O2_ACT.map(x => x.id));
+  const semLabel = o1Ids.has(s.id) ? ' · Impar' : o2Ids.has(s.id) ? ' · Par' : '';
+  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}${semLabel}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
 
   d.addEventListener('click', (e) => {
     getAC();
@@ -2855,6 +2930,47 @@ function buildPPReqRows(id) {
     const ok = actual >= req.cr;
     creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
   }
+  if (id === 'TUTPAR') {
+    const E = S.E, A = S.A;
+    const opt1Met = gs('FIS1F') >= E;
+    const opt2Met = gs('GEOALG1') >= E && gs('GEOALG2') >= A;
+    const opt3Met = gs('CALC1') >= E && gs('CALC2') >= A;
+    const opts = [
+      { label: 'Opción 1', met: opt1Met, items: [{ id: 'FIS1F', ms: E }] },
+      { label: 'Opción 2', met: opt2Met, items: [{ id: 'GEOALG1', ms: E }, { id: 'GEOALG2', ms: A }] },
+      { label: 'Opción 3', met: opt3Met, items: [{ id: 'CALC1', ms: E }, { id: 'CALC2', ms: A }] },
+    ];
+    let rows = '';
+    opts.forEach(opt => {
+      rows += `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
+      opt.items.forEach(({ id: pid, ms }) => {
+        const ok = gs(pid) >= ms;
+        rows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+      });
+    });
+    return creditRow + rows;
+  }
+  if (id === 'FIS3F') {
+    const E = S.E, A = S.A;
+    // CALC1 aprobada es requisito común
+    const calc1Ok = gs('CALC1') >= A;
+    let rows = `<div class="pi${calc1Ok ? ' met' : ''}"><span class="pn">${BI['CALC1']?.name || 'CALC1'}</span><span class="pr ${calc1Ok ? 'ok' : SN[A]}">${calc1Ok ? '✓' : SL[A]}</span></div>`;
+    // Opciones para la física
+    const opt1Met = gs('FIS1F') >= A && gs('FIS2F') >= A;
+    const opt2Met = gs('FIS1F') >= E;
+    const opts = [
+      { label: 'Opción 1', met: opt1Met, items: [{ id: 'FIS1F', ms: A }, { id: 'FIS2F', ms: A }] },
+      { label: 'Opción 2', met: opt2Met, items: [{ id: 'FIS1F', ms: E }] },
+    ];
+    opts.forEach(opt => {
+      rows += `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
+      opt.items.forEach(({ id: pid, ms }) => {
+        const ok = gs(pid) >= ms;
+        rows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+      });
+    });
+    return creditRow + rows;
+  }
   if (!p || (typeof p === 'object' && !Array.isArray(p) && Object.keys(p).length === 0))
     return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
   const groups = Array.isArray(p) ? p : [p];
@@ -3145,7 +3261,9 @@ function openUpd() {
 }
 function maybeShowUpd() {
   try {
-    const seen = parseInt(localStorage.getItem('qp_upd_ver') || '0');
+    const raw = localStorage.getItem('qp_upd_ver');
+    if (raw === null) { localStorage.setItem('qp_upd_ver', UPD_VERSION); return; }
+    const seen = parseInt(raw);
     if (seen < UPD_VERSION) {
       document.getElementById('ov-upd').classList.add('op');
       setModalOpen(true);
