@@ -3237,7 +3237,13 @@ function openUpd() {
 function maybeShowUpd() {
   try {
     const raw = localStorage.getItem('qp_upd_ver');
-    if (raw === null) { localStorage.setItem('qp_upd_ver', UPD_VERSION); return; }
+    if (raw === null) {
+      // Si nunca vio novedades: si es usuario nuevo (sin welcomed) no mostrar, si es viejo mostrar
+      if (!localStorage.getItem('qp_welcomed')) { localStorage.setItem('qp_upd_ver', UPD_VERSION); return; }
+      document.getElementById('ov-upd').classList.add('op');
+      setModalOpen(true);
+      return;
+    }
     const seen = parseInt(raw);
     if (seen < UPD_VERSION) {
       document.getElementById('ov-upd').classList.add('op');
