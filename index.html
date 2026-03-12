@@ -355,7 +355,7 @@ body {
   grid-column: 1/-1;
 }
 .sect-label:first-child { margin-top: 0; }
-.sect-label:empty { border-bottom-color: rgba(var(--bd-rgb, 100,100,100),.35); margin: 10px 0 4px; }
+.sect-label:empty { border-bottom-color: rgba(100,100,100,.35); margin: 10px 0 4px; }
 
 /* ══════════ CARDS ══════════ */
 .card {
@@ -1218,7 +1218,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
 </div>
 
-<!-- ══ QUIMI<!-- ══ QUIMI MASCOTA ══ -->
+<!-- ══ QUIMI MASCOTA ══ -->
 <div id="quimi">
   <div id="quimi-bubble"></div>
   <img id="quimi-img" src="quimi_estatico.png" data-mood="idle" alt="Quimi"/>
@@ -1691,7 +1691,7 @@ const O2 = [
 
 // ══════════ IDs DE OPTATIVAS ══════════
 // Plan-dynamic variables (set by applyPlan)
-let OPT_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O1_ACT, O2_ACT;
+let OPT_IDS, OPT_O1_IDS, OPT_O2_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O1_ACT, O2_ACT;
 let plan = null;
 
 // ══════════ PREVIAS ══════════
@@ -1966,6 +1966,19 @@ const SEMESTRES_2000_FING = SEMESTRES_2021_FING.map((sem, i) =>
     : sem
 );
 
+const SEMESTRES_2021 = [
+  { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
+  { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
+  { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
+  { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
+  { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
+  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
+  { label: '8vo Semestre',  ids: ['IRREAQUI2','INGAMB','DINCONPRO','INTINGBIO','MECAPL'] },
+  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
+  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
+];
+
 const SEMESTRES_2000 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
   { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
@@ -1983,6 +1996,7 @@ const SEMESTRES_2000 = [
 function applyPlan(p) {
   plan = p;
   const isFing = ingreso === 'fing';
+  const TUTPAR_IDS = new Set(['TUTPARMAT1','TUTPARMAT4','TUTPARFQ101']);
 
   // Base obligatorias: si ingreso FING, reemplazar cursos FQ de Mat/Fis por los de FING
   let baseOB = isFing
@@ -2001,7 +2015,6 @@ function applyPlan(p) {
         return s;
       });
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
-    const TUTPAR_IDS = new Set(['TUTPARMAT1','TUTPARMAT4','TUTPARFQ101']);
     O1_ACT = isFing ? O1.filter(s => s.id !== 'LABQCAINO' && !TUTPAR_IDS.has(s.id)) : O1.filter(s => s.id !== 'LABQCAINO');
     O2_ACT = isFing
       ? [...O2.filter(s => s.id !== 'TECSERIND2' && !TUTPAR_IDS.has(s.id)),
@@ -2014,7 +2027,6 @@ function applyPlan(p) {
     SEMESTRES_ACT = isFing ? SEMESTRES_2000_FING : SEMESTRES_2000;
   } else {
     OB_ACT      = baseOB;
-    const TUTPAR_IDS = new Set(['TUTPARMAT1','TUTPARMAT4','TUTPARFQ101']);
     O1_ACT      = isFing ? O1.filter(s => !TUTPAR_IDS.has(s.id)) : O1;
     O2_ACT      = isFing
       ? [...O2.filter(s => !TUTPAR_IDS.has(s.id)),
@@ -2025,6 +2037,8 @@ function applyPlan(p) {
     SEMESTRES_ACT = isFing ? SEMESTRES_2021_FING : SEMESTRES_2021;
   }
   OPT_IDS      = new Set([...O1_ACT.map(s => s.id), ...O2_ACT.map(s => s.id)]);
+  OPT_O1_IDS   = new Set(O1_ACT.map(s => s.id));
+  OPT_O2_IDS   = new Set(O2_ACT.map(s => s.id));
   ALL          = [...OB_ACT, ...O1_ACT.map(s => ({ ...s, name: s.name + ' *' })), ...O2_ACT.map(s => ({ ...s, name: s.name + ' *' }))];
   BI           = Object.fromEntries(ALL.map(s => [s.id, s]));
   buildSearchCache();
@@ -2263,22 +2277,22 @@ function getAC() {
 async function playTone(freq, dur, vol = 1) {
   if (!soundOn) return;
   try {
-    const AC_ = getAC();
-    if (AC_.state === 'suspended') await AC_.resume();
+    const ac = getAC();
+    if (ac.state === 'suspended') await ac.resume();
     // Buffer silencioso para calentar el contexto
-    const silence = AC_.createBuffer(1, Math.ceil(AC_.sampleRate * 0.05), AC_.sampleRate);
-    const silSrc = AC_.createBufferSource();
+    const silence = ac.createBuffer(1, Math.ceil(ac.sampleRate * 0.05), ac.sampleRate);
+    const silSrc = ac.createBufferSource();
     silSrc.buffer = silence;
-    silSrc.connect(AC_.destination);
+    silSrc.connect(ac.destination);
     silSrc.start();
     await new Promise(r => setTimeout(r, 50));
-    const g = AC_.createGain();
-    g.gain.setValueAtTime(vol, AC_.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, AC_.currentTime + dur);
-    const o = AC_.createOscillator();
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+    const o = ac.createOscillator();
     o.frequency.value = freq;
-    o.connect(g); g.connect(AC_.destination);
-    o.start(); o.stop(AC_.currentTime + dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime + dur);
   } catch (e) {}
 }
 
@@ -2446,9 +2460,7 @@ function mkCard(s) {
   const peekFn = s.id === 'DINCONPRO'  ? `dOp?showPPDin():showPP('${s.id}')` :
                  s.id === 'INGBIOTRAE' ? `bOp?showPPBio():showPP('${s.id}')` :
                  `showPP('${s.id}')`;
-  const o1Ids = new Set(O1_ACT.map(x => x.id));
-  const o2Ids = new Set(O2_ACT.map(x => x.id));
-  const semLabel = o1Ids.has(s.id) ? ' · Impar' : o2Ids.has(s.id) ? ' · Par' : '';
+  const semLabel = OPT_O1_IDS.has(s.id) ? ' · Impar' : OPT_O2_IDS.has(s.id) ? ' · Par' : '';
   d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}${semLabel}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
 
   d.addEventListener('click', (e) => {
@@ -2765,18 +2777,7 @@ function topoSort(arr, precomputed) {
 }
 
 // ══════════ GRIDS ══════════
-const SEMESTRES_2021 = [
-  { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
-  { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
-  { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
-  { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
-  { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
-  { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
-  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
-  { label: '8vo Semestre',  ids: ['IRREAQUI2','INGAMB','DINCONPRO','INTINGBIO','MECAPL'] },
-  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
-  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
-];
+const WIP_LEVEL = 9999;
 
 let blt = {};
 function bldGrds() {
@@ -2787,7 +2788,7 @@ function bldGrds() {
     const sorted = topoSort(ALL, computed);
     const byLevel = new Map();
     for (const s of sorted) {
-      const lv = isWip(s.id) ? 9999 : (globalLevel[s.id] ?? 0);
+      const lv = isWip(s.id) ? WIP_LEVEL : (globalLevel[s.id] ?? 0);
       if (!byLevel.has(lv)) byLevel.set(lv, []);
       byLevel.get(lv).push(s);
     }
@@ -2797,7 +2798,7 @@ function bldGrds() {
       if (i > 0) {
         const sep = document.createElement('div');
         sep.className = 'sect-label';
-        sep.textContent = lv === 9999 ? '— Sin previas definidas —' : '';
+        sep.textContent = lv === WIP_LEVEL ? '— Sin previas definidas —' : '';
         container.appendChild(sep);
       }
       byLevel.get(lv).forEach(s => container.appendChild(mkCard(s)));
@@ -3408,7 +3409,7 @@ function applyQuimiVisibility() {
 function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); sv(); }
 function applyTheme()  {
   document.body.classList.toggle('light', theme === 'light');
-  document.getElementById('theme-btn').textContent = theme === 'dark' ? '🌙 Oscuro' : '☀️ Claro';
+  document.getElementById('theme-btn').innerHTML = theme === 'dark' ? '🌙 <span class="label">Oscuro</span>' : '☀️ <span class="label">Claro</span>';
 }
 
 // ══════════ CELEBRACIÓN ══════════
@@ -3512,7 +3513,7 @@ document.addEventListener('keydown', e => {
     for (const [id, fn] of modals)
       if (document.getElementById(id).classList.contains('op')) { fn(); return; }
     const sq = document.getElementById('sq');
-    if (sq.value) { sq.value = ''; qr = ''; rAll(); return; }
+    if (sq.value) { sq.value = ''; qr = ''; switchTab(_prevTab); return; }
     if (aF.size)  { clearFilters(); return; }
     if (areaF)    { setAreaF('');   return; }
   }
@@ -3538,6 +3539,7 @@ window._applyCloudData = function (d) {
   est     = d.est   || {};
   bOp     = d.bOp   || null;
   dOp     = d.dOp   || null;
+  matIni  = d.matIni !== undefined ? d.matIni : matIni;
   cel     = d.cel   || false;
   soundOn = d.soundOn !== undefined ? d.soundOn : true;
   toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
@@ -3741,6 +3743,36 @@ function updateCfgIngresoBtns() {
   });
 }
 
+// ══════════ QUIMI — CLICK ══════════
+const QUIMI_MSGS = [
+  '¡Hola! Soy Quimi, tu compañero de carrera 🐾',
+  '¡Vamos, vos podés! 💪',
+  '¡Otro semestre y al título! 🎓',
+  '¡La química te necesita! ⚗️',
+  '¡Seguí dale que se nota el progreso! 📚',
+  '¡El café y yo te bancamos! ☕',
+  '¡Cada crédito cuenta! ⚖️',
+  '¡No te rindas, campeón! 🏆',
+  '¿Perdido? El botón ❓ del panel lateral tiene todo lo que necesitás saber 😉',
+  '¿Encontraste algo raro? ¡Avisame en "Reportar error" y lo arreglamos! 🐛',
+];
+const QUIMPI_MSGS = [
+  '¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱',
+  '¡Miau! ¡Esta materia cae seguro! 🐱',
+  '¡Vamos, vos podés! 💪',
+  '¡Otro semestre y al título! 🎓',
+  '¡La química te necesita! ⚗️',
+  '¡Seguí dale que se nota el progreso! 📚',
+  '¡El café y yo te bancamos! ☕',
+  '¡Cada crédito cuenta! ⚖️',
+  '¡No te rindas, campeón/a! 🏆',
+  'Estoy segura que serás ingeniero/a algún día 🐱',
+  'Lo sé, vas a llegar. Confío en vos 🌟',
+  'Tengo fe en que este semestre es el tuyo 🐱',
+  '¿Dudas? El botón ❓ del panel lateral tiene toda la ayuda que necesitás 😸',
+  '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
+];
+
 // ══════════ QUIMI — FRASES AUTOMÁTICAS ══════════
 const QUIMI_AMBIENT = [
   { max: 5,  msgs: [
@@ -3799,35 +3831,6 @@ function quimiAmbientSay() {
   }, delay);
 })();
 
-// ══════════ QUIMI — CLICK ══════════
-const QUIMI_MSGS = [
-  '¡Hola! Soy Quimi, tu compañero de carrera 🐾',
-  '¡Vamos, vos podés! 💪',
-  '¡Otro semestre y al título! 🎓',
-  '¡La química te necesita! ⚗️',
-  '¡Seguí dale que se nota el progreso! 📚',
-  '¡El café y yo te bancamos! ☕',
-  '¡Cada crédito cuenta! ⚖️',
-  '¡No te rindas, campeón! 🏆',
-  '¿Perdido? El botón ❓ del panel lateral tiene todo lo que necesitás saber 😉',
-  '¿Encontraste algo raro? ¡Avisame en "Reportar error" y lo arreglamos! 🐛',
-];
-const QUIMPI_MSGS = [
-  '¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱',
-  '¡Miau! ¡Esta materia cae seguro! 🐱',
-  '¡Vamos, vos podés! 💪',
-  '¡Otro semestre y al título! 🎓',
-  '¡La química te necesita! ⚗️',
-  '¡Seguí dale que se nota el progreso! 📚',
-  '¡El café y yo te bancamos! ☕',
-  '¡Cada crédito cuenta! ⚖️',
-  '¡No te rindas, campeón/a! 🏆',
-  'Estoy segura que serás ingeniero/a algún día 🐱',
-  'Lo sé, vas a llegar. Confío en vos 🌟',
-  'Tengo fe en que este semestre es el tuyo 🐱',
-  '¿Dudas? El botón ❓ del panel lateral tiene toda la ayuda que necesitás 😸',
-  '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
-];
 document.getElementById('quimi').addEventListener('click', () => {
   const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
   quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 2800);
