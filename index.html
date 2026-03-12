@@ -1517,7 +1517,12 @@ window.fbSignOut = async () => {
 
 window.fbSave = async (data) => {
   if (!currentUser) return;
-  try { await setDoc(doc(db, 'users', currentUser.uid), { ...data, email: currentUser.email }); }
+  try {
+    const ref  = doc(db, 'users', currentUser.uid);
+    const snap = await getDoc(ref);
+    const createdAt = snap.exists() ? (snap.data().createdAt ?? new Date().toISOString()) : new Date().toISOString();
+    await setDoc(ref, { ...data, email: currentUser.email, createdAt });
+  }
   catch (e) { console.error('fbSave error:', e); }
 };
 
@@ -2242,10 +2247,47 @@ let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light'
 let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
+function _buildFbPayload() {
+  // Créditos acumulados por área (solo aprobadas/exoneradas)
+  const cr = {};
+  let crTotal = 0;
+  for (const s of (ALL || [])) {
+    const st = gs(s.id);
+    if (st === S.A || st === S.E) {
+      const grp = s.grp || 'Otras';
+      cr[grp] = (cr[grp] || 0) + (s.cr || 0);
+      crTotal += (s.cr || 0);
+    }
+  }
+  cr.total = crTotal;
+
+  // Conteo de materias por estado
+  const vals = Object.values(est);
+  const mat = {
+    exoneradas: vals.filter(v => v === S.E).length,
+    aprobadas:  vals.filter(v => v === S.A).length,
+    cursando:   vals.filter(v => v === S.C).length,
+    habilitadas:vals.filter(v => v === S.H).length,
+  };
+
+  return {
+    // — Perfil del usuario —
+    plan, ingreso, theme, mascot,
+    ...(matIni !== null ? { matIni } : {}),
+    // — Resumen académico —
+    cr, mat,
+    pctAvance: Math.round(crTotal / META * 100),
+    // — Actividad —
+    lastSeen: new Date().toISOString(),
+    // — Estado raw (para restaurar en otro dispositivo) —
+    est,
+  };
+}
+
 function sv() {
   const data = { est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso });
+  window.fbSave?.(_buildFbPayload());
 }
 
 function ld() {
