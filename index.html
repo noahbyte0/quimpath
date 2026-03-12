@@ -498,7 +498,6 @@ body.light .ci-emoji { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
   display: block;
 }
 #quimi-img { transform: scaleX(-1); }
-#quimi.quimpi #quimi-img { transform: scaleX(-1); }
 #quimi.quimpi #quimi-bubble {
   right: auto;
   left: 0;
@@ -559,8 +558,6 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 @keyframes quimi-breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
 @keyframes quimi-bounce  { 0%{transform:translateY(0)} 35%{transform:translateY(-14px)} 65%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
 @keyframes quimi-jump    { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-18px) scale(1.07)} 70%{transform:translateY(-8px) scale(1.03)} 100%{transform:translateY(0) scale(1)} }
-@keyframes quimi-rock    { 0%{transform:rotate(-7deg) translateY(0)} 100%{transform:rotate(7deg) translateY(-8px)} }
-@keyframes quimi-wave    { 0%,100%{transform:rotate(0deg)} 30%{transform:rotate(-12deg) translateY(-4px)} 70%{transform:rotate(10deg)} }
 @keyframes quimi-breathe-f { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
 @keyframes quimi-bounce-f  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
 @keyframes quimi-jump-f    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
@@ -937,7 +934,8 @@ body.light #quimi-bubble     { background: #1a2744; border-color: #2d3d6b; color
 body.light #quimi-bubble::after { background: #1a2744; border-color: #2d3d6b; }
 body.light .fb-toggle { color: #1a202c; border-color: #a0abb5; }
 body.light .card[data-st="bloqueada"]  { background: #b0bac5; border-color: #a0abb5; }
-body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }body.light .card[data-st="bloqueada"]  .cn,
+body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }
+body.light .card[data-st="bloqueada"]  .cn,
 body.light .card[data-st="bloqueada"]  .cc,
 body.light .card[data-st="bloqueada"]  .cf  { color: #4a5568; }
 body.light .card[data-st="habilitada"] .cn,
@@ -1819,7 +1817,6 @@ const PV_DIN = {
 
 // ══════════ PLAN 2000 — DATOS ══════════
 const INIC_2021 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
-const INIC_2000 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI']);
 
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
@@ -1928,30 +1925,8 @@ const PV_2021_FING = (() => {
 })();
 
 const PV_2000_FING = (() => {
-  const p = buildPVFing(PV_2021);
-  // Override TERAPL para FING: según reglamento usa GEOALG2 (no GEOALG1) y CALVEC en lugar de MAT04
-  p['TERAPL'] = [{ 'ECUADIF': A, 'QUIGEN1': E, 'QUIGEN2': E, 'FISQUI101': A, 'CALC2': E, 'GEOALG2': E, 'CALVEC': E, 'FIS1F': E }];
-  // Override FLU para FING: usa Física 3 (FIS3F) no Física 2
-  p['FLU'] = [{ 'FIS3F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
-  // Override COM1 para FING
-  p['COM1'] = { 'CALC1': E, 'GEOALG1': E, 'CALC2': E, 'GEOALG2': E };
-  // Override IRREAQUI1 para FING
-  p['IRREAQUI1'] = [{ 'FLU': A, 'QUIANA1': E, 'QUIANA2': E, 'FISQUI103': E, 'PROBEST': E, 'ECUADIF': E, 'FENTRA': E, 'TERAPL': E }];
-  // Override ELE1 para FING
-  p['ELE1'] = { 'CALC2': A, 'FIS3F': E };
-  // Overrides para materias con FIS102/FIS103LAB (excluidos de traducción automática)
-  p['MECAPL']     = { 'CALC2': A, 'FIS2F': E, 'FISEXPF': A };
-  p['TRACALMA1']  = [{ 'FIS2F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
-  p['MEDELEINGP'] = { 'FIS3F': E, 'FISEXPF': A, 'FLU': A };
-  // Overrides optativas para FING
-  p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
-  p['CONCAL']     = { 'PROBEST': A };
-  p['INIRINGR']   = { 'GEOALG1': A };
-  p['METESTREG']  = { 'GEOALG2': A, 'CALC2': A, 'PROBEST': A };
-  p['ASEGCALANA'] = { 'QUIANA3': A, 'PROBEST': A };
-  p['TECPOL']     = { 'FIS3F': E, 'QUIORGT101': A };
-  // TUTPAR unificada para FING (lógica especial en cp() y buildPPReqRows())
-  p['TUTPAR']     = {};
+  // Parte desde PV_2021_FING y agrega los 3 overrides propios del plan 2000
+  const p = { ...PV_2021_FING };
   p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
@@ -1973,18 +1948,11 @@ const SEMESTRES_2021_FING = [
   { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
 ];
 
-const SEMESTRES_2000_FING = [
-  { label: '1er Semestre',  ids: ['MATINI','GEOALG1','FIS1F','QUIGEN1','PRERIELAB'] },
-  { label: '2do Semestre',  ids: ['CALC2','GEOALG2','FIS2F','QUIGEN2','INTINGQUI'] },
-  { label: '3er Semestre',  ids: ['CALVEC','PROBEST','FIS3F','QUIORGT101','QUIANA1'] },
-  { label: '4to Semestre',  ids: ['ECUADIF','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
-  { label: '5to Semestre',  ids: ['FISEXPF','QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
-  { label: '6to Semestre',  ids: ['FISQUI104','FLU','TRACALMA1','COM1'] },
-  { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
-  { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] },
-  { label: '9no Semestre',  ids: ['INGBIOTRAE','PROIND1','DISPROQUI'] },
-  { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
-];
+const SEMESTRES_2000_FING = SEMESTRES_2021_FING.map((sem, i) =>
+  i === 7
+    ? { ...sem, ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] }
+    : sem
+);
 
 const SEMESTRES_2000 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
@@ -2030,7 +1998,7 @@ function applyPlan(p) {
       : [...O2.filter(s => s.id !== 'TECSERIND2'),
          { id: 'INGAMB', name: 'Ingeniería Ambiental', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' }];
     PV_ACT      = isFing ? PV_2000_FING : PV_2000;
-    INIC_ACT    = isFing ? INIC_FING : INIC_2000;
+    INIC_ACT    = isFing ? INIC_FING : INIC_2021;
     SEMESTRES_ACT = isFing ? SEMESTRES_2000_FING : SEMESTRES_2000;
   } else {
     OB_ACT      = baseOB;
@@ -2247,7 +2215,7 @@ let _prevTab = 'princ';
 function sv() {
   const data = { est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
-  window.fbSave?.({ est, bOp, dOp, matIni, cel, soundOn, quimiOn, mascot, theme, plan, ingreso });
+  window.fbSave?.({ est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso });
 }
 
 function ld() {
@@ -2333,15 +2301,18 @@ function cp(id) {
   }
   // TALENCCRE: créditos requeridos distintos según plan
   if (id === 'TALENCCRE') {
-    const reqs = plan === '2021'
-      ? [{ cr: 24, type: 'ing_proc_qb' }, { cr: 190, type: 'basicas' }, { cr: 20, type: 'act_int' }, { cr: 65, type: 'ing_proc_fis' }]
-      : [{ cr: 65, type: 'ing_proc_fis' }, { cr: 20, type: 'act_int' }, { cr: 190, type: 'basicas' }, { cr: 24, type: 'ing_proc_qb' }];
-    const tot = crTotal(), bas = crBasicas();
+    const reqs = [
+      { cr: 65,  type: 'ing_proc_fis' },
+      { cr: 24,  type: 'ing_proc_qb'  },
+      { cr: 20,  type: 'act_int'       },
+      { cr: 190, type: 'basicas'       },
+    ];
+    const bas = crBasicas();
     const crIngProcFis = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Físicos') t+=gcr(s.id,gs(s.id)); return t; })();
     const crIngProcQB  = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Q/B')     t+=gcr(s.id,gs(s.id)); return t; })();
     const crActInt     = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Act. Integradoras')  t+=gcr(s.id,gs(s.id)); return t; })();
     const check = (r) => {
-      if (r.type==='basicas')      return bas   >= r.cr;
+      if (r.type==='basicas')      return bas          >= r.cr;
       if (r.type==='ing_proc_fis') return crIngProcFis >= r.cr;
       if (r.type==='ing_proc_qb')  return crIngProcQB  >= r.cr;
       if (r.type==='act_int')      return crActInt     >= r.cr;
@@ -2767,8 +2738,8 @@ function computeGlobalLevels() {
   return { globalLevel, maxLevel };
 }
 
-function topoSort(arr) {
-  const { globalLevel } = computeGlobalLevels();
+function topoSort(arr, precomputed) {
+  const { globalLevel } = precomputed || computeGlobalLevels();
   const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
   return [...arr].sort((a, b) => {
     const wa = isWip(a.id), wb = isWip(b.id);
@@ -2794,9 +2765,10 @@ const SEMESTRES_2021 = [
 let blt = {};
 function bldGrds() {
   if (!blt.t) {
-    const { globalLevel } = computeGlobalLevels();
+    const computed = computeGlobalLevels();
+    const { globalLevel } = computed;
     const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
-    const sorted = topoSort(ALL);
+    const sorted = topoSort(ALL, computed);
     const byLevel = new Map();
     for (const s of sorted) {
       const lv = isWip(s.id) ? 9999 : (globalLevel[s.id] ?? 0);
@@ -2904,6 +2876,21 @@ function applyS() {
 let _ppCurrentId = null;
 let _ppMode = 'req'; // 'req' | 'rev'
 
+// Helper: renderiza una fila de previa
+function renderPPItem(pid, ms, indent = false) {
+  const ok = gs(pid) >= ms;
+  const style = indent ? ' style="margin-left:8px"' : '';
+  return `<div class="pi${ok ? ' met' : ''}"${style}><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+}
+
+// Helper: renderiza una lista de opciones con label
+function renderPPOpts(opts) {
+  return opts.map(opt => {
+    const header = `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
+    return header + opt.items.map(({ id: pid, ms }) => renderPPItem(pid, ms, true)).join('');
+  }).join('');
+}
+
 function buildPPReqRows(id) {
   const p = PV_ACT[id];
   // Requisito de créditos (si aplica)
@@ -2931,66 +2918,38 @@ function buildPPReqRows(id) {
     creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
   }
   if (id === 'TUTPAR') {
-    const E = S.E, A = S.A;
-    const opt1Met = gs('FIS1F') >= E;
-    const opt2Met = gs('GEOALG1') >= E && gs('GEOALG2') >= A;
-    const opt3Met = gs('CALC1') >= E && gs('CALC2') >= A;
     const opts = [
-      { label: 'Opción 1', met: opt1Met, items: [{ id: 'FIS1F', ms: E }] },
-      { label: 'Opción 2', met: opt2Met, items: [{ id: 'GEOALG1', ms: E }, { id: 'GEOALG2', ms: A }] },
-      { label: 'Opción 3', met: opt3Met, items: [{ id: 'CALC1', ms: E }, { id: 'CALC2', ms: A }] },
+      { label: 'Opción 1', met: gs('FIS1F') >= E,
+        items: [{ id: 'FIS1F', ms: E }] },
+      { label: 'Opción 2', met: gs('GEOALG1') >= E && gs('GEOALG2') >= A,
+        items: [{ id: 'GEOALG1', ms: E }, { id: 'GEOALG2', ms: A }] },
+      { label: 'Opción 3', met: gs('CALC1') >= E && gs('CALC2') >= A,
+        items: [{ id: 'CALC1', ms: E }, { id: 'CALC2', ms: A }] },
     ];
-    let rows = '';
-    opts.forEach(opt => {
-      rows += `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
-      opt.items.forEach(({ id: pid, ms }) => {
-        const ok = gs(pid) >= ms;
-        rows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
-      });
-    });
-    return creditRow + rows;
+    return creditRow + renderPPOpts(opts);
   }
   if (id === 'FIS3F') {
-    const E = S.E, A = S.A;
-    // CALC1 aprobada es requisito común
-    const calc1Ok = gs('CALC1') >= A;
-    let rows = `<div class="pi${calc1Ok ? ' met' : ''}"><span class="pn">${BI['CALC1']?.name || 'CALC1'}</span><span class="pr ${calc1Ok ? 'ok' : SN[A]}">${calc1Ok ? '✓' : SL[A]}</span></div>`;
-    // Opciones para la física
-    const opt1Met = gs('FIS1F') >= A && gs('FIS2F') >= A;
-    const opt2Met = gs('FIS1F') >= E;
+    const commonRow = renderPPItem('CALC1', A);
     const opts = [
-      { label: 'Opción 1', met: opt1Met, items: [{ id: 'FIS1F', ms: A }, { id: 'FIS2F', ms: A }] },
-      { label: 'Opción 2', met: opt2Met, items: [{ id: 'FIS1F', ms: E }] },
+      { label: 'Opción 1', met: gs('FIS1F') >= A && gs('FIS2F') >= A,
+        items: [{ id: 'FIS1F', ms: A }, { id: 'FIS2F', ms: A }] },
+      { label: 'Opción 2', met: gs('FIS1F') >= E,
+        items: [{ id: 'FIS1F', ms: E }] },
     ];
-    opts.forEach(opt => {
-      rows += `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
-      opt.items.forEach(({ id: pid, ms }) => {
-        const ok = gs(pid) >= ms;
-        rows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
-      });
-    });
-    return creditRow + rows;
+    return creditRow + commonRow + renderPPOpts(opts);
   }
   if (!p || (typeof p === 'object' && !Array.isArray(p) && Object.keys(p).length === 0))
     return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
   const groups = Array.isArray(p) ? p : [p];
-  let allRows = '';
   if (groups.length === 1) {
-    for (const [pid, ms] of Object.entries(groups[0])) {
-      const ok = gs(pid) >= ms;
-      allRows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
-    }
-  } else {
-    groups.forEach((g, i) => {
-      const allMet = Object.entries(g).every(([pid, ms]) => gs(pid) >= ms);
-      allRows += `<div class="pp-opt-label${allMet ? ' met' : ''}">Opción ${i + 1}${allMet ? ' ✓' : ''}</div>`;
-      for (const [pid, ms] of Object.entries(g)) {
-        const ok = gs(pid) >= ms;
-        allRows += `<div class="pi${ok ? ' met' : ''}" style="margin-left:8px"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
-      }
-    });
+    return creditRow + Object.entries(groups[0]).map(([pid, ms]) => renderPPItem(pid, ms)).join('');
   }
-  return creditRow + allRows;
+  const opts = groups.map((g, i) => ({
+    label: `Opción ${i + 1}`,
+    met: Object.entries(g).every(([pid, ms]) => gs(pid) >= ms),
+    items: Object.entries(g).map(([pid, ms]) => ({ id: pid, ms })),
+  }));
+  return creditRow + renderPPOpts(opts);
 }
 
 function buildPPRevRows(id) {
@@ -3393,27 +3352,25 @@ function switchHelpTab(tab) {
   });
 }
 
-function _toggleCfg(elId, onSide) {
+function _updateCfgBtn(elId, val) {
   const el = document.getElementById(elId);
-  const val = !onSide;
   el.textContent = val ? '✔ On' : '✘ Off';
   el.className   = 'toggle-btn ' + (val ? 'on' : 'off');
-  return val;
 }
 function toggleSound() {
   soundOn = !soundOn;
   if (soundOn) sndAdvance();
-  _toggleCfg('cfg-sound', !soundOn);
+  _updateCfgBtn('cfg-sound', soundOn);
   sv();
 }
 function toggleToasts() {
   toastsOn = !toastsOn;
-  _toggleCfg('cfg-toasts', !toastsOn);
+  _updateCfgBtn('cfg-toasts', toastsOn);
   sv();
 }
 function toggleQuimi() {
   quimiOn = !quimiOn;
-  _toggleCfg('cfg-quimi', !quimiOn);
+  _updateCfgBtn('cfg-quimi', quimiOn);
   applyQuimiVisibility();
   sv();
 }
@@ -3558,8 +3515,10 @@ window._applyCloudData = function (d) {
   if (!d) return;
   est     = d.est   || {};
   bOp     = d.bOp   || null;
+  dOp     = d.dOp   || null;
   cel     = d.cel   || false;
   soundOn = d.soundOn !== undefined ? d.soundOn : true;
+  toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
   quimiOn = d.quimiOn !== undefined ? d.quimiOn : true;
   mascot  = d.mascot  || mascot;
   if (d.theme) theme = d.theme;
