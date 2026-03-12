@@ -1754,7 +1754,7 @@ const PV_2021 = {
   'TUTPAR':      {},
   'PRAADING':  { 'ADMGRAING': A },
   'INTSISGES': {},
-  'TRATRESSOLID':{ 'INTINGBIO': A, 'IRREAQUI1': A },
+  'TRATRESSOLID':{ 'INGAMB': A },
   'CIETECSOC': {},
   'QCASOLACUA':{ 'QUIINO1': A },
   'INTCIEBIO1':{},
@@ -1790,16 +1790,16 @@ const PV_2021 = {
   'CATADS':    { 'QUIANA2': A, 'QUIORG103L': A, 'FISQUI103': A },
   'LABQCAINO': { 'QUIGEN2': A, 'QUIINO1': C },
   'DINCONPRO': [{ 'TRACALMA1': E, 'COM1': A, 'IRREAQUI1': A }, { 'TRACALMA1': E, 'MAT06': A, 'IRREAQUI1': A }],
-  'INTINGBIO': { 'QUIORG102I': E, 'QUIORGT101': A, 'FISQUI103': A },
-  'INGBIOTRAE':[{ 'INTINGBIO': A, 'IRREAQUI1': A, 'TRACALMA2': A }, { 'INTINGBIO': A, 'IRREAQUI1': A }],
+  'INTINGBIO': { 'QUIORG102I': E, 'QUIORGT101': E, 'FISQUI103': A },
+  'INGBIOTRAE':[{ 'INTINGBIO': A, 'IRREAQUI1': E, 'TRACALMA2': E }, { 'INTINGBIO': A, 'IRREAQUI1': E }],
   'PROIND1':   [{ 'TRACALMA1': E, 'TRACALMA2': E, 'TECSERIND1': E, 'FLU': E, 'MECAPL': A, 'INTINGBIO': A, 'IRREAQUI2': A, 'ELE1': A, 'IRREAQUI1': E }],
-  'DISPROQUI': { 'IRREAQUI1': A, 'TRACALMA1': A },
+  'DISPROQUI': { 'IRREAQUI1': E, 'TRACALMA1': E },
   'PROIND2':   { 'PROIND1': A },
-  'PAS':       { 'TECSERIND1': A, 'IRREAQUI1': A, 'TRACALMA1': A, 'TRACALMA2': A, 'FLU': A, 'TERAPL': A, 'FENTRA': A, 'IRREAQUI2': A },
+  'PAS':       { 'TECSERIND1': E, 'IRREAQUI1': E, 'TRACALMA1': E, 'TRACALMA2': E, 'FLU': E, 'TERAPL': E, 'FENTRA': E, 'IRREAQUI2': A },
 };
 const PV_BIO = {
-  bio:  { 'INTINGBIO': 3, 'IRREAQUI1': 3, 'TRACALMA2': 3 },
-  trat: { 'INTINGBIO': 3, 'IRREAQUI1': 3 },
+  bio:  { 'INTINGBIO': A, 'IRREAQUI1': E, 'TRACALMA2': E },
+  trat: { 'INTINGBIO': A, 'IRREAQUI1': E },
 };
 const BO = {
   bio:  { name: 'Ing. Bioquímica',  cr: 10 },
@@ -1823,6 +1823,8 @@ const PV_2000 = (() => {
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
+  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E };
+  p['PAS']        = { 'TECSERIND1': E, 'IRREAQUI1': E, 'TRACALMA1': E, 'TRACALMA2': E, 'FLU': E, 'TERAPL': E, 'FENTRA': E, 'IRREAQUI2': A, 'TECSERIND2': A };
   return p;
 })();
 
@@ -1910,7 +1912,7 @@ const PV_2021_FING = (() => {
   p['ELE1'] = { 'CALC2': A, 'FIS3F': E };
   // Overrides para materias con FIS102/FIS103LAB (excluidos de traducción automática)
   p['MECAPL']     = { 'CALC2': A, 'FIS2F': E, 'FISEXPF': A };
-  p['TRACALMA1']  = [{ 'FIS3F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['TRACALMA1']  = [{ 'FIS2F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
   p['MEDELEINGP'] = { 'FIS3F': E, 'FISEXPF': A, 'FLU': A };
   // Overrides optativas para FING
   p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
@@ -1927,9 +1929,10 @@ const PV_2021_FING = (() => {
 const PV_2000_FING = (() => {
   // Parte desde PV_2021_FING y agrega los 3 overrides propios del plan 2000
   const p = { ...PV_2021_FING };
-  p['TECSERIND2'] = { 'TECSERIND1': A, 'TRACALMA1': A };
+  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
+  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E };
   return p;
 })();
 
@@ -2038,8 +2041,12 @@ function applyPlan(p) {
         return { ...sem, ids: matIni === false ? ['CALC1', ...ids] : ids };
       }
       if (i === 1) {
-        const ids = sem.ids.filter(id => id !== 'CALC1');
-        return { ...sem, ids: matIni === true ? ['CALC1', ...ids] : ids };
+        let ids = sem.ids.filter(id => id !== 'CALC1');
+        if (matIni === true) {
+          ids = ids.filter(id => id !== 'CALC2');
+          return { ...sem, ids: ['CALC1', 'CALC2', ...ids] };
+        }
+        return { ...sem, ids };
       }
       return sem;
     });
@@ -3815,6 +3822,9 @@ function init() {
   ld();
   if (!plan) plan = '2021';
   if (!ingreso) ingreso = 'fq';
+  // Usuarios FING con localStorage anterior a la feature de Matemática Inicial
+  // tienen matIni=null; applyPlan no agrega CALC1 a ningún semestre con null.
+  if (ingreso === 'fing' && matIni === null) matIni = false;
   applyPlan(plan);
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
   rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
