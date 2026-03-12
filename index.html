@@ -2275,12 +2275,12 @@ function _buildFbPayload() {
     plan, ingreso, theme, mascot,
     ...(matIni !== null ? { matIni } : {}),
     // — Resumen académico —
-    cr, mat,
+    z_cr: cr, z_mat: mat,
     pctAvance: Math.round(crTotal / META * 100),
     // — Actividad —
     lastSeen: new Date().toISOString(),
     // — Estado raw (para restaurar en otro dispositivo) —
-    est,
+    z_est: est,
   };
 }
 
@@ -2294,7 +2294,7 @@ function ld() {
   try {
     const d = JSON.parse(localStorage.getItem(SK));
     if (!d) return;
-    est     = d.est   || {};
+    est     = d.z_est || d.est || {};
     bOp     = d.bOp   || null;
     dOp     = d.dOp   || null;
     matIni  = d.matIni !== undefined ? d.matIni : null;
@@ -3578,7 +3578,7 @@ document.addEventListener('keydown', e => {
 // ══════════ INIT ══════════
 window._applyCloudData = function (d) {
   if (!d) return;
-  est     = d.est   || {};
+  est     = d.z_est || d.est || {};
   bOp     = d.bOp   || null;
   dOp     = d.dOp   || null;
   matIni  = d.matIni !== undefined ? d.matIni : matIni;
