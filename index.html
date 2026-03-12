@@ -1505,6 +1505,7 @@ const db    = getFirestore(fbApp);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
+let _cachedCreatedAt = null; // se setea una sola vez al cargar o al primer guardado
 
 window.fbSignIn = async () => {
   try { await signInWithPopup(auth, provider); }
@@ -1518,10 +1519,12 @@ window.fbSignOut = async () => {
 window.fbSave = async (data) => {
   if (!currentUser) return;
   try {
-    const ref  = doc(db, 'users', currentUser.uid);
-    const snap = await getDoc(ref);
-    const createdAt = snap.exists() ? (snap.data().createdAt ?? new Date().toISOString()) : new Date().toISOString();
-    await setDoc(ref, { ...data, email: currentUser.email, createdAt });
+    // createdAt se cachea en memoria para no leer Firestore en cada guardado
+    if (!_cachedCreatedAt) {
+      const snap = await getDoc(doc(db, 'users', currentUser.uid));
+      _cachedCreatedAt = snap.exists() ? (snap.data().createdAt ?? new Date().toISOString()) : new Date().toISOString();
+    }
+    await setDoc(doc(db, 'users', currentUser.uid), { ...data, email: currentUser.email, createdAt: _cachedCreatedAt });
   }
   catch (e) { console.error('fbSave error:', e); }
 };
@@ -1540,6 +1543,7 @@ window.fbLoad = async () => {
 
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
+  _cachedCreatedAt = null; // resetear caché al cambiar de usuario
   window._fbCurrentUser = user;
   if (user) {
     const cloud = await window.fbLoad();
@@ -1575,7 +1579,7 @@ const A   = S.A, E = S.E, C = S.C;
 const META = 450;
 const SK  = 'qp_v3';
 
-const isMobile = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // ══════════ DATOS: MATERIAS OBLIGATORIAS ══════════
 const OB = [
@@ -2248,15 +2252,15 @@ let _prevTab = 'princ';
 
 // ══════════ PERSISTENCIA ══════════
 function _buildFbPayload() {
-  // Créditos acumulados por área (solo aprobadas/exoneradas)
+  // Créditos acumulados por área — usa gcr() igual que la barra lateral
   const cr = {};
   let crTotal = 0;
   for (const s of (ALL || [])) {
-    const st = gs(s.id);
-    if (st === S.A || st === S.E) {
+    const c = gcr(s.id, gs(s.id));
+    if (c > 0) {
       const grp = s.grp || 'Otras';
-      cr[grp] = (cr[grp] || 0) + (s.cr || 0);
-      crTotal += (s.cr || 0);
+      cr[grp] = (cr[grp] || 0) + c;
+      crTotal += c;
     }
   }
   cr.total = crTotal;
@@ -2380,9 +2384,9 @@ function cp(id) {
       { cr: 190, type: 'basicas'       },
     ];
     const bas = crBasicas();
-    const crIngProcFis = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Físicos') t+=gcr(s.id,gs(s.id)); return t; })();
-    const crIngProcQB  = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Q/B')     t+=gcr(s.id,gs(s.id)); return t; })();
-    const crActInt     = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Act. Integradoras')  t+=gcr(s.id,gs(s.id)); return t; })();
+    const crIngProcFis = crArea('Ing. Proc. Físicos');
+    const crIngProcQB  = crArea('Ing. Proc. Q/B');
+    const crActInt     = crArea('Act. Integradoras');
     const check = (r) => {
       if (r.type==='basicas')      return bas          >= r.cr;
       if (r.type==='ing_proc_fis') return crIngProcFis >= r.cr;
@@ -2467,6 +2471,13 @@ function acr() {
     if (ar && c > 0) r[ar] = (r[ar] || 0) + c;
   }
   return r;
+}
+
+// Helper: créditos acumulados en un área específica — evita triplicar esta lógica
+function crArea(area) {
+  let t = 0;
+  for (const s of ALL) if (AM_ACT[s.id] === area) t += gcr(s.id, gs(s.id));
+  return t;
 }
 
 function setSt(id, ns, back) {
@@ -2650,6 +2661,43 @@ function buildABSidebar() {
 
   function grpCr(hijas) { return hijas.reduce((s, h) => s + (ac[h] || 0), 0); }
 
+  // Helper interno: crea un botón de área (hija, padre o standalone)
+  function mkAreaBtn({ area, ea, mn, tipo, isOpen }) {
+    const done   = ea >= mn;
+    const active = areaF === area;
+    const isPadre = tipo === 'padre';
+    const isHija  = tipo === 'hija';
+    const barCol  = done ? 'var(--gn)' : (isHija ? 'var(--ac)' : 'var(--a2)');
+    const barH    = isHija ? '2px' : '3px';
+    const fSize   = isHija ? '.65rem' : '.68rem';
+    const fWeight = isHija ? '' : 'font-weight:700;';
+    const crSize  = isHija ? '.54rem' : '.55rem';
+    const arrow   = isPadre ? `<span style="font-size:.55rem;transition:transform .2s;display:inline-block;transform:rotate(${isOpen?'90':'0'}deg)">▶</span>` : '';
+    const crColor = isPadre ? (done ? 'var(--gn)' : 'var(--a2)') : '';
+    const crStyle = crColor ? `color:${crColor};` : '';
+    const arrowMr = isPadre ? 'margin-right:6px;' : '';
+
+    const b = document.createElement('button');
+    b.className = 'nb' + (active ? ' on' : (!isHija && done ? '' : (isHija && done ? ' done' : '')));
+    if (area) b.dataset.area = area;
+    if (isHija) {
+      b.style.paddingLeft = '20px';
+    } else {
+      b.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
+    }
+    b.innerHTML = `<div style="width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${isHija?'2':'3'}px">
+        <span style="font-size:${fSize};${fWeight}${!isHija?'color:var(--tx);':''}flex:1">${area}${done ? ' ✓' : ''}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:${crSize};${crStyle}${arrowMr}">${ea}/${mn}</span>
+        ${arrow}
+      </div>
+      <div style="background:var(--bd);border-radius:100px;height:${barH};overflow:hidden">
+        <div style="height:100%;border-radius:100px;background:${barCol};width:${Math.min(100,Math.round(ea/mn*100))}%;transition:width .6s"></div>
+      </div>
+    </div>`;
+    return b;
+  }
+
   // Header principal desplegable "Áreas"
   const hdr = document.createElement('button');
   hdr.className = 'nb sb-collapsible';
@@ -2669,81 +2717,23 @@ function buildABSidebar() {
     const esHija  = !!(currentPadre && (padres[currentPadre] || []).includes(area));
 
     if (esHija) {
-      // Solo mostrar si el padre está abierto
       if (!sbGrupoOpen[currentPadre]) continue;
-
       const ea = ac[area] || 0;
-      const pt = Math.min(100, Math.round(ea / mn * 100));
-      const done = ea >= mn;
-      const active = areaF === area;
-      const barCol = done ? 'var(--gn)' : 'var(--ac)';
-      const b = document.createElement('button');
-      b.className  = 'nb' + (active ? ' on' : done ? ' done' : '');
-      b.dataset.area = area;
-      b.style.paddingLeft = '20px';
-      b.innerHTML = `<div style="width:100%">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-          <span style="font-size:.65rem">${area}${done ? ' ✓' : ''}</span>
-          <span style="font-family:'Space Mono',monospace;font-size:.54rem">${ea}/${mn}</span>
-        </div>
-        <div style="background:var(--bd);border-radius:100px;height:2px;overflow:hidden">
-          <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
-        </div>
-      </div>`;
+      const b = mkAreaBtn({ area, ea, mn, tipo: 'hija' });
       b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
       c.appendChild(b);
 
     } else if (esPadre) {
       currentPadre = area;
-      const hijas = padres[area];
-      const ea = grpCr(hijas);
-      const pt = Math.min(100, Math.round(ea / mn * 100));
-      const done = ea >= mn;
-      const barCol = done ? 'var(--gn)' : 'var(--a2)';
+      const ea = grpCr(padres[area]);
       const isOpen = !!sbGrupoOpen[area];
-      const arrow = isOpen ? '90' : '0';
-
-      const btn = document.createElement('button');
-      btn.className = 'nb';
-      btn.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
-      btn.innerHTML = `
-        <div style="width:100%">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-            <span style="font-size:.68rem;font-weight:700;color:var(--tx);flex:1">${area}${done ? ' ✓' : ''}</span>
-            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:${done?'var(--gn)':'var(--a2)'};margin-right:6px">${ea}/${mn}</span>
-            <span style="font-size:.55rem;transition:transform .2s;display:inline-block;transform:rotate(${arrow}deg)">▶</span>
-          </div>
-          <div style="background:var(--bd);border-radius:100px;height:3px;overflow:hidden">
-            <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
-          </div>
-        </div>`;
-      btn.addEventListener('click', () => {
-        sbGrupoOpen[area] = !sbGrupoOpen[area];
-        buildABSidebar();
-      });
+      const btn = mkAreaBtn({ area, ea, mn, tipo: 'padre', isOpen });
+      btn.addEventListener('click', () => { sbGrupoOpen[area] = !sbGrupoOpen[area]; buildABSidebar(); });
       c.appendChild(btn);
 
     } else {
-      // Área standalone: mismo diseño visual que padre pero clickeable como filtro
       const ea = ac[area] || 0;
-      const pt = Math.min(100, Math.round(ea / mn * 100));
-      const done = ea >= mn;
-      const active = areaF === area;
-      const barCol = done ? 'var(--gn)' : 'var(--a2)';
-      const b = document.createElement('button');
-      b.className = 'nb' + (active ? ' on' : '');
-      b.dataset.area = area;
-      b.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
-      b.innerHTML = `
-        <div style="width:100%">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-            <span style="font-size:.68rem;font-weight:700;color:var(--tx);flex:1">${area}${done ? ' ✓' : ''}</span>
-            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:${done?'var(--gn)':'var(--a2)'}">${ea}/${mn}</span>
-          </div>
-          <div style="background:var(--bd);border-radius:100px;height:3px;overflow:hidden">
-            <div style="height:100%;border-radius:100px;background:${barCol};width:${pt}%;transition:width .6s"></div>
-          </div>
-        </div>`;
+      const b = mkAreaBtn({ area, ea, mn, tipo: 'standalone' });
       b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
       c.appendChild(b);
     }
@@ -2823,8 +2813,8 @@ const WIP_LEVEL = 9999;
 
 let blt = {};
 function bldGrds() {
+  const computed = computeGlobalLevels();
   if (!blt.t) {
-    const computed = computeGlobalLevels();
     const { globalLevel } = computed;
     const isWip = (id) => PV_ACT[id] === undefined && !(id in CR_REQ) && id !== 'TALENCCRE' && !INIC_ACT.has(id);
     const sorted = topoSort(ALL, computed);
@@ -2865,11 +2855,11 @@ function bldGrds() {
     blt.p = true;
   }
   if (!blt.o1) {
-    topoSort(O1_ACT).forEach(s => document.getElementById('g-o1').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    topoSort(O1_ACT, computed).forEach(s => document.getElementById('g-o1').appendChild(mkCard({ ...s, name: s.name + ' *' })));
     blt.o1 = true;
   }
   if (!blt.o2) {
-    topoSort(O2_ACT).forEach(s => document.getElementById('g-o2').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    topoSort(O2_ACT, computed).forEach(s => document.getElementById('g-o2').appendChild(mkCard({ ...s, name: s.name + ' *' })));
     blt.o2 = true;
   }
 }
@@ -2961,9 +2951,9 @@ function buildPPReqRows(id) {
       act_int:      { cr: 20,  label: 'cr. Act. Integradoras' },
       basicas:      { cr: 190, label: 'cr. Materias Básicas' },
     };
-    const crIngProcFis = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Físicos') t+=gcr(s.id,gs(s.id)); return t; })();
-    const crIngProcQB  = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Ing. Proc. Q/B')     t+=gcr(s.id,gs(s.id)); return t; })();
-    const crActInt     = (() => { let t=0; for(const s of ALL) if(AM_ACT[s.id]==='Act. Integradoras')  t+=gcr(s.id,gs(s.id)); return t; })();
+    const crIngProcFis = crArea('Ing. Proc. Físicos');
+    const crIngProcQB  = crArea('Ing. Proc. Q/B');
+    const crActInt     = crArea('Act. Integradoras');
     const bas = crBasicas();
     const actuals = { ing_proc_fis: crIngProcFis, ing_proc_qb: crIngProcQB, act_int: crActInt, basicas: bas };
     for (const [type, { cr, label }] of Object.entries(labels)) {
@@ -3064,7 +3054,7 @@ function ppOvClick(e) {
 
 function hidePP() {
   const ov = document.getElementById('ov-pp');
-  ov.classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  ov.classList.remove('op'); syncModalOpen();
   ov.removeEventListener('click', ppOvClick);
 }
 function showPPBio() {
@@ -3096,7 +3086,7 @@ function openFeedback() {
   document.getElementById('ov-fb').classList.add('op'); setModalOpen(true);
 }
 
-function closeFeedback() { document.getElementById('ov-fb').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeFeedback() { document.getElementById('ov-fb').classList.remove('op'); syncModalOpen(); }
 
 function selectFbType(btn) {
   fbType = btn.dataset.type;
@@ -3252,12 +3242,12 @@ function openMatIniWarn()  {
   document.getElementById('ov-matini-warn').classList.add('op'); setModalOpen(true);
 }
 function closeMatIniWarn() {
-  document.getElementById('ov-matini-warn').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  document.getElementById('ov-matini-warn').classList.remove('op'); syncModalOpen();
   try { localStorage.setItem('qp_matini_warn_seen', '1'); } catch(e) {}
 }
 
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
-function closeReset() { document.getElementById('ov-r').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeReset() { document.getElementById('ov-r').classList.remove('op'); syncModalOpen(); }
 
 // ══════════ ACTUALIZACIONES ══════════
 const UPD_VERSION = 5;
@@ -3269,7 +3259,7 @@ function switchUpdTab(tab) {
 }
 function closeUpd() {
   document.getElementById('ov-upd').classList.remove('op');
-  setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  syncModalOpen();
   try { localStorage.setItem('qp_upd_ver', UPD_VERSION); } catch(e) {}
 }
 function openUpd() {
@@ -3323,11 +3313,7 @@ function openDin() {
   document.querySelectorAll('input[name="din"]').forEach(r => r.checked = r.value === dOp);
   document.getElementById('ov-d').classList.add('op'); setModalOpen(true);
 }
-function dinBack() {
-  document.getElementById('din-prereq-section').style.display = 'none';
-  document.getElementById('din-back-btn').style.display       = 'none';
-}
-function closeDin() { document.getElementById('ov-d').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeDin() { document.getElementById('ov-d').classList.remove('op'); syncModalOpen(); }
 function confirmDin() {
   const s = document.querySelector('input[name="din"]:checked');
   if (!s) return;
@@ -3361,6 +3347,9 @@ function showPPDin() {
 function setModalOpen(open) {
   document.body.classList.toggle('modal-open', open);
 }
+function syncModalOpen() {
+  setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+}
 
 function openBio() {
   document.getElementById('bio-prereq-section').style.display = 'none';
@@ -3370,12 +3359,7 @@ function openBio() {
   document.getElementById('ov-b').classList.add('op'); setModalOpen(true);
 }
 
-function bioBack() {
-  document.getElementById('bio-prereq-section').style.display = 'none';
-  document.getElementById('bio-back-btn').style.display       = 'none';
-}
-
-function closeBio() { document.getElementById('ov-b').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeBio() { document.getElementById('ov-b').classList.remove('op'); syncModalOpen(); }
 
 function confirmBio() {
   const s = document.querySelector('input[name="bio"]:checked');
@@ -3399,7 +3383,7 @@ function openConfig() {
 }
 
 function closeConfig() {
-  document.getElementById('ov-cfg').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  document.getElementById('ov-cfg').classList.remove('op'); syncModalOpen();
   if (ingreso === 'fing' && matIni === true) setTimeout(() => openMatIniWarn(), 300);
 }
 
@@ -3408,7 +3392,7 @@ function openHelp() {
   if (isMobile()) switchHelpTab('mob');
 }
 
-function closeHelp() { document.getElementById('ov-help').classList.remove('op'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); }
+function closeHelp() { document.getElementById('ov-help').classList.remove('op'); syncModalOpen(); }
 
 function switchHelpTab(tab) {
   ['pc','mob'].forEach(t => {
@@ -3467,7 +3451,7 @@ function chkCel() {
   }, 400);
 }
 
-function closeCel() { document.getElementById('cel').classList.remove('on'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on')); stopConfetti(); }
+function closeCel() { document.getElementById('cel').classList.remove('on'); syncModalOpen(); stopConfetti(); }
 
 let confActive = false;
 const CC = ['#e63946','#f4a261','#2a9d8f','#4ea8de','#e9c46a','#c77dff','#f72585','#4cc9f0','#fff','#3fb950'];
@@ -3593,8 +3577,11 @@ window._applyCloudData = function (d) {
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
   rc(); rAll(); upCr(); applyTheme(); applyMascot(); applyQuimiVisibility();
   try {
+    // Guardar en localStorage solo los campos que ld() sabe leer, no los campos de Firebase (z_cr, z_mat, etc.)
     const local = JSON.parse(localStorage.getItem(SK) || '{}');
-    localStorage.setItem(SK, JSON.stringify({ ...d, toastsOn: local.toastsOn ?? !isMobile() }));
+    const toSave = { est, bOp, dOp, matIni, cel, soundOn, mascot, theme, plan, ingreso,
+                     quimiOn, toastsOn: local.toastsOn ?? !isMobile() };
+    localStorage.setItem(SK, JSON.stringify(toSave));
   } catch (e) {}
 };
 
@@ -3697,7 +3684,7 @@ function closeSplash() {
   }
   mascot = splashMascot || 'quimi';
   applyMascot();
-  document.getElementById('splash').classList.remove('on'); setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+  document.getElementById('splash').classList.remove('on'); syncModalOpen();
   try { localStorage.setItem('qp_welcomed', '1'); } catch(e) {}
   sv();
   if (splashIngreso === 'fing' && splashMatIni === true) setTimeout(() => openMatIniWarn(), 300);
