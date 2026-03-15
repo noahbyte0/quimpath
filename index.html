@@ -1715,6 +1715,7 @@ const CR_REQ = {
   'GESRRHH':  { cr: 270, type: 'total',   label: 'créditos totales' },
   'INTPRERIEL':{ cr: 270, type: 'total',  label: 'créditos totales' },
   'TUTPAR':    { cr: 55,  type: 'total',  label: 'créditos totales' },
+  'ELEGESLOG': { cr: 225, type: 'total',  label: 'créditos totales' },
 };
 
 const PV_2021 = {
@@ -1790,6 +1791,9 @@ const PV_2021 = {
   'INTDISMON':{},  // habilitada por créditos (≥200 cr totales)
   'GESPROIND': {},  // habilitada por créditos (≥270 cr totales)
   'ADMGRAING': {},  // habilitada por créditos (≥140 cr totales)
+  'ELEGESLOG': {},  // habilitada por créditos (≥225 cr totales)
+  'ANAFAL':    { 'FISQUI103': A },
+  'TEORES':    { 'INTINGQUI': E },
   'METESTREG': { 'MAT03': A, 'MAT04': A, 'MAT05': A },
   'HERELE':    { 'FISQUI104': A },
   'INSIND':    { 'ELE1': E, 'TERAPL': E, 'FENTRA': E, 'MECAPL': A },
