@@ -2253,6 +2253,7 @@ function _buildFbPayload() {
 
   return {
     // — Perfil del usuario —
+    carrera: 'ing_alimentos',
     plan, ingreso, theme, mascot,
     ...(matIni !== null ? { matIni } : {}),
     // — Resumen académico —
@@ -3089,6 +3090,7 @@ async function sendFeedback() {
   btn.textContent = 'Enviando...';
   try {
     await window.fbSaveFeedback({
+      carrera:    'ing_alimentos',
       tipo:       fbType,
       materia:    fbType === 'error' ? document.getElementById('fb-materia').value.trim() : '',
       descripcion: desc,
