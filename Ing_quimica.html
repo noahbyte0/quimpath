@@ -3891,6 +3891,15 @@ function init() {
   quimiSetMood('idle');
 }
 
+// ── Verificar que el usuario pasó por el selector de carrera en esta sesión ──
+(function checkSession() {
+  try {
+    if (!sessionStorage.getItem('qp_from_index')) {
+      window.location.replace('index.html');
+    }
+  } catch(e) { /* si sessionStorage no está disponible, dejamos pasar */ }
+})();
+
 init();
 </script>
 </body>
