@@ -736,7 +736,8 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 /* Cartel 2: ancho del centro fijo, mascotas se superponen por fuera */
 .splash-inner-2 {
   position: relative;
-  width: 480px;
+  width: 100%;
+  max-width: 480px;
   background: var(--sf);
   border: 1px solid var(--bd);
   border-radius: 16px;
@@ -748,7 +749,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 .splash-inner-2.active { display: block; }
 
 .splash-content-col {
-  width: 480px;
+  width: 100%;
   padding: 28px 24px 22px;
   display: flex;
   flex-direction: column;
@@ -1071,6 +1072,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <button class="sbtn" onclick="openUpd()">🆕 Actualizaciones</button>
       <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
       <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
+      <button class="sbtn" onclick="sessionStorage.setItem('qp_from_index','1'); window.location.href='index.html'" style="margin-top:8px; border-top: 1px solid var(--bd); padding-top:12px">🔀 Cambiar carrera</button>
 
     </div>
   </aside>
