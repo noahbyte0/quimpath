@@ -493,65 +493,92 @@ body.light .ci-emoji { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
   width: 90px;
   height: 90px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
-  transition: transform .15s;
+  filter: drop-shadow(0 3px 12px rgba(0,0,0,.5));
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  display: block;
 }
-#quimi-img:hover { transform: scale(1.08); }
-#quimi { transition: opacity .2s; }
-body.modal-open #quimi { opacity: 0; pointer-events: none; }
+#quimi-img { transform: scaleX(-1); }
+#quimi.quimpi #quimi-bubble {
+  right: auto;
+  left: 0;
+  transform-origin: bottom left;
+  border-right-width: 1px;
+  border-left-width: 3px;
+}
+#quimi.quimpi #quimi-bubble::after {
+  right: auto;
+  left: 18px;
+}
 #quimi-bubble {
+  position: absolute;
+  bottom: 98px;
+  right: 0;
+  left: auto;
   background: var(--sf);
   border: 1px solid var(--bd);
-  border-radius: 10px 10px 0 10px;
-  padding: 9px 12px;
-  font-size: .73rem;
+  border-right-width: 3px;
+  border-radius: 12px;
+  padding: 10px 13px;
+  font-size: .76rem;
   font-weight: 600;
-  color: var(--tx);
-  max-width: 210px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.4);
-  margin-bottom: 8px;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity .22s, transform .22s cubic-bezier(.34,1.56,.64,1);
+  max-width: 230px;
+  min-width: 150px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.45);
   pointer-events: none;
-  line-height: 1.4;
-  position: relative;
+  opacity: 0;
+  transform: translateY(10px) scale(.93);
+  transform-origin: bottom right;
+  transition: opacity .22s, transform .22s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1.45;
+  z-index: 601;
 }
+#quimi-bubble.on { opacity: 1; transform: translateY(0) scale(1); }
 #quimi-bubble::after {
   content: '';
   position: absolute;
   bottom: -7px;
-  right: 14px;
-  border-left: 7px solid transparent;
-  border-right: 0px solid transparent;
-  border-top: 7px solid var(--bd);
+  right: 18px;
+  left: auto;
+  width: 12px;
+  height: 12px;
+  background: var(--sf);
+  border-right: 1px solid var(--bd);
+  border-bottom: 1px solid var(--bd);
+  transform: rotate(45deg);
 }
-#quimi.quimpi #quimi-bubble {
-  border-radius: 10px 10px 10px 0;
-}
-#quimi.quimpi #quimi-bubble::after {
-  right: auto;
-  left: 14px;
-  border-left: 0px solid transparent;
-  border-right: 7px solid transparent;
-}
-#quimi-bubble.on { opacity: 1; transform: translateY(0); }
+#quimi-bubble[data-mood="exonerada"] { border-right-color: var(--ac); }
+#quimi-bubble[data-mood="aprobada"]  { border-right-color: var(--a2); }
+#quimi-bubble[data-mood="cursando"]  { border-right-color: #f4a261; }
+#quimi-bubble[data-mood="wip"]       { border-right-color: #f4a261; }
+#quimi-bubble[data-mood="happy"]     { border-right-color: var(--gn); }
+.qb-subject { font-size: .6rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 3px; }
 
 /* Animaciones quimi */
-@keyframes quimi-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-@keyframes quimi-rock-f { from{transform:rotate(-8deg)} to{transform:rotate(8deg)} }
-@keyframes quimpi-rock  { from{transform:rotate(-7deg) scale(1)} to{transform:rotate(7deg) scale(1.04)} }
+@keyframes quimi-breathe   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+@keyframes quimi-bounce    { 0%{transform:translateY(0)} 35%{transform:translateY(-14px)} 65%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
+@keyframes quimi-jump      { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-18px) scale(1.07)} 70%{transform:translateY(-8px) scale(1.03)} 100%{transform:translateY(0) scale(1)} }
+@keyframes quimi-breathe-f { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
+@keyframes quimi-bounce-f  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
+@keyframes quimi-jump-f    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
+@keyframes quimi-rock-f    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
 
-#quimi-img[data-mood="happy"]     { animation: quimi-bounce .55s ease-in-out 2; }
-#quimi-img[data-mood="exonerada"] { animation: quimi-rock-f .35s ease-in-out infinite alternate; }
-#quimi-img[data-mood="aprobada"]  { animation: quimi-bounce .6s ease-in-out 3; }
-#quimi-img[data-mood="cursando"]  { animation: quimi-bounce .7s ease-in-out 2; }
+@keyframes quimpi-breathe { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
+@keyframes quimpi-bounce  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
+@keyframes quimpi-jump    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
+@keyframes quimpi-rock    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
+
+#quimi-img[data-mood="idle"]      { animation: quimi-breathe-f 3.5s ease-in-out infinite; }
+#quimi-img[data-mood="happy"]     { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="exonerada"] { animation: quimi-jump-f .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="aprobada"]  { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="cursando"]  { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
 #quimi-img[data-mood="celebrate"] { animation: quimi-rock-f .45s ease-in-out infinite alternate; }
 
-#quimi.quimpi #quimi-img[data-mood="happy"]     { animation: quimpi-rock .5s ease-in-out 2 alternate; }
-#quimi.quimpi #quimi-img[data-mood="exonerada"] { animation: quimpi-rock .35s ease-in-out infinite alternate; }
-#quimi.quimpi #quimi-img[data-mood="aprobada"]  { animation: quimpi-rock .6s ease-in-out 3 alternate; }
-#quimi.quimpi #quimi-img[data-mood="cursando"]  { animation: quimpi-rock .7s ease-in-out 2 alternate; }
+#quimi.quimpi #quimi-img[data-mood="idle"]      { animation: quimpi-breathe 3.5s ease-in-out infinite; }
+#quimi.quimpi #quimi-img[data-mood="happy"]     { animation: quimpi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="exonerada"] { animation: quimpi-jump .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="aprobada"]  { animation: quimpi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="cursando"]  { animation: quimpi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
 #quimi.quimpi #quimi-img[data-mood="celebrate"] { animation: quimpi-rock .45s ease-in-out infinite alternate; }
 
 #cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock-f .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
