@@ -286,7 +286,7 @@
   <div class="grid">
 
     <!-- Ing. Química -->
-    <a class="card teal" href="Ing_quimica.html" onclick="sessionStorage.setItem('qp_from_index','1')">
+    <a class="card teal" href="Ing_quimica.html" onclick="sessionStorage.setItem('qp_from_index','1');try{localStorage.setItem('qp_last_career','Ing_quimica.html')}catch(e){}"  >
       <div class="card-top">
         <span class="card-icon">⚗️</span>
         <span class="card-badge ready">Disponible</span>
@@ -299,7 +299,7 @@
     </a>
 
     <!-- Ing. en Alimentos -->
-    <a class="card blue" href="Ing_alimentos.html" onclick="sessionStorage.setItem('qp_from_index','1')">
+    <a class="card blue" href="Ing_alimentos.html" onclick="sessionStorage.setItem('qp_from_index','1');try{localStorage.setItem('qp_last_career','Ing_alimentos.html')}catch(e){}">
       <div class="card-top">
         <span class="card-icon">🍞</span>
         <span class="card-badge ready">Disponible</span>
@@ -529,6 +529,16 @@ function closePoll() {
   document.getElementById('poll-modal').style.display = 'none';
 }
 document.addEventListener('DOMContentLoaded', () => {
+  // Auto-redirigir si ya eligió carrera antes
+  try {
+    const lastCareer = localStorage.getItem('qp_last_career');
+    if (lastCareer) {
+      sessionStorage.setItem('qp_from_index', '1');
+      window.location.replace(lastCareer);
+      return;
+    }
+  } catch(e) {}
+
   // Cerrar al click fuera
   document.getElementById('poll-modal').addEventListener('click', function(e) {
     if (e.target === this) closePoll();
