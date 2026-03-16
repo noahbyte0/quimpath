@@ -1,0 +1,3869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuimPath — Ingeniería en Alimentos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+/* ══════════ VARIABLES ══════════ */
+:root {
+  --bg:  #0d1117;
+  --sf:  #161b22;
+  --sf2: #1c2128;
+  --bd:  #30363d;
+  --tx:  #e6edf3;
+  --tm:  #7d8590;
+  --ac:  #2a9d8f;
+  --a2:  #4ea8de;
+  --a3:  #e05252;
+  --gn:  #3fb950;
+
+  --c-bl: #0d1117; --t-bl: #484f58;
+  --c-ha: #1e2228;
+  --c-cu: #3d1212; --t-cu: #e05252;
+  --c-ap: #0a2240; --t-ap: #4ea8de;
+  --c-ex: #0a2e28; --t-ex: #2a9d8f;
+
+  --sw: 185px;
+}
+
+/* ══════════ RESET ══════════ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: none) {
+  button:focus, input:focus, a:focus, .card:focus,
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: none; }
+}
+html, body { max-width: 100vw; height: 100%; }
+@media (max-width: 768px) { html, body { overflow: auto; } }
+@media (max-width: 768px) {
+  #quimi { display: none !important; }
+}
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  height: 100dvh;
+}
+
+/* ══════════ LAYOUT ══════════ */
+#app {
+  display: flex;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ══════════ SIDEBAR ══════════ */
+#sb {
+  width: var(--sw);
+  min-width: var(--sw);
+  background: var(--sf);
+  border-right: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform .3s;
+  z-index: 100;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bd) transparent;
+}
+#sb::-webkit-scrollbar { width: 4px; }
+#sb::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 2px; }
+
+/* Sidebar — logo */
+.sl {
+  padding: 14px 10px 10px;
+  border-bottom: 1px solid var(--bd);
+  text-align: center;
+}
+.sl h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ac), var(--a2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  padding-right: 3px;
+}
+.sl p {
+  font-size: .6rem;
+  color: var(--tm);
+  font-family: 'Space Mono', monospace;
+  margin-top: 1px;
+}
+
+/* Sidebar — créditos */
+.cb {
+  margin: 10px;
+  background: var(--sf2);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 10px;
+}
+.cb .lb {
+  font-size: .58rem;
+  color: var(--tm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Space Mono', monospace;
+}
+.cm-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 3px 0;
+}
+.cm-row .nm  { font-size: 1.5rem; font-weight: 800; color: var(--ac); line-height: 1; }
+.cm-row .tt  { font-size: .7rem; color: var(--tm); font-family: 'Space Mono', monospace; flex: 1; }
+.pct-lbl { font-size: .65rem; color: var(--tm); font-family: 'Space Mono', monospace; text-align: right; flex-shrink: 0; }
+.pb  { background: var(--bd); border-radius: 100px; height: 5px; overflow: hidden; margin-top: 4px; }
+.pbi { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--ac), var(--a2)); transition: width .6s cubic-bezier(.4,0,.2,1); width: 0%; }
+
+/* Sidebar — nav */
+.sn { padding: 6px 8px; flex: 1; }
+.nl {
+  font-size: .55rem;
+  color: var(--tm);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: 'Space Mono', monospace;
+  padding: 6px 5px 3px;
+}
+.nb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Syne', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all .15s;
+}
+.nb.on   { background: var(--sf2); color: var(--ac); }
+.nb.done { color: var(--gn); }
+.nb .ic  { font-size: .9rem; width: 16px; text-align: center; }
+
+/* Sidebar — botones inferiores */
+.sbot {
+  padding: 8px;
+  border-top: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sbtn {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Syne', sans-serif;
+  font-size: .73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: left;
+}
+.sbtn.danger { border-color: #3d1f1f; color: var(--a3); }
+
+/* Sidebar — auth */
+#auth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--bd);
+  margin-bottom: 2px;
+}
+#auth-info {
+  font-size: .58rem;
+  color: var(--ac);
+  font-family: 'Space Mono', monospace;
+  text-align: center;
+  min-height: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+/* Feedback type buttons */
+.fb-type-btn {
+  flex: 1;
+  padding: 5px 4px;
+  border-radius: 6px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Space Mono', monospace;
+  font-size: .6rem;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+}
+.fb-type-btn.on { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--ac); }
+
+/* ══════════ TOPBAR ══════════ */
+#mn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+#tb {
+  background: var(--sf);
+  border-bottom: 1px solid var(--bd);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  flex-shrink: 0;
+}
+.bg { display: none; background: none; border: none; color: var(--tx); cursor: pointer; padding: 4px; flex-shrink: 0; }
+#sw-wrap { position: relative; flex: 1; min-width: 0; max-width: 340px; }
+#sw-wrap svg {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tm);
+  width: 14px;
+  height: 14px;
+}
+#sq {
+  width: 100%;
+  background: var(--sf2);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 6px 9px 6px 30px;
+  color: var(--tx);
+  font-family: 'Space Mono', monospace;
+  font-size: .73rem;
+  outline: none;
+  transition: border-color .15s;
+}
+#sq:focus       { border-color: var(--ac); }
+#sq::placeholder { color: var(--tm); }
+.tb-btns { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.tb-btn  {
+  padding: 5px 11px;
+  border-radius: 6px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Syne', sans-serif;
+  font-size: .73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tb-btn.tog-theme { border-color: transparent; }
+
+/* ══════════ FILTROS ══════════ */
+#filterbar {
+  background: var(--sf);
+  border-bottom: 1px solid var(--bd);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.fb-label  { font-size: .75rem; color: var(--tm); font-family: 'Space Mono', monospace; white-space: nowrap; }
+.ch {
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  outline: none;
+}
+.ch.on     { border-color: var(--tx); background: rgba(255,255,255,.1); color: var(--tx); }
+.clear-btn {
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .15s;
+}
+.fb-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  color: var(--tx);
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fb-toggle.has-filter { border-color: var(--ac); color: var(--ac); }
+#fb-filters { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; flex: 1; }
+
+/* ══════════ CONTENIDO ══════════ */
+#ct { padding: 16px; flex: 1; overflow-y: auto; overflow-x: hidden; }
+.tp     { display: none; width: 100%; }
+.tp.on  { display: block; }
+.gd     { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 8px; width: 100%; }
+.sect-label {
+  font-size: .58rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--tm);
+  font-family: 'Space Mono', monospace;
+  margin: 16px 0 7px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--bd);
+  width: 100%;
+  grid-column: 1/-1;
+}
+.sect-label:first-child { margin-top: 0; }
+.sect-label:empty { border-bottom-color: rgba(100,100,100,.35); margin: 10px 0 4px; }
+
+/* ══════════ CARDS ══════════ */
+.card {
+  border-radius: 8px;
+  border: 1px solid var(--bd);
+  padding: 11px;
+  cursor: pointer;
+  transition: all .18s cubic-bezier(.4,0,.2,1);
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
+}
+.card[data-st="bloqueada"]  { background: var(--c-bl); }
+.card[data-st="habilitada"] { background: var(--c-ha); border-color: rgba(255,255,255,0.18); border-width: 1.5px; }
+.card[data-st="cursando"]   { background: var(--c-cu); border-color: #7a2020; }
+.card[data-st="aprobada"]   { background: var(--c-ap); border-color: #1a5080; }
+.card[data-st="exonerada"]  { background: var(--c-ex); border-color: #1a6b5a; }
+.card.hd { display: none; }
+
+/* Fila superior: emoji + badge */
+.ci {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 7px;
+}
+.ci-emoji { font-size: .82rem; line-height: 1; flex-shrink: 0; }
+.card[data-st="bloqueada"]  .ci-emoji::before { content: '🔒'; }
+.card[data-st="habilitada"] .ci-emoji::before { content: ''; }
+.card[data-st="cursando"]   .ci-emoji::before { content: '📖'; }
+.card[data-st="aprobada"]   .ci-emoji::before { content: '✅'; }
+.card[data-st="exonerada"]  .ci-emoji::before { content: '🏆'; }
+body.light .ci-emoji { filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
+
+.cbg { font-size: .54rem; font-weight: 700; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+.card[data-st="bloqueada"]  .cbg { color: #484f58; }
+.card[data-st="habilitada"] .cbg { color: #9ea7b5; }
+.card[data-st="cursando"]   .cbg { color: #e05252; }
+.card[data-st="aprobada"]   .cbg { color: #4ea8de; }
+.card[data-st="exonerada"]  .cbg { color: #2a9d8f; }
+
+.cn { font-size: .75rem; font-weight: 700; line-height: 1.3; margin-bottom: 6px; flex: 1; }
+.card[data-st="bloqueada"]                            .cn { color: var(--t-bl); }
+.card[data-st="habilitada"] .cn,
+.card[data-st="cursando"]   .cn,
+.card[data-st="aprobada"]   .cn,
+.card[data-st="exonerada"]  .cn { color: #fff; }
+
+.cm2 { display: flex; justify-content: space-between; align-items: center; }
+.cc  { font-family: 'Space Mono', monospace; font-size: .68rem; color: #c8d0d8; }
+.card[data-st="bloqueada"] .cc,
+.card[data-st="bloqueada"] .cf { color: #484f58; }
+
+/* Fila inferior: facultad + botón previas */
+.cf  { font-size: .53rem; font-family: 'Space Mono', monospace; color: #c8d0d8; }
+.cf-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+.pp-peek-btn {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  font-family: 'Syne', sans-serif;
+  font-size: .6rem;
+  font-weight: 600;
+  color: var(--tm);
+  cursor: pointer;
+  padding: 3px 7px;
+  transition: color .15s, border-color .15s, background .15s;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.pp-peek-btn::before { content: '🔍'; font-size: .52rem; }
+.pp-peek-btn:hover { color: var(--tx); border-color: var(--tm); background: rgba(255,255,255,.05); }
+.card[data-st="habilitada"] .pp-peek-btn,
+.card[data-st="cursando"]   .pp-peek-btn,
+.card[data-st="aprobada"]   .pp-peek-btn,
+.card[data-st="exonerada"]  .pp-peek-btn { display: inline-flex; }
+.card[data-st="bloqueada"]  .pp-peek-btn { display: none; }
+
+/* ══════════ MODAL PREVIAS ══════════ */
+#ov-pp { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 700; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+#ov-pp.op { display: flex; }
+.pp-modal {
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 20px 22px;
+  max-width: 380px;
+  width: 92%;
+  box-shadow: 0 18px 50px rgba(0,0,0,.7);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.pp-modal h3    { font-size: .9rem; font-weight: 700; margin-bottom: 4px; color: var(--tx); display: flex; justify-content: space-between; align-items: center; }
+.pp-modal .pp-sub { font-size: .68rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 12px; }
+.pp-opt-label { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--a2); font-family: 'Space Mono', monospace; margin-top: 10px; margin-bottom: 2px; padding-bottom: 3px; border-bottom: 1px solid var(--bd); }
+.pp-opt-label.met { color: var(--gn); border-bottom-color: rgba(63,185,80,.3); }
+.pp-close { background: none; border: none; color: var(--tm); cursor: pointer; font-size: 1rem; padding: 0 2px; line-height: 1; }
+.pi { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--bd); font-size: .72rem; gap: 8px; }
+.pi:last-child  { border-bottom: none; }
+.pi .pn         { color: var(--tm); flex: 1; }
+.pi.met .pn     { text-decoration: line-through; color: var(--gn); opacity: .7; }
+.pi .pr         { font-family: 'Space Mono', monospace; font-size: .58rem; padding: 2px 6px; border-radius: 3px; white-space: nowrap; }
+.pi .pr.ap      { background: var(--c-ap); color: var(--t-ap); }
+.pi .pr.ex      { background: var(--c-ex); color: var(--t-ex); }
+.pi .pr.ok      { color: var(--gn); font-weight: 700; }
+.pp-alts { font-size: .58rem; color: var(--tm); margin-top: 6px; font-family: 'Space Mono', monospace; padding: 5px 0; }
+
+/* ══════════ QUIMI MASCOTA ══════════ */
+#quimi {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  left: auto;
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  cursor: pointer;
+  user-select: none;
+}
+#quimi.quimpi {
+  right: auto;
+  left: calc(var(--sw) + 14px);
+  align-items: flex-start;
+}
+#quimi-img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 12px rgba(0,0,0,.5));
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  display: block;
+}
+#quimi-img { transform: scaleX(-1); }
+#quimi.quimpi #quimi-bubble {
+  right: auto;
+  left: 0;
+  transform-origin: bottom left;
+  border-right-width: 1px;
+  border-left-width: 3px;
+}
+#quimi.quimpi #quimi-bubble::after {
+  right: auto;
+  left: 18px;
+}
+#quimi { transition: opacity .2s; }
+body.modal-open #quimi { opacity: 0; pointer-events: none; }
+#quimi-bubble {
+  position: absolute;
+  bottom: 98px;
+  right: 0;
+  left: auto;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-right-width: 3px;
+  border-radius: 12px;
+  padding: 10px 13px;
+  font-size: .76rem;
+  font-weight: 600;
+  max-width: 230px;
+  min-width: 150px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.45);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px) scale(.93);
+  transform-origin: bottom right;
+  transition: opacity .22s, transform .22s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1.45;
+  z-index: 601;
+}
+#quimi-bubble.on { opacity: 1; transform: translateY(0) scale(1); }
+#quimi-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  right: 18px;
+  left: auto;
+  width: 12px;
+  height: 12px;
+  background: var(--sf);
+  border-right: 1px solid var(--bd);
+  border-bottom: 1px solid var(--bd);
+  transform: rotate(45deg);
+}
+#quimi-bubble[data-mood="exonerada"] { border-right-color: var(--ac); }
+#quimi-bubble[data-mood="aprobada"]  { border-right-color: var(--a2); }
+#quimi-bubble[data-mood="cursando"]  { border-right-color: #f4a261; }
+#quimi-bubble[data-mood="wip"]       { border-right-color: #f4a261; }
+#quimi-bubble[data-mood="happy"]     { border-right-color: var(--gn); }
+.qb-subject { font-size: .6rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 3px; }
+
+@keyframes quimi-breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+@keyframes quimi-bounce  { 0%{transform:translateY(0)} 35%{transform:translateY(-14px)} 65%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
+@keyframes quimi-jump    { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-18px) scale(1.07)} 70%{transform:translateY(-8px) scale(1.03)} 100%{transform:translateY(0) scale(1)} }
+@keyframes quimi-breathe-f { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
+@keyframes quimi-bounce-f  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
+@keyframes quimi-jump-f    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
+@keyframes quimi-rock-f    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
+
+@keyframes quimpi-breathe { 0%,100%{transform:scaleX(-1) scale(1)} 50%{transform:scaleX(-1) scale(1.03)} }
+@keyframes quimpi-bounce  { 0%{transform:scaleX(-1) translateY(0)} 35%{transform:scaleX(-1) translateY(-14px)} 65%{transform:scaleX(-1) translateY(-6px)} 100%{transform:scaleX(-1) translateY(0)} }
+@keyframes quimpi-jump    { 0%{transform:scaleX(-1) translateY(0) scale(1)} 30%{transform:scaleX(-1) translateY(-18px) scale(1.07)} 70%{transform:scaleX(-1) translateY(-8px) scale(1.03)} 100%{transform:scaleX(-1) translateY(0) scale(1)} }
+@keyframes quimpi-rock    { 0%{transform:scaleX(-1) rotate(-7deg) translateY(0)} 100%{transform:scaleX(-1) rotate(7deg) translateY(-8px)} }
+
+#quimi-img[data-mood="idle"]      { animation: quimi-breathe-f 3.5s ease-in-out infinite; }
+#quimi-img[data-mood="happy"]     { animation: quimi-bounce-f .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="exonerada"] { animation: quimi-jump-f .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi-img[data-mood="celebrate"] { animation: quimi-rock-f .45s ease-in-out infinite alternate; }
+
+#quimi.quimpi #quimi-img[data-mood="idle"]      { animation: quimpi-breathe 3.5s ease-in-out infinite; }
+#quimi.quimpi #quimi-img[data-mood="happy"]     { animation: quimpi-bounce .45s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="exonerada"] { animation: quimpi-jump .5s cubic-bezier(.34,1.56,.64,1); }
+#quimi.quimpi #quimi-img[data-mood="celebrate"] { animation: quimpi-rock .45s ease-in-out infinite alternate; }
+
+#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock-f .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+
+/* ══ FLOATING TOASTS (fallback sin mascota) ══ */
+#ft-container {
+  position: fixed;
+  bottom: 20px;
+  right: 14px;
+  z-index: 600;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  pointer-events: none;
+}
+.ft {
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-right-width: 3px;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--tx);
+  max-width: 230px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  opacity: 0;
+  transform: translateX(12px);
+  transition: opacity .22s, transform .22s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1.4;
+}
+.ft.on { opacity: 1; transform: translateX(0); }
+.ft[data-mood="exonerada"] { border-right-color: var(--ac); }
+.ft[data-mood="aprobada"]  { border-right-color: var(--a2); }
+.ft[data-mood="cursando"]  { border-right-color: #f4a261; }
+.ft[data-mood="wip"]       { border-right-color: var(--tm); }
+
+.help-quimi-col { width: 190px; min-width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 14px; background: linear-gradient(160deg,rgba(42,157,143,.1),rgba(78,168,222,.06)); border-left: 1px solid var(--bd); }
+.help-quimi-col img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
+.help-quimi-col img.mirror { transform: scaleX(-1); }
+.help-quimi-col p { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tx); line-height: 1.55; margin: 0; }
+.help-quimi-col p em { color: var(--ac); font-style: italic; }
+.help-md-body { flex: 1; min-width: 0; padding: 22px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--bd) transparent; }
+.help-md-body::-webkit-scrollbar { width: 4px; }
+.help-md-body::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 2px; }
+.help-md-body::-webkit-scrollbar-track { background: transparent; }
+
+/* ══════════ MODALES ══════════ */
+.ov {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.ov.op { display: flex; }
+.md {
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 22px;
+  max-width: 440px;
+  width: 92%;
+  box-shadow: 0 18px 50px rgba(0,0,0,.6);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.md h2   { font-size: 1rem; margin-bottom: 6px; }
+.md .sub { color: var(--tm); font-size: .8rem; margin-bottom: 16px; }
+.ma  { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.sep { height: 1px; background: var(--bd); margin: 12px 0; }
+
+/* Botones de modal */
+.bsc { padding: 6px 16px; border-radius: 6px; border: 1px solid var(--bd); background: transparent; color: var(--tm); font-family: 'Syne', sans-serif; font-weight: 600; font-size: .8rem; cursor: pointer; transition: all .15s; }
+.bdn { padding: 6px 16px; border-radius: 6px; border: none; background: var(--a3); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .8rem; cursor: pointer; }
+.bpr { padding: 6px 20px; border-radius: 6px; border: none; background: linear-gradient(135deg, var(--ac), var(--a2)); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .8rem; cursor: pointer; transition: all .15s; }
+
+/* Modal bio */
+.rg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.ro { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 7px; border: 1px solid var(--bd); cursor: pointer; transition: all .15s; }
+.ro input { accent-color: var(--ac); }
+.ro .rl   { font-size: .8rem; font-weight: 600; }
+.ro .rc   { font-size: .65rem; color: var(--tm); font-family: 'Space Mono', monospace; }
+
+/* Modal config */
+.cfg-row       { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.cfg-row-label { font-size: .82rem; color: var(--tx); }
+.toggle-btn    {
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  font-family: 'Space Mono', monospace;
+  font-size: .62rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  min-width: 60px;
+}
+.toggle-btn.on  { background: var(--ac); border-color: var(--ac); color: #fff; }
+.toggle-btn.off { background: transparent; border-color: var(--bd); color: var(--tm); }
+
+/* Modal ayuda */
+.help-section    { margin-bottom: 14px; }
+.help-section h3 { font-size: .8rem; font-weight: 700; color: var(--tx); margin-bottom: 8px; }
+.wlc-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: .78rem;
+}
+.wlc-row:last-child  { border-bottom: none; }
+.wlc-key {
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  color: var(--ac);
+  font-weight: 700;
+  white-space: normal;
+  word-break: break-word;
+}
+.wlc-val { color: var(--tm); line-height: 1.5; }
+
+/* ══════════ SPLASH BIENVENIDA ══════════ */
+#splash {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#splash.on { display: flex; }
+
+/* Cartel 1: angosto, solo el centro */
+.splash-inner {
+  max-width: 480px;
+  width: 100%;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+  animation: pop .5s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  overflow: hidden;
+}
+
+/* Cartel 2: ancho del centro fijo, mascotas se superponen por fuera */
+.splash-inner-2 {
+  position: relative;
+  width: 480px;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+  display: none;
+  overflow: visible;
+}
+.splash-inner-2.active { display: block; }
+
+.splash-content-col {
+  width: 480px;
+  padding: 28px 24px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mascotas: posicionadas absolutamente fuera del cartel central */
+.splash-mascot-col {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 170px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 24px 14px;
+  cursor: pointer;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s .05s, transform .5s cubic-bezier(.34,1.15,.64,1), filter .4s .05s;
+  filter: saturate(.3);
+  box-shadow: 0 24px 64px rgba(0,0,0,.7);
+}
+.splash-mascot-col.left  {
+  right: calc(100% + 12px);
+  transform: translateX(60px);
+}
+.splash-mascot-col.right {
+  left: calc(100% + 12px);
+  transform: translateX(-60px);
+}
+.splash-mascot-col.sp-visible {
+  opacity: .45;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.splash-mascot-col.sp-visible:hover { opacity: .65; filter: saturate(.6); }
+.splash-mascot-col.sp-visible.chosen { opacity: 1; filter: saturate(1); background: linear-gradient(160deg, rgba(42,157,143,.13) 0%, var(--sf) 60%); }
+
+/* Elementos internos de las mascotas */
+.splash-mascot-col img { width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
+.splash-mascot-col img.mirror { transform: scaleX(-1); }
+.splash-mascot-col .smc-name { font-size: .9rem; font-weight: 800; color: var(--tx); }
+.splash-mascot-col .smc-bubble {
+  background: var(--sf2);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--tx);
+  line-height: 1.45;
+  text-align: center;
+  max-width: 145px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all .3s .1s;
+}
+.splash-mascot-col.chosen .smc-bubble { opacity: 1; transform: translateY(0); }
+.splash-mascot-col.left  .smc-badge { font-size: .58rem; color: var(--a2); font-family: 'Space Mono', monospace; font-weight: 700; }
+.splash-mascot-col.right .smc-badge { font-size: .58rem; color: var(--ac); font-family: 'Space Mono', monospace; font-weight: 700; }
+.splash-mascot-col.left  { border-right: none; }
+.splash-mascot-col.right { border-left:  none; }
+.splash-mascot-col.left.sp-visible  { border-right: 1px solid var(--bd); }
+.splash-mascot-col.right.sp-visible { border-left:  1px solid var(--bd); }
+/* Step indicator */
+.sp-step-ind { font-size: .58rem; font-family: 'Space Mono', monospace; color: var(--tm); text-align: center; margin-bottom: 14px; letter-spacing: .06em; }
+/* Step 1 layout */
+#sp-step1 { display: flex; flex-direction: column; flex: 1; }
+#sp-step2 { flex: 1; }
+.splash-logo { font-size: 2.8rem; text-align: center; margin-bottom: 6px; }
+.splash-title {
+  font-size: 1.9rem; font-weight: 800; text-align: center;
+  background: linear-gradient(135deg, var(--ac), var(--a2), #c77dff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 4px;
+}
+.splash-sub { text-align: center; font-size: .72rem; color: var(--tm); font-family: 'Space Mono', monospace; margin-bottom: 10px; }
+.splash-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+.splash-card { background: var(--sf2); border: 1px solid var(--bd); border-radius: 10px; padding: 12px 11px; }
+.splash-card .sc-icon  { font-size: 1.3rem; margin-bottom: 5px; display: block; }
+.splash-card .sc-title { font-size: .76rem; font-weight: 700; color: var(--tx); margin-bottom: 3px; }
+.splash-card .sc-desc  { font-size: .63rem; color: var(--tm); font-family: 'Space Mono', monospace; line-height: 1.5; }
+.splash-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding-top: 16px;
+}
+.splash-hint { font-size: .58rem; color: var(--tm); font-family: 'Space Mono', monospace; }
+.splash-instructions { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--bd); border-radius: 10px; overflow: hidden; }
+.si-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--bd); font-size: .72rem; color: var(--tm); line-height: 1.5; }
+.si-row:last-child { border-bottom: none; }
+.si-ic { font-size: .9rem; flex-shrink: 0; width: 20px; text-align: center; }
+.si-title { font-weight: 700; color: var(--tx); }
+.splash-plan-sel { margin-bottom: 18px; }
+.splash-plan-label { font-size: .7rem; color: var(--tm); font-family: 'Space Mono', monospace; text-align: center; margin-bottom: 10px; }
+.splash-plan-btns { display: flex; gap: 10px; }
+.splash-plan-btn { flex: 1; padding: 11px; border-radius: 8px; border: 2px solid var(--bd); background: var(--sf2); color: var(--tm); font-family: 'Syne', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+.splash-plan-btn.selected { border-color: var(--ac); background: rgba(42,157,143,.15); color: var(--tx); }
+#splash-start-btn:disabled { opacity: .4; cursor: not-allowed; }
+#sp-next-btn:disabled      { opacity: .4; cursor: not-allowed; }
+#sp-mi-next-btn:disabled   { opacity: .4; cursor: not-allowed; }
+@media (max-width: 700px) {
+  .splash-inner { flex-direction: column; max-height: 95dvh; overflow-y: auto; }
+  .splash-mascot-col { display: none; }
+  .help-quimi-col { display: none; }
+  #cel-quimi-img { display: none; }
+  .smc-hint { display: none; }
+  .cfg-mascot-row { display: none; }
+  .splash-content-col { padding: 16px 14px 14px; }
+  .splash-title { font-size: 1.3rem; }
+  .splash-logo  { font-size: 2rem; margin-bottom: 4px; }
+  .splash-sub   { font-size: .65rem; margin-bottom: 14px; }
+  .splash-plan-sel { margin-bottom: 12px; }
+  .splash-card  { padding: 10px; }
+  .splash-card .sc-icon { font-size: 1.1rem; margin-bottom: 3px; }
+  .splash-footer { padding-top: 12px; }
+}
+
+
+#plan-badge {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: .58rem;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--ac);
+  color: var(--ac);
+  letter-spacing: .03em;
+}
+/* ══════════ TICKER ══════════ */
+#tk {
+  background: var(--sf);
+  border-top: 1px solid var(--bd);
+  padding: 8px 16px;
+  font-size: .65rem;
+  font-family: 'Space Mono', monospace;
+  color: var(--tm);
+  text-align: center;
+  cursor: pointer;
+  transition: opacity .3s;
+  flex-shrink: 0;
+}
+
+/* ══════════ CELEBRACIÓN ══════════ */
+#cel     { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.88); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+#cel.on  { display: flex; }
+.celi    { text-align: center; animation: pop .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+.celi h1 { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--ac), var(--a2), #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.celi p  { color: var(--tm); font-size: .9rem; margin-bottom: 20px; }
+#confetti-canvas { position: fixed; inset: 0; z-index: 1000; pointer-events: none; }
+
+/* ══════════ TEMA CLARO ══════════ */
+body.light {
+  --bg: #e8edf2; --sf: #1a2744; --sf2: #243157; --bd: #2d3d6b;
+  --tx: #e6edf3; --tm: #8fa8cc;
+  --c-bl: #a8b4c0; --t-bl: #4a5568;
+  --c-ha: #e8edf2;
+  --c-cu: #f5b8b8; --t-cu: #b02020;
+  --c-ap: #a8d4f5; --t-ap: #1060b0;
+  --c-ex: #a0ddd0; --t-ex: #1a7a6e;
+}
+body.light #mn           { background: #e8edf2; }
+body.light #tb           { background: #1a2744; border-bottom-color: #2d3d6b; }
+body.light #filterbar    { background: #e8edf2; border-bottom-color: #c5cdd8; }
+body.light #filterbar .fb-label,
+body.light #filterbar .ch,
+body.light #filterbar .clear-btn { color: #4a5568; border-color: #c5cdd8; }
+body.light #filterbar .ch.on { background: #2d3748; border-color: #2d3748; color: #e6edf3; }
+body.light #filterbar .ch    { text-shadow: 0 0 3px rgba(0,0,0,.4); }
+body.light #fb-filters       { background: #e8edf2; border-bottom-color: #c5cdd8; }
+body.light #fb-filters .ch,
+body.light #fb-filters .clear-btn { color: #4a5568; border-color: #c5cdd8; }
+body.light #fb-filters .ch.on { background: #2d3748; border-color: #2d3748; color: #e6edf3; }
+body.light #fb-filters .ch    { text-shadow: 0 0 3px rgba(0,0,0,.4); }
+body.light #sq               { background: #243157; border-color: #2d3d6b; color: #e6edf3; }
+body.light #sq::placeholder  { color: #8fa8cc; }
+body.light #ct               { background: #e8edf2; }
+body.light #tk               { background: #1a2744; border-top-color: #2d3d6b; color: #8fa8cc; }
+body.light .tb-btn           { color: #e6edf3; border-color: #2d3d6b; }
+body.light #quimi-bubble     { background: #1a2744; border-color: #2d3d6b; color: #e6edf3; }
+body.light #quimi-bubble::after { background: #1a2744; border-color: #2d3d6b; }
+body.light .fb-toggle { color: #1a202c; border-color: #a0abb5; }
+body.light .card[data-st="bloqueada"]  { background: #b0bac5; border-color: #a0abb5; }
+body.light .card[data-st="habilitada"] { background: #dde3ea; border-color: #1a202c; border-width: 1.5px; }
+body.light .card[data-st="bloqueada"]  .cn,
+body.light .card[data-st="bloqueada"]  .cc,
+body.light .card[data-st="bloqueada"]  .cf  { color: #4a5568; }
+body.light .card[data-st="habilitada"] .cn,
+body.light .card[data-st="habilitada"] .cc,
+body.light .card[data-st="habilitada"] .cf  { color: #2d3748; }
+body.light .card[data-st="cursando"]   .cn,
+body.light .card[data-st="aprobada"]   .cn,
+body.light .card[data-st="exonerada"]  .cn  { color: #1a202c; }
+body.light .card[data-st="cursando"]   .cc,
+body.light .card[data-st="cursando"]   .cf,
+body.light .card[data-st="aprobada"]   .cc,
+body.light .card[data-st="aprobada"]   .cf,
+body.light .card[data-st="exonerada"]  .cc,
+body.light .card[data-st="exonerada"]  .cf  { color: #1a202c; }
+body.light .pp-peek-btn              { color: #4a5568; border-color: #1a202c; }
+body.light .pp-peek-btn:hover        { color: #000; background: rgba(0,0,0,.08); border-color: #000; }
+body.light .sect-label { color: #4a5568; border-bottom-color: #c5cdd8; }
+
+/* ══════════ MOBILE ══════════ */
+#sbov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 99; }
+#mob-reset-btn {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #3d1f1f;
+  background: transparent;
+  color: var(--a3);
+  font-family: 'Syne', sans-serif;
+  font-size: .73rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  #sb { position: fixed; top: 0; left: 0; bottom: 0; height: 100dvh; transform: translateX(-100%); }
+  #sb.op    { transform: translateX(0); }
+  #sbov.op  { display: block; }
+  .bg       { display: flex; }
+  #ct       { padding: 10px; }
+  .gd       { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .tb-btns .tb-btn span.label { display: none; }
+  #filterbar   { padding: 5px 10px; flex-wrap: nowrap; gap: 5px; }
+  .fb-label    { display: none; }
+  .fb-toggle   { display: flex; align-items: center; gap: 4px; }
+  #fb-filters  {
+    display: none;
+    position: fixed;
+    left: 0; right: 0;
+    background: var(--sf);
+    border-bottom: 1px solid var(--bd);
+    padding: 6px 16px;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  }
+  #fb-filters.open { display: flex; }
+  .clear-btn   { flex-shrink: 0; }
+}
+
+@media (max-width: 400px) { .gd { grid-template-columns: 1fr 1fr; } }
+
+/* Inputs de feedback */
+.fb-input { width: 100%; background: var(--sf2); border: 1px solid var(--bd); border-radius: 6px; padding: 7px 10px; color: var(--tx); font-family: 'Space Mono', monospace; font-size: .72rem; outline: none; }
+textarea.fb-input { resize: vertical; min-height: 80px; }
+
+/* ══════════ HOVER (solo dispositivos con mouse) ══════════ */
+@media (hover: hover) {
+  .nb:hover          { background: var(--sf2); color: var(--tx); }
+  .sbtn:hover        { background: var(--sf2); color: var(--tx); }
+  .sbtn.danger:hover { background: #2a1515; }
+  .tb-btn:hover      { background: var(--sf2); color: var(--tx); }
+  .ch:hover          { border-color: var(--tx); color: var(--tx); }
+  body.light #filterbar .ch:hover { background: #2d3748; border-color: #2d3748; color: #e6edf3; }
+  .clear-btn:hover   { border-color: var(--a3); color: var(--a3); }
+  .card:hover        { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,0,0,.4); }
+  .card[data-st="habilitada"]:hover { border-color: #888; box-shadow: 0 5px 18px rgba(136,136,136,.15); }
+  .pp-close:hover    { color: var(--tx); }
+  .bsc:hover         { color: var(--tx); border-color: var(--tm); }
+  .bdn:hover         { background: #c04040; }
+  .bpr:hover         { transform: scale(1.03); }
+  .ro:hover          { border-color: var(--ac); }
+  #tk:hover          { opacity: .7; }
+  #mob-reset-btn:hover     { background: #2a1515; }
+  body.light .tb-btn:hover { background: #243157; }
+}
+
+  </style>
+</head>
+<body>
+
+<div id="sbov"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div id="app">
+  <!-- ══ SIDEBAR ══ -->
+  <aside id="sb">
+    <div class="sl">
+      <h1>🔬 QuimPath</h1>
+      <p>Ing. en Alimentos / <span id="ingreso-badge">FQ</span></p>
+      <div id="plan-badge" style="display:none"></div>
+    </div>
+
+    <div class="cb">
+      <div class="lb">Créditos exonerados</div>
+      <div class="cm-row">
+        <span class="nm" id="cn">0</span>
+        <span class="tt">/ 450</span>
+        <span class="pct-lbl" id="cpct">0%</span>
+      </div>
+      <div class="pb"><div class="pbi" id="pbi"></div></div>
+    </div>
+
+    <nav class="sn">
+      <div class="nl">Vistas</div>
+      <button class="nb on" data-tab="princ" onclick="switchTab('princ')">Currícula Sugerida</button>
+      <button class="nb"    data-tab="opt1"  onclick="switchTab('opt1')">Optativas Impar</button>
+      <button class="nb"    data-tab="opt2"  onclick="switchTab('opt2')">Optativas Par</button>
+      <button class="nb"    data-tab="todas" onclick="switchTab('todas')">Todas</button>
+      <div id="ab-sidebar"></div>
+    </nav>
+
+    <div class="sbot">
+      <div id="auth-section">
+        <div id="auth-info"></div>
+        <button class="sbtn" id="auth-btn" onclick="window.fbSignIn?.()">☁️ Iniciar sesión con Google</button>
+      </div>
+      <button class="sbtn" onclick="openHelp()">❓ Ayuda</button>
+      <button class="sbtn" onclick="openUpd()">🆕 Actualizaciones</button>
+      <button class="sbtn" onclick="openFeedback()">📝 Reportar error</button>
+      <button class="sbtn" onclick="openConfig()">⚙️ Configuración</button>
+
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div id="mn">
+    <div id="tb">
+      <button class="bg" onclick="toggleSB()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div id="sw-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="sq" placeholder="Buscar materia... (Ctrl+F)" oninput="applyS()">
+      </div>
+      <div class="tb-btns">
+        <button id="mob-reset-btn" onclick="openReset()">🗑️ Reiniciar</button>
+        <button class="tb-btn tog-theme" id="theme-btn" onclick="toggleTheme()">🌙 <span class="label">Oscuro</span></button>
+      </div>
+    </div>
+
+    <div id="filterbar">
+      <span class="fb-label">Filtrar:</span>
+      <button class="fb-toggle" id="fb-toggle-btn" onclick="toggleFilterBar()">🔽 Filtrar</button>
+      <div id="fb-filters">
+        <button class="ch" data-s="bloqueada"  onclick="toggleF('bloqueada')">🔒 Bloqueada</button>
+        <button class="ch" data-s="habilitada" onclick="toggleF('habilitada')">Habilitada</button>
+        <button class="ch" data-s="cursando"   onclick="toggleF('cursando')">📖 Cursando</button>
+        <button class="ch" data-s="aprobada"   onclick="toggleF('aprobada')">✅ Aprobada</button>
+        <button class="ch" data-s="exonerada"  onclick="toggleF('exonerada')">🏆 Exonerada</button>
+        <button class="clear-btn" onclick="clearFilters()">✕ Limpiar</button>
+      </div>
+    </div>
+
+    <div id="ct">
+      <div class="tp"    id="tp-todas"><div class="gd" id="g-ta"></div></div>
+      <div class="tp on" id="tp-princ"></div>
+      <div class="tp"    id="tp-opt1"><div class="gd" id="g-o1"></div></div>
+      <div class="tp"    id="tp-opt2"><div class="gd" id="g-o2"></div></div>
+    </div>
+
+    <div id="tk"><span id="tkt"></span></div>
+  </div>
+</div>
+
+<!-- ══ SPLASH BIENVENIDA ══ -->
+<div id="splash">
+
+  <!-- ── Cartel 1: Elegir Facultad ── -->
+  <div class="splash-inner" id="sp-panel-1">
+    <div class="splash-content-col">
+      <div class="splash-logo" style="font-size:1.5rem;text-align:center">🔬</div>
+      <div class="splash-title">QuimPath</div>
+      <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. en Alimentos</div>
+      <div id="sp-step1">
+        <div class="sp-step-ind" id="sp-step-ind-1">Paso 1 de 2</div>
+        <div class="splash-plan-sel" style="margin-bottom:0">
+          <div class="splash-plan-label">¿Por dónde ingresaste a la carrera?</div>
+          <div class="splash-plan-btns">
+            <button class="splash-plan-btn" id="sp-btn-fq"   onclick="selectSplashIngreso('fq')">👩🏻‍🔬 Fac. de Química</button>
+            <button class="splash-plan-btn" id="sp-btn-fing" onclick="selectSplashIngreso('fing')">👷🏻‍♀️ Fac. de Ingeniería</button>
+          </div>
+        </div>
+        <div class="splash-footer" style="margin-top:auto">
+          <span class="splash-hint" style="align-self:flex-start">🚧 En desarrollo — reportá cualquier error</span>
+          <button class="bpr" id="sp-next-btn" onclick="splashNextStep()" style="padding:8px 28px;font-size:.85rem;white-space:nowrap" disabled>Siguiente →</button>
+        </div>
+      </div>
+      <!-- Paso 1.5: Matemática Inicial (solo FING) -->
+      <div id="sp-step-mi" style="display:none;flex-direction:column;flex:1">
+        <div class="sp-step-ind">Paso 1½ · Solo para FING</div>
+        <div class="splash-plan-sel" style="margin-bottom:0">
+          <div class="splash-plan-label">¿Cursaste Matemática Inicial?</div>
+          <div class="splash-plan-btns">
+            <button class="splash-plan-btn" id="sp-btn-mi-si" onclick="selectSplashMatIni(true)">✅ Sí la cursé<span class="smc-hint" style="display:block;font-size:.6rem;margin-top:3px;opacity:.7">4 créditos · previa de Cálculo 1</span></button>
+            <button class="splash-plan-btn" id="sp-btn-mi-no" onclick="selectSplashMatIni(false)">➡️ No la cursé<span class="smc-hint" style="display:block;font-size:.6rem;margin-top:3px;opacity:.7">Cálculo 1 queda habilitada directo</span></button>
+          </div>
+        </div>
+        <div class="splash-footer" style="margin-top:auto">
+          <button class="bsc" onclick="splashMIPrevStep()" style="padding:8px 16px;font-size:.82rem">← Atrás</button>
+          <button class="bpr" id="sp-mi-next-btn" onclick="splashMINextStep()" style="padding:8px 22px;font-size:.85rem" disabled>Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Cartel 2: Elegir Mascota ── -->
+  <div class="splash-inner-2" id="sp-panel-2">
+    <!-- Quimi — izquierda -->
+    <div class="splash-mascot-col left" id="sp-col-quimi" onclick="selectSplashMascot('quimi')">
+      <img src="quimi_saludando.png" alt="Quimi saludando" class="mirror"/>
+      <span class="smc-name">Quimi</span>
+      <div class="smc-bubble">¡Hola! Soy Quimi 🐾<br>Bienvenido/a a QuimPath</div>
+    </div>
+    <!-- Centro -->
+    <div class="splash-content-col">
+      <div class="splash-logo" style="font-size:1.5rem;text-align:center">🍞</div>
+      <div class="splash-title">QuimPath</div>
+      <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. en Alimentos</div>
+      <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
+        <div class="sp-step-ind" id="sp-step-ind-2">Paso 2 de 2</div>
+        <div class="splash-plan-sel">
+          <div class="splash-plan-label">¿Quién te acompaña en la carrera?</div>
+        </div>
+        <div id="splash-cards-pc" style="margin-bottom:18px">
+          <div class="splash-instructions">
+            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
+            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic derecho</span> — Retroceder el estado de la materia</div></div>
+            <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Clic para ver qué previas te faltan</div></div>
+            <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Ajustá sonidos, notificaciones y más desde el panel lateral</div></div>
+          </div>
+        </div>
+        <div id="splash-cards-mob" style="display:none;margin-bottom:18px">
+          <div class="splash-instructions">
+            <div class="si-row"><span class="si-ic">👆</span><div><span class="si-title">Tocá una materia</span> — Avanza el estado en loop hasta Exonerada</div></div>
+            <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Tocá para ver qué previas te faltan</div></div>
+            <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Abrí el menú lateral con ☰</div></div>
+          </div>
+        </div>
+        <div class="splash-footer" style="margin-top:auto">
+          <button class="bsc" onclick="splashPrevStep()" style="padding:8px 16px;font-size:.82rem">← Atrás</button>
+          <button class="bpr" id="splash-start-btn" onclick="sndAdvance();closeSplash();" style="padding:8px 28px;font-size:.85rem" disabled>¡Empezar! 🚀</button>
+        </div>
+      </div>
+    </div>
+    <!-- Quimπ — derecha -->
+    <div class="splash-mascot-col right" id="sp-col-quimpi" onclick="selectSplashMascot('quimpi')">
+      <img src="quimpi_saludando.png" alt="Quimπ saludando"/>
+      <span class="smc-name">Quimπ</span>
+      <div class="smc-bubble">¡Hola! Soy Quimπ 🐱<br>¡Es un gusto tenerte aquí!</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ QUIMI MASCOTA ══ -->
+<div id="quimi">
+  <div id="quimi-bubble"></div>
+  <img id="quimi-img" src="quimi_estatico.png" data-mood="idle" alt="Quimi"/>
+</div>
+
+<!-- ══ FLOATING TOAST CONTAINER ══ -->
+<div id="ft-container"></div>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div id="tc"></div>
+
+<!-- ══ MODAL: Previas ══ -->
+<div id="ov-pp">
+  <div class="pp-modal" id="pp-modal"></div>
+</div>
+
+<!-- ══ MODAL: Feedback ══ -->
+<div class="ov" id="ov-fb"><div class="md">
+  <h2>📝 Reportar error o sugerencia</h2>
+  <p class="sub">Tu reporte ayuda a mejorar QuimPath. No es necesario estar logueado.</p>
+  <div class="sep"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div>
+      <div class="lb" style="margin-bottom:5px">Tipo</div>
+      <div style="display:flex;gap:6px">
+        <button class="fb-type-btn on" data-type="error"      onclick="selectFbType(this)">🐛 Error en materia</button>
+        <button class="fb-type-btn"    data-type="sugerencia" onclick="selectFbType(this)">💡 Sugerencia</button>
+        <button class="fb-type-btn"    data-type="otro"       onclick="selectFbType(this)">📌 Otro</button>
+      </div>
+    </div>
+    <div id="fb-materia-row">
+      <div class="lb" style="margin-bottom:5px">Materia (opcional)</div>
+      <input id="fb-materia" type="text" class="fb-input" placeholder="Ej: Matemática 04">
+    </div>
+    <div>
+      <div class="lb" style="margin-bottom:5px">Descripción</div>
+      <textarea id="fb-desc" class="fb-input" placeholder="Describí el error o sugerencia..."></textarea>
+    </div>
+  </div>
+  <div id="fb-msg" style="font-size:.7rem;text-align:center;min-height:18px;margin-top:8px"></div>
+  <div class="ma">
+    <button class="bsc" onclick="closeFeedback()">Cancelar</button>
+    <button class="bpr" id="fb-send-btn" onclick="sendFeedback()">Enviar reporte</button>
+  </div>
+</div></div>
+
+
+<!-- ══ MODAL: Reiniciar ══ -->
+<!-- ══ MODAL: Actualizaciones ══ -->
+<div class="ov" id="ov-upd">
+  <div class="md" style="max-width:480px">
+    <h2>🆕 Novedades de QuimPath</h2>
+    <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="toggle-btn on" id="upd-tab-v5" onclick="switchUpdTab('v5')" style="flex:1;text-align:center">v1.5 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v4" onclick="switchUpdTab('v4')" style="flex:1;text-align:center">v1.4</button>
+      <button class="toggle-btn off" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3</button>
+      <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
+      <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
+    </div>
+
+    <!-- v5 — nueva versión -->
+    <div id="upd-v5" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de previas</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se modificaron previas de: Transferencia de Calor y Masa 1, Intro a la Ing. Bioquímica, Ing. Bioquímica / Trat. Efluentes, Trat. y Val. Residuos Sólidos, Diseño de Procesos Químicos, Pasantía, Tec. y Serv. Industriales 2.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Fix</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Usuarios FING podían ver Cálculo 1 desaparecer de la currícula sugerida.</span></div>
+    </div>
+
+    <!-- v4 — historial -->
+    <div id="upd-v4" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron las previas de Intro a la Ing. de Procesos (examen de Química General 2, examen de Matemática 01 y aprobado de Física 101).</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores.</span></div>
+    </div>
+
+    <!-- v3 — historial -->
+    <div id="upd-v3" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Proyecto Industrial 1 y 2 y Pasantía movidos al área correcta (Avanzadas) en Plan 2021.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 Botón "Previas" en cards</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Las materias habilitadas, cursando, aprobadas y exoneradas ahora muestran un botón Previas. Shift+Click sigue funcionando como atajo.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">📐 Matemática Inicial (ingreso FING)</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se añadió la posibilidad de activar Matemática Inicial. Desde ⚙️ Configuración podés activarla.</span></div>
+    </div>
+
+    <!-- v2 — historial -->
+    <div id="upd-v2" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🏫 Ingreso por FING</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se agregaron Matemática y Física del ingreso por Facultad de Ingeniería. Para activarlo, andá a ⚙️ Configuración → <strong>Ingreso por</strong> → FING.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 ¿De qué es previa?</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el cartel de previas de cualquier materia ahora podés ver para qué otras materias te sirve como previa.</span></div>
+    </div>
+
+    <!-- v1 — historial -->
+    <div id="upd-v1" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔓 Previas agregadas</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Evaluación Gestión Amb.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op I (T+L)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op II (T)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Aguas Residuales</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Residuos Sólidos</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de RRHH en Prod. Bienes y Serv.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Taller Encararé: Crear</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inic. Entorno de Prog. R para Ing.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 01</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 04</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Fisicoquímica 101</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Práctica de Administración Ing.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Herramientas de Electroquímica</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Métodos Estadísticos Reg. y Clas.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sist. Gestión de Calidad Lab.</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Instrumentación Industrial</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Prevención Riesgos Lab.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">✅ Materias habilitadas (sin previas)</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Economía</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inglés Científico</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Epistemología</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Iniciación Prod. Audiovisual y Multimedia</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro a los Sistemas de Gestión</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sensibilización e Intercambio</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Rep. Gráfica Ind. de Procesos</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de Calidad</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Ciencias Biológicas 1</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Ciencia Tecnología y Sociedad</span></div>
+    </div>
+
+    <div class="ma" style="margin-top:14px">
+      <button class="bpr" onclick="closeUpd()" style="width:100%">¡Entendido! 👍</button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ov-r"><div class="md">
+  <h2>⚠️ Reiniciar progreso</h2>
+  <p class="sub">¿Estás seguro? Se borrará todo tu progreso guardado. Esta acción no se puede deshacer.</p>
+  <div class="ma">
+    <button class="bsc" onclick="closeReset()">Cancelar</button>
+    <button class="bdn" onclick="doReset()">Sí, reiniciar</button>
+  </div>
+</div></div>
+
+<!-- ══ MODAL: Aviso Matemática Inicial ══ -->
+<div class="ov" id="ov-matini-warn" style="background:none;pointer-events:none"><div class="md" style="pointer-events:all">
+  <h2>📐 Currícula con Matemática Inicial</h2>
+  <p class="sub">Todavía no tengo el orden sugerido de la currícula para quienes ingresaron por FING con Matemática Inicial.</p>
+  <p class="sub" style="margin-top:10px">Si tenés esa información, ¡me sería de mucha ayuda! Podés compartirla a través del botón <strong>Reportar error</strong> en el menú lateral 🙏</p>
+  <p class="sub" style="margin-top:8px;font-size:.72rem;color:var(--tm)">Mientras tanto, las materias aparecerán sin un orden semestral definido.</p>
+  <div class="ma">
+    <button class="bpr" onclick="closeMatIniWarn()">Entendido</button>
+  </div>
+</div></div>
+
+<!-- ══ MODAL: Orientación Bioquímica ══ -->
+<div class="ov" id="ov-b"><div class="md">
+  <h2>🧬 Elegí una orientación</h2>
+  <p class="sub">Esta materia tiene dos variantes. Seleccioná cuál querés cursar:</p>
+  <div class="rg" id="bio-options">
+    <label class="ro"><input type="radio" name="bio" value="bio"><div><div class="rl">Ing. Bioquímica</div><div class="rc">10 créditos</div></div></label>
+    <label class="ro"><input type="radio" name="bio" value="trat"><div><div class="rl">Trat. Efluentes y Res. Sól.</div><div class="rc">9 créditos</div></div></label>
+  </div>
+  <div id="bio-prereq-section" style="display:none">
+    <div class="sep"></div>
+    <div id="bio-prereq-list"></div>
+  </div>
+  <div class="ma">
+    <button class="bsc" id="bio-back-btn" onclick="bioBack()" style="display:none">← Volver</button>
+    <button class="bsc" onclick="closeBio()">Cancelar</button>
+    <button class="bpr" id="bio-confirm-btn" onclick="confirmBio()">Confirmar</button>
+  </div>
+</div></div>
+
+
+<!-- ══ MODAL: Din/Inst ══ -->
+<div class="ov" id="ov-d"><div class="md">
+  <h2>⚗️ Elegí una opción</h2>
+  <p class="sub">Debe cursarse al menos una de las dos opciones.</p>
+  <div class="rg" id="din-options">
+    <label class="ro"><input type="radio" name="din" value="din"><div><div class="rl">Dinámica y Control de Procesos</div><div class="rc">10 créditos</div></div></label>
+    <label class="ro"><input type="radio" name="din" value="inst"><div><div class="rl">Instrumentación Industrial</div><div class="rc">10 créditos</div></div></label>
+  </div>
+  <div id="din-prereq-section" style="display:none">
+    <div class="sep"></div>
+    <div id="din-prereq-list"></div>
+  </div>
+  <div class="ma">
+    <button class="bsc" id="din-back-btn" onclick="dinBack()" style="display:none">← Volver</button>
+    <button class="bsc" onclick="closeDin()">Cancelar</button>
+    <button class="bpr" id="din-confirm-btn" onclick="confirmDin()">Confirmar</button>
+  </div>
+</div></div>
+
+<!-- ══ MODAL: Configuración ══ -->
+<div class="ov" id="ov-cfg"><div class="md">
+  <h2>⚙️ Configuración</h2>
+  <div class="sep"></div>
+  <div class="cfg-row"><span class="cfg-row-label">📋 Plan de estudios</span><div style="display:flex;gap:6px"><button class="toggle-btn on" id="cfg-plan-2003">Plan 2003</button></div></div>
+  <div class="cfg-row"><span class="cfg-row-label">🏫 Ingreso por</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-ing-fq" onclick="changeIngreso('fq')">FQ</button><button class="toggle-btn" id="cfg-ing-fing" onclick="changeIngreso('fing')">FING</button></div></div>
+  <div class="cfg-row" id="cfg-row-matini" style="display:none"><span class="cfg-row-label">📐 Matemática Inicial</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mi-si" onclick="changeMatIni(true)">Sí</button><button class="toggle-btn" id="cfg-mi-no" onclick="changeMatIni(false)">No</button></div></div>
+  <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mascota</span><div style="display:flex;gap:6px"><button class="toggle-btn" id="cfg-mascot-quimi" onclick="changeMascot('quimi')">Quimi</button><button class="toggle-btn" id="cfg-mascot-quimpi" onclick="changeMascot('quimpi')">Quimπ</button></div></div>
+  <div class="sep"></div>
+  <div class="cfg-row"><span class="cfg-row-label">🔊 Sonido</span><button class="toggle-btn" id="cfg-sound" onclick="toggleSound()"></button></div>
+  <div class="cfg-row"><span class="cfg-row-label">💬 Mensajes flotantes</span><button class="toggle-btn" id="cfg-toasts" onclick="toggleToasts()"></button></div>
+  <div class="cfg-row cfg-mascot-row"><span class="cfg-row-label">🐾 Mostrar mascota</span><button class="toggle-btn" id="cfg-quimi" onclick="toggleQuimi()"></button></div>
+  <div class="sep"></div>
+  <div class="ma"><button class="bsc" onclick="closeConfig()">Cerrar</button></div>
+</div></div>
+
+<!-- ══ MODAL: Ayuda ══ -->
+<div class="ov" id="ov-help"><div class="md" style="max-width:720px;display:flex;padding:0;gap:0;overflow:hidden">
+  <div class="help-md-body">
+  <h2>❓ Ayuda — QuimPath</h2>
+  <p class="sub">Seguimiento curricular para Ingeniería en Alimentos (UdelaR) · Plan 2003</p>
+  <div class="sep"></div>
+  <div style="display:flex;gap:6px;margin-bottom:22px">
+    <button class="toggle-btn on"  id="help-tab-pc"  onclick="switchHelpTab('pc')"  style="flex:1;text-align:center">🖥️ PC / Desktop</button>
+    <button class="toggle-btn off" id="help-tab-mob" onclick="switchHelpTab('mob')" style="flex:1;text-align:center">📱 Mobile</button>
+  </div>
+  <div id="help-pc">
+    <div class="help-section"><h3>Controles</h3>
+      <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado de la materia.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Clic para ver qué previas te faltan.</span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="help-section"><h3>Atajos de teclado</h3>
+      <div class="wlc-row"><span class="wlc-key">Shift + Clic</span><span class="wlc-val">Ver las previas de cualquier materia, sin importar su estado.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Ctrl + F</span><span class="wlc-val">Enfocar la barra de búsqueda.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Escape</span><span class="wlc-val">Cerrar modales, limpiar búsqueda o filtros.</span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="help-section"><h3>Notas</h3>
+      <div class="wlc-row"><span class="wlc-key">14 créditos (12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
+    </div>
+  </div>
+  <div id="help-mob" style="display:none">
+    <div class="help-section"><h3>Controles táctiles</h3>
+      <div class="wlc-row"><span class="wlc-key">Toque</span><span class="wlc-val">Avanzar estado en loop: al llegar a Exonerada, el siguiente toque vuelve a Habilitada.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Toque para ver qué previas te faltan.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Menú lateral</span><span class="wlc-val">Toca el ☰ para abrir.</span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="help-section"><h3>Notas</h3>
+      <div class="wlc-row"><span class="wlc-key">14 créditos (12)</span><span class="wlc-val">Indica que la materia está en vías de pasar a 12 créditos. Se muestra así porque algunas ya otorgan 12 y otras aún no; una vez que todas lo hagan, se actualizará el valor.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Diseño de Procesos Químicos</span><span class="wlc-val">Obligatoria a partir de 2025 para estudiantes que ingresaron en 2021 en adelante. Para generaciones anteriores figura como electiva en bedelías.</span></div>
+    </div>
+  </div>
+  <div class="sep"></div>
+  <div class="ma"><button class="bpr" onclick="closeHelp()">Entendido</button></div>
+</div>
+  <div class="help-quimi-col">
+    <img src="quimi_ensenando.png" alt="Quimi enseñando" class="mirror"/>
+    <p>¿Necesitás ayuda? No tengas miedo a equivocarte, <em>"Nada en este mundo debe ser temido, solo entendido"</em>... ¿recordás quién dijo eso?</p>
+  </div>
+</div></div>
+
+<!-- ══ PANTALLA CELEBRACIÓN ══ -->
+<div id="cel"><div class="celi">
+  <img id="cel-quimi-img" src="quimi_celebrando.png" alt="Quimi celebrando"/>
+  <h1>¡450 CRÉDITOS!</h1>
+  <p>¡Sos Ingeniero/a Químico/a! 🏆<br>¡Lo sabía desde el primer semestre, campeón! 🐾</p>
+  <button class="bpr" onclick="closeCel()">¡Vamos! 🚀</button>
+</div></div>
+
+<!-- ══════════ FIREBASE ══════════ -->
+<script type="module">
+import { initializeApp }                                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc }         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDWP8CFJcqAXfWvPGVktfF_ZcNrxLnY5tM",
+  authDomain:        "quimpath.firebaseapp.com",
+  projectId:         "quimpath",
+  storageBucket:     "quimpath.firebasestorage.app",
+  messagingSenderId: "550304707214",
+  appId:             "1:550304707214:web:ceb0c5df17b39edc3f0fdf"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let _cachedCreatedAt = null; // se setea una sola vez al cargar o al primer guardado
+
+window.fbSignIn = async () => {
+  try { await signInWithPopup(auth, provider); }
+  catch (e) { console.error(e); }
+};
+
+window.fbSignOut = async () => {
+  await signOut(auth);
+};
+
+window.fbSave = async (data) => {
+  if (!currentUser) return;
+  try {
+    // createdAt se cachea en memoria para no leer Firestore en cada guardado
+    if (!_cachedCreatedAt) {
+      const snap = await getDoc(doc(db, 'users', currentUser.uid));
+      _cachedCreatedAt = snap.exists() ? (snap.data().createdAt ?? new Date().toISOString()) : new Date().toISOString();
+    }
+    await setDoc(doc(db, 'users', currentUser.uid), { ...data, email: currentUser.email, createdAt: _cachedCreatedAt });
+  }
+  catch (e) { console.error('fbSave error:', e); }
+};
+
+window.fbSaveFeedback = async (data) => {
+  await addDoc(collection(db, 'feedback'), data);
+};
+
+window.fbLoad = async () => {
+  if (!currentUser) return null;
+  try {
+    const snap = await getDoc(doc(db, 'users', currentUser.uid));
+    return snap.exists() ? snap.data() : null;
+  } catch (e) { console.error('fbLoad error:', e); return null; }
+};
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  _cachedCreatedAt = null; // resetear caché al cambiar de usuario
+  window._fbCurrentUser = user;
+  if (user) {
+    const cloud = await window.fbLoad();
+    if (cloud && window._applyCloudData) window._applyCloudData(cloud);
+  }
+  updateAuthUI(user);
+});
+
+function updateAuthUI(user) {
+  const btn  = document.getElementById('auth-btn');
+  const info = document.getElementById('auth-info');
+  if (!btn || !info) return;
+  if (user) {
+    info.textContent = user.email;
+    btn.textContent  = 'Cerrar sesión';
+    btn.onclick      = window.fbSignOut;
+  } else {
+    info.textContent = '';
+    btn.textContent  = '☁️ Iniciar sesión con Google';
+    btn.onclick      = window.fbSignIn;
+  }
+}
+</script>
+
+<!-- ══════════ APP ══════════ -->
+<script>
+
+// ══════════ CONSTANTES ══════════
+const S   = { B: 0, H: 1, C: 2, A: 3, E: 4 };
+const SN  = ['bloqueada', 'habilitada', 'cursando', 'aprobada', 'exonerada'];
+const SL  = ['Bloqueada', 'Habilitada', 'Cursando', 'Aprobada', 'Exonerada'];
+const A   = S.A, E = S.E, C = S.C;
+// ════════════════════════════════════════════════════
+// DATOS: INGENIERÍA EN ALIMENTOS — Plan 2003 y Plan 1992
+// Generado a partir de la curricula vigente julio 2025
+// ════════════════════════════════════════════════════
+
+const META = 450;
+const SK   = 'qp_al_v1';
+
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// ══════════ NIVELES DE ESTADO ══════════
+// (reutilizados del motor de Ing. Química — definidos más abajo en el script)
+
+// ══════════ DATOS: MATERIAS OBLIGATORIAS ══════════
+// Ruta FQ (Facultad de Química) para Mat/Física
+const OB = [
+  // ── 1er Semestre ──
+  { id: 'MAT01',      name: 'Matemática 01',                         cr: 14, fac: 'FQ',       grp: 'Básicas' },
+  { id: 'MAT03',      name: 'Matemática 03 (Álgebra)',               cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'QUIGEN1',    name: 'Química General 1',                     cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'INTCIEBIO1', name: 'Intro Ciencias Biológicas 1',           cr: 5,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'PRERIELAB',  name: 'Prevención de Riesgos en el Lab.',      cr: 4,  fac: 'FQ',       grp: 'Cs. Soc. y Eco.' },
+  // ── 2do Semestre ──
+  { id: 'MAT04',      name: 'Matemática 04',                         cr: 17, fac: 'FQ',       grp: 'Básicas' },
+  { id: 'QUIGEN2',    name: 'Química General 2',                     cr: 8,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'FIS101',     name: 'Física 101',                            cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'ECO',        name: 'Economía',                              cr: 7,  fac: 'FING/DISI', grp: 'Cs. Soc. y Eco.' },
+  { id: 'INTINGAL',   name: 'Intro a la Ing. de Alimentos',          cr: 2,  fac: 'FING',     grp: 'Ing. de Procesos' },
+  // ── 3er Semestre ──
+  { id: 'FIS102',     name: 'Física 102',                            cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'MAT05',      name: 'Matemática 05',                         cr: 11, fac: 'FQ',       grp: 'Básicas' },
+  { id: 'MAT06',      name: 'Matemática 06 (Cálculo Numérico)',       cr: 7,  fac: 'FQ',       grp: 'Informática' },
+  { id: 'QUIORGT101', name: 'Química Orgánica 101',                  cr: 11, fac: 'FQ',       grp: 'Básicas' },
+  { id: 'QUIANA1',    name: 'Química Analítica 1',                   cr: 10, fac: 'FQ',       grp: 'Básicas' },
+  // ── 4to Semestre ──
+  { id: 'QUIORG102',  name: 'Química Orgánica 102',                  cr: 5,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'QUIANA2',    name: 'Química Analítica 2',                   cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'FISQUI101',  name: 'Fisicoquímica 101',                     cr: 13, fac: 'FQ',       grp: 'Física' },
+  { id: 'MAT07',      name: 'Matemática 07',                         cr: 8,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'FIS103',     name: 'Física 103',                            cr: 8,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'INTINGPRO',  name: 'Intro a la Ing. Química y de Procesos', cr: 5,  fac: 'FING',     grp: 'Ing. de Procesos' },
+  // ── 5to Semestre ──
+  { id: 'FISQUI103',  name: 'Fisicoquímica 103',                     cr: 12, fac: 'FQ',       grp: 'Básicas' },
+  { id: 'QUIORG103',  name: 'Química Orgánica 103',                  cr: 5,  fac: 'FQ',       grp: 'Básicas' },
+  { id: 'FENTRA',     name: 'Fenómenos de Transporte',               cr: 12, fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'TERAPL',     name: 'Termodinámica Aplicada',                cr: 9,  fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'BIOQUIM',    name: 'Bioquímica',                            cr: 7,  fac: 'FQ',       grp: 'Básicas' },
+  // ── 6to Semestre ──
+  { id: 'FLU',        name: 'Fluidodinámica',                        cr: 12, fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'TRACALMA1',  name: 'Transferencia Calor y Masa 1',          cr: 12, fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'MICROGEN',   name: 'Microbiología General (T)',              cr: 6,  fac: 'FQ',       grp: 'Cs. Biológicas' },
+  { id: 'LABMICRO',   name: 'Lab. de Análisis Microbiológico',       cr: 6,  fac: 'FQ',       grp: 'Cs. Biológicas' },
+  { id: 'QUIMLIM',    name: 'Química de Alimentos',                  cr: 8,  fac: 'FQ',       grp: 'Qca. de Alimentos' },
+  // ── 7mo Semestre ──
+  { id: 'IRREAQUI1',  name: 'Ing. de las Reacciones Químicas 1',     cr: 14, fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'MICROBIAL',  name: 'Microbiología Alimentaria',             cr: 8,  fac: 'FVet',     grp: 'Microbio. Alimentos' },
+  { id: 'ANALAL',     name: 'Análisis de Alimentos',                 cr: 14, fac: 'FQ',       grp: 'Qca. de Alimentos' },
+  { id: 'TRACALMA2',  name: 'Transferencia Calor y Masa 2',          cr: 14, fac: 'FING',     grp: 'Ing. de Procesos' },
+  // ── 8vo Semestre ──
+  { id: 'CONCTCAL',   name: 'Control de Calidad',                    cr: 8,  fac: 'FING',     grp: 'Org./Gestión' },
+  { id: 'NUTRAPL',    name: 'Nutrición Aplic. a la Ing. de Alim.',   cr: 8,  fac: 'FAgro',    grp: 'Calidad de Alimentos' },
+  { id: 'HIGSSEAL',   name: 'Higiene y Seguridad de los Alimentos',  cr: 8,  fac: 'FVet',     grp: 'Microbio. Alimentos' },
+  { id: 'LABQUIMAL',  name: 'Lab. de Química de Alimentos',          cr: 8,  fac: 'FQ',       grp: 'Qca. de Alimentos' },
+  { id: 'TOXICAL',    name: 'Toxicología Alimentaria',               cr: 6,  fac: 'FQ',       grp: 'Calidad de Alimentos' },
+  { id: 'HIGSERV',    name: 'Higiene y Serv. Plantas Procesadoras',  cr: 6,  fac: 'FING',     grp: 'Ing. de Procesos' },
+  // ── 9no Semestre ──
+  { id: 'PAS',        name: 'Pasantía / TPG',                        cr: 15, fac: 'FING',     grp: 'Act. Integradoras' },
+  { id: 'PROIND1',    name: 'Proyecto Industrial 1',                  cr: 8,  fac: 'FING',     grp: 'Act. Integradoras' },
+  { id: 'INGBIOTEC',  name: 'Ingeniería Bioquímica',                 cr: 10, fac: 'FING',     grp: 'Ing. de Procesos' },
+  { id: 'GESTCAL',    name: 'Gestión de Calidad',                    cr: 7,  fac: 'FING',     grp: 'Org./Gestión' },
+  // ── 10mo Semestre ──
+  { id: 'LEGISALIM',  name: 'Legislación Alimentaria',               cr: 5,  fac: 'FVet',     grp: 'Legal' },
+  { id: 'PROIND2',    name: 'Proyecto Industrial 2',                  cr: 20, fac: 'FING',     grp: 'Act. Integradoras' },
+];
+
+// ══════════ OPTATIVAS SEMESTRES IMPARES ══════════
+const O1 = [
+  // ── Sem 1 (o sin semestre fijo) ──
+  { id: 'CTECSOC',    name: 'Ciencia, Tecnología y Sociedad',       cr: 8,  fac: 'FING/DISI', grp: 'Cs. Soc. y Eco.' },
+  { id: 'EPIST',      name: 'Epistemología',                        cr: 6,  fac: 'FQ',        grp: 'Cs. Soc. y Eco.' },
+  { id: 'INGCIENT',   name: 'Inglés Científico',                    cr: 4,  fac: 'FQ',        grp: 'Cs. Soc. y Eco.' },
+  { id: 'TALCOMU',    name: 'Taller Comunicación Oral y Escrita',   cr: 2,  fac: 'FVet',      grp: 'Cs. Soc. y Eco.' },
+  // ── Sem 3 ──
+  { id: 'FISIOL',     name: 'Fisiología',                          cr: 7,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'REPGRAIND',  name: 'Representación Gráfica para la Ind.', cr: 4,  fac: 'FING',      grp: 'Cs. Soc. y Eco.' },
+  // ── Sem 5 ──
+  { id: 'DISEÑEXP',   name: 'Diseño y Análisis de Experimentos',   cr: 6,  fac: 'FAgro',     grp: 'Matemática' },
+  { id: 'ECOQUIM',    name: 'Ecología Química',                    cr: 6,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'ELE1',       name: 'Electrotécnica 1',                    cr: 9,  fac: 'FING',      grp: 'Ing. de Procesos' },
+  { id: 'FISSÓLIDO',  name: 'Física del Estado Sólido',            cr: 8,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'FUNOPT',     name: 'Fundamentos de Optimización',         cr: 6,  fac: 'FING',      grp: 'Básicas' },
+  { id: 'QUIANA3',    name: 'Química Analítica 3',                 cr: 10, fac: 'FQ',        grp: 'Básicas' },
+  { id: 'QUIPRODNAT', name: 'Química de Productos Naturales',      cr: 5,  fac: 'FQ',        grp: 'Qca. de Alimentos' },
+  { id: 'QUIORG104',  name: 'Química Orgánica 104',                cr: 3,  fac: 'FQ',        grp: 'Básicas' },
+  // ── Sem 7 ──
+  { id: 'AGROQUIM',   name: 'Agroquímicos II',                     cr: 6,  fac: 'FQ',        grp: 'Química' },
+  { id: 'APBIOMOL',   name: 'Aplic. Biología Molecular a Micro.',  cr: 4,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'ANTIOXNAT',  name: 'Aplic. Ind. Antioxidantes Naturales', cr: 5,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'ASEGCALANA', name: 'Aseg. Calidad Proc. Analíticos',     cr: 5,  fac: 'FQ',        grp: 'Química' },
+  { id: 'BIOINGMOL',  name: 'Bioingeniería Molecular y Celular',   cr: 10, fac: 'FCien',     grp: 'Básicas' },
+  { id: 'BIOMOL',     name: 'Biología Molecular',                  cr: 12, fac: 'FCien',     grp: 'Básicas' },
+  { id: 'MICROAMBAG', name: 'Intro Microbio. Ambiental y Agrícola',cr: 6,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'MICROLACT',  name: 'Microbiología de Lácteos',            cr: 7,  fac: 'FAgro',     grp: 'Microbio. Alimentos' },
+  { id: 'PROPFISALIT',name: 'Propiedades Físicas de los Alimentos',cr: 5,  fac: 'FING',      grp: 'Tecnol. Alimentos' },
+  { id: 'TOXAMBGEO',  name: 'Toxicología Ambiental y Geo. Médica', cr: 5,  fac: 'FQ',        grp: 'Org./Gestión' },
+  // ── Sem 7 — Tecnologías de Alimentos (grupo 2, elegir ≥20 cr) ──
+  { id: 'TECNLECHE',  name: 'Ciencia y Tec. de la Leche',          cr: 8,  fac: 'FVet',      grp: 'Tecnol. Alimentos' },
+  { id: 'ENOLOGIA',   name: 'Enología, Ciencia y Téc. del Vino',   cr: 6,  fac: 'FAgro',     grp: 'Tecnol. Alimentos' },
+  { id: 'ENOBIOFER',  name: 'Enología y Biotec. de la Fermentación',cr:10, fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'QCATECGRA',  name: 'Q. y Tec. Grasas y Aceites (T+L)',    cr: 11, fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'QCATECGRAT', name: 'Q. y Tec. Grasas y Aceites (T)',      cr: 6,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'TECCARNE',   name: 'Tecnología de la Carne',              cr: 8,  fac: 'FVet',      grp: 'Tecnol. Alimentos' },
+  // ── Sem 9 ──
+  { id: 'GESTPRO',    name: 'Gestión de los Procesos en la Ind.',   cr: 8,  fac: 'FING',      grp: 'Org./Gestión' },
+  { id: 'LACHEMATL',  name: 'La Leche Materna y la Lactancia',     cr: 5,  fac: 'FQ',        grp: 'Calidad de Alimentos' },
+];
+
+// ══════════ OPTATIVAS SEMESTRES PARES ══════════
+const O2 = [
+  // ── Sem 2 ──
+  { id: 'INTCIEBIO2', name: 'Intro Ciencias Biológicas 2',         cr: 4,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'SISGESTION', name: 'Sistemas de Gestión',                 cr: 4,  fac: 'FQ',        grp: 'Org./Gestión' },
+  { id: 'TALINFO',    name: 'Taller Herramientas Informáticas',    cr: 2,  fac: 'FVet',      grp: 'Informática' },
+  // ── Sem 4 ──
+  { id: 'APLALGLIN',  name: 'Aplicaciones del Álgebra Lineal',     cr: 9,  fac: 'FING',      grp: 'Básicas' },
+  { id: 'ASESOEMP',   name: 'Asesoramiento a Emprendedores',       cr: 4,  fac: 'FQ',        grp: 'Cs. Soc. y Eco.' },
+  { id: 'FISTÉRMICA', name: 'Física Térmica',                      cr: 10, fac: 'FING',      grp: 'Ing. de Procesos' },
+  { id: 'INIRINGR',   name: 'Inic. Entorno Programación R',        cr: 3,  fac: 'FING',      grp: 'Informática' },
+  { id: 'MAT08',      name: 'Matemática 08',                       cr: 4,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'MAT09',      name: 'Matemática 09',                       cr: 4,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'METESTREG',  name: 'Modelos Estadísticos Clas. y Reg.',   cr: 6,  fac: 'FING',      grp: 'Básicas' },
+  { id: 'MODPROBENG', name: 'Modelos Probabilísticos en Ing.',     cr: 6,  fac: 'FING',      grp: 'Básicas' },
+  // ── Sem 6 ──
+  { id: 'BOTANICA',   name: 'Botánica',                            cr: 4,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'ENVPOL',     name: 'Envases Poliméricos Ind. Alim.',      cr: 5,  fac: 'FING',      grp: 'Ing. de Procesos' },
+  { id: 'FISEXP2',    name: 'Física Experimental 2',               cr: 5,  fac: 'FING',      grp: 'Básicas' },
+  { id: 'FISQUI104',  name: 'Fisicoquímica 104',                   cr: 7,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'MECAPL',     name: 'Mecánica Aplicada',                   cr: 8,  fac: 'FING',      grp: 'Ing. de Procesos' },
+  // ── Sem 8 — Tecnologías de Alimentos (grupo 2 cont.) ──
+  { id: 'EVALSENS',   name: 'Evaluación Sensorial',                cr: 7,  fac: 'FQ',        grp: 'Calidad de Alimentos' },
+  { id: 'TECNFRUTHOR',name: 'Tecnología de Frutas y Hortalizas',   cr: 7,  fac: 'FAgro',     grp: 'Tecnol. Alimentos' },
+  { id: 'INDUSLACT',  name: 'Industrias Lácteas',                  cr: 6,  fac: 'FAgro',     grp: 'Tecnol. Alimentos' },
+  { id: 'TECNPESQ',   name: 'Tecnología de Productos Pesqueros',   cr: 10, fac: 'FVet',      grp: 'Tecnol. Alimentos' },
+  { id: 'TECNCITR',   name: 'Tecnología de Citrus y Berries',      cr: 4,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'POSCOSECHA', name: 'Poscosecha de Frutas y Hortalizas',   cr: 5,  fac: 'FAgro',     grp: 'Tecnol. Alimentos' },
+  { id: 'TECNCER',    name: 'Q. y Tec. Cereales: Prod. en Harinas',cr: 5,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'FIBFERM',    name: 'Fibra y Alimentos Fermentados',       cr: 4,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'FRITURAS',   name: 'Fritura de Alimentos (T+L)',          cr: 3,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'FRITUTAT',   name: 'Fritura de Alimentos (T)',            cr: 2,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'TECNLECHE2', name: 'Tec. de la Leche y Prod. Lácteos',    cr: 5,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  // ── Sem 8 — otras electivas ──
+  { id: 'ACETOLIVA',  name: 'Ciencia y Tec. del Aceite de Oliva',  cr: 7,  fac: 'FQ',        grp: 'Tecnol. Alimentos' },
+  { id: 'IRREAQUI2',  name: 'Ing. de las Reacciones Químicas 2',   cr: 10, fac: 'FING',      grp: 'Ing. de Procesos' },
+  { id: 'INGENZFAS',  name: 'Ingeniería Enzimática en Fase Sólida',cr: 2,  fac: 'FQ',        grp: 'Ing. de Procesos' },
+  { id: 'INTDISMON',  name: 'Intro Diseño y Montaje Ind. Procesos', cr: 5,  fac: 'FING',      grp: 'Cs. Soc. y Eco.' },
+  { id: 'REPENSISTAL',name: 'Repensando los Sistemas Alimentarios', cr: 4,  fac: 'FING',      grp: 'Cs. Soc. y Eco.' },
+  // ── Sem 8 — alternativa a NUTRAPL ──
+  { id: 'ALIMSAL',    name: 'Alimentos y Proceso Salud-Enfermedad', cr: 6,  fac: 'FMed',      grp: 'Calidad de Alimentos' },
+];
+
+// ══════════ REQUISITOS DE CRÉDITOS ══════════
+const CR_REQ = {
+  'CONCTCAL':  { cr: 150, type: 'basicas', label: 'cr. de Formación Básica aprobados' },
+  'GESTCAL':   { cr: 250, type: 'total',   label: 'créditos totales' },
+  'GESTPRO':   { cr: 270, type: 'total',   label: 'créditos totales' },
+  'INTDISMON': { cr: 200, type: 'total',   label: 'créditos totales' },
+};
+
+// ══════════ PLAN 2003 — PREVIAS (ruta FQ) ══════════
+// Convención: E=exonerada, A=aprobada, C=cursando (definidos como constantes en el motor)
+// IMPORTANTE: estas previas se usan en la ruta FQ. Las equivalencias FING se definen abajo.
+const PV_2003 = {
+  // ── Básicas ──
+  'MAT04':      { 'MAT01': A, 'MAT03': A },
+  'QUIGEN2':    { 'QUIGEN1': A, 'PRERIELAB': A },
+  'FIS101':     { 'MAT01': A },
+  'FIS102':     { 'FIS101': A },
+  'MAT05':      { 'MAT04': A },
+  'MAT06':      [{ 'MAT04': A, 'MAT03': A }],
+  'QUIORGT101': { 'QUIGEN2': A },
+  'QUIANA1':    { 'QUIGEN2': A },
+  'QUIORG102':  { 'QUIORGT101': A },
+  'QUIANA2':    { 'QUIANA1': A },
+  'FISQUI101':  { 'QUIGEN2': A, 'QUIANA1': A, 'MAT04': A },
+  'MAT07':      { 'MAT04': A },
+  'FIS103':     { 'FIS102': A },
+  'INTINGPRO':  { 'FIS101': A, 'MAT01': E, 'QUIGEN2': E },
+  'FISQUI103':  { 'FISQUI101': A },
+  'QUIORG103':  { 'QUIORGT101': A, 'QUIANA1': A },
+  'FENTRA':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'ECUADIF': C, 'FISQUI101': A }],
+  'TERAPL':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'ECUADIF': C, 'FISQUI101': A }],
+  'BIOQUIM':    { 'INTCIEBIO1': A, 'FISQUI101': A, 'QUIORG102': A, 'QUIANA2': A },
+  'FLU':        [{ 'FISQUI101': E, 'FIS102': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }],
+  'TRACALMA1':  [{ 'FISQUI101': E, 'FIS102': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }],
+  'MICROGEN':   { 'INTCIEBIO1': A, 'BIOQUIM': A },
+  'LABMICRO':   { 'INTCIEBIO1': A, 'BIOQUIM': A },
+  'QUIMLIM':    { 'QUIGEN1': E, 'QUIGEN2': E, 'QUIORGT101': E, 'QUIANA1': E, 'BIOQUIM': A, 'QUIORG103': A },
+  'IRREAQUI1':  [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'MAT07': E, 'MAT05': E, 'FENTRA': A, 'FLU': A, 'TERAPL': A }],
+  'MICROBIAL':  { 'QUIGEN1': E, 'QUIGEN2': E, 'QUIORGT101': E, 'QUIANA1': E, 'INTCIEBIO1': E, 'MICROGEN': A },
+  'ANALAL':     { 'QUIANA2': E, 'MICROGEN': A, 'LABMICRO': A, 'QUIMLIM': A },
+  'TRACALMA2':  [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'MAT07': E, 'MAT05': E, 'FENTRA': E, 'TRACALMA1': E }],
+  'CONCTCAL':   { 'QUIMLIM': A, 'MICROBIAL': A },  // + req créditos (manejado por CR_REQ)
+  'NUTRAPL':    { 'QUIMLIM': A },
+  'ALIMSAL':    { 'BIOQUIM': A },
+  'HIGSSEAL':   { 'MICROBIAL': A },
+  'LABQUIMAL':  { 'QUIMLIM': A, 'ANALAL': A },
+  'TOXICAL':    { 'MICROGEN': C, 'ANALAL': A },
+  'HIGSERV':    [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'MAT07': E, 'MAT05': E, 'FENTRA': A, 'TERAPL': A, 'FLU': A, 'QUIMLIM': A, 'MICROGEN': A, 'TRACALMA1': A }],
+  'PAS':        [{ 'FLU': E, 'IRREAQUI1': A, 'TRACALMA2': A, 'HIGSERV': A, 'QUIMLIM': A, 'ANALAL': A, 'MICROBIAL': A }],
+  'PROIND1':    [{ 'FLU': E, 'IRREAQUI1': E, 'TRACALMA2': E, 'HIGSERV': A, 'QUIMLIM': A, 'MICROBIAL': A }],
+  'INGBIOTEC':  { 'TRACALMA2': E, 'IRREAQUI1': E, 'MICROGEN': A },
+  'GESTCAL':    { 'TECNLECHE': A, 'CONCTCAL': A },  // +250 cr (en CR_REQ) — al menos 7cr Tecnol. basta con TECNLECHE como proxy
+  'LEGISALIM':  { 'MICROBIAL': A, 'QUIMLIM': A },
+  'PROIND2':    { 'PROIND1': A },
+  // ── Optativas ──
+  'FISIOL':     { 'INTCIEBIO1': A },
+  'QUIORG104':  { 'QUIORGT101': A, 'QUIORG102': A },
+  'QUIORG103':  { 'QUIORGT101': A, 'QUIANA1': A },
+  'QUIANA3':    { 'QUIANA2': A },
+  'FISQUI104':  { 'FISQUI103': A },
+  'ECOQUIM':    { 'QUIORGT101': A, 'QUIORG102': A, 'BIOQUIM': C },
+  'QUIPRODNAT': { 'QUIORG103': A, 'QUIORG104': A, 'BIOQUIM': A },
+  'DISEÑEXP':   { 'MAT05': A, 'QUIANA1': A },
+  'FUNOPT':     { 'MAT06': A, 'MAT01': A, 'MAT03': A },
+  'ELE1':       { 'MAT04': A, 'FIS102': E },
+  'FISSÓLIDO':  { 'FIS103': A },
+  'INTCIEBIO2': { 'INTCIEBIO1': A, 'PRERIELAB': A },
+  'ASESOEMP':   { 'INTINGAL': A },
+  'FISTÉRMICA': { 'MAT01': E, 'FIS101': E, 'FIS102': A },
+  'APLALGLIN':  { 'MAT01': E, 'MAT03': E },
+  'METESTREG':  { 'MAT01': E, 'MAT03': E, 'MAT05': E },
+  'MODPROBENG': { 'MAT01': E, 'MAT03': E, 'MAT05': E },
+  'INIRINGR':   { 'MAT03': A },
+  'MAT08':      { 'MAT04': A },
+  'MAT09':      { 'MAT04': A },
+  'BOTANICA':   { 'INTCIEBIO2': A, 'QUIORG103': A },
+  'ENVPOL':     { 'QUIORGT101': A, 'FENTRA': A },
+  'FISEXP2':    { 'FIS102': E, 'FIS103': A },
+  'MECAPL':     { 'MAT04': A, 'FIS102': E, 'FIS103': A },
+  'AGROQUIM':   { 'QUIORG102': A, 'QUIANA3': A, 'BIOQUIM': A },
+  'APBIOMOL':   { 'MICROGEN': A },
+  'ANTIOXNAT':  { 'QUIMLIM': A },
+  'ASEGCALANA': { 'QUIANA3': A, 'MAT05': A },
+  'BIOINGMOL':  { 'BIOQUIM': A },
+  'BIOMOL':     { 'BIOQUIM': A },
+  'MICROAMBAG': { 'MICROGEN': A },
+  'MICROLACT':  { 'MICROGEN': A },
+  'PROPFISALIT':{ 'QUIMLIM': A },
+  'TOXAMBGEO':  { 'BIOQUIM': A },
+  'TECNLECHE':  { 'BIOQUIM': E, 'QUIMLIM': A, 'MICROBIAL': C },
+  'ENOLOGIA':   { 'MICROGEN': A, 'QUIMLIM': A },
+  'ENOBIOFER':  { 'MICROGEN': A, 'QUIMLIM': A },
+  'QCATECGRA':  { 'FISQUI101': A, 'FISQUI103': A, 'QUIORG102': A },
+  'QCATECGRAT': { 'FISQUI101': A, 'FISQUI103': A, 'QUIORG102': A },
+  'TECCARNE':   { 'BIOQUIM': E, 'QUIMLIM': A, 'MICROBIAL': C },
+  'EVALSENS':   { 'QUIMLIM': A, 'ANALAL': A },
+  'TECNFRUTHOR':{ 'MICROGEN': A },
+  'INDUSLACT':  { 'BIOQUIM': A, 'QUIMLIM': A },
+  'TECNPESQ':   { 'MICROBIAL': A },
+  'TECNCITR':   { 'ANALAL': A, 'FLU': A, 'MICROBIAL': A, 'QUIMLIM': A, 'TRACALMA1': A },
+  'POSCOSECHA': { 'QUIMLIM': A, 'MICROBIAL': A },
+  'TECNCER':    { 'QUIMLIM': A, 'ANALAL': A },
+  'FIBFERM':    { 'QUIMLIM': A, 'ANALAL': A, 'MICROBIAL': A },
+  'FRITURAS':   { 'QCATECGRA': A },
+  'FRITUTAT':   { 'QCATECGRA': A },
+  'TECNLECHE2': { 'QUIMLIM': A },
+  'ACETOLIVA':  { 'QUIMLIM': A },
+  'IRREAQUI2':  { 'IRREAQUI1': A },
+  'INGENZFAS':  { 'BIOQUIM': A, 'MICROGEN': A },
+  'INTDISMON':  {},  // solo créditos (CR_REQ)
+  'REPENSISTAL':{ 'ANALAL': A, 'NUTRAPL': C },
+  'GESTPRO':    {},  // solo créditos (CR_REQ)
+  'LACHEMATL':  { 'NUTRAPL': A },
+};
+
+// ══════════ PLAN 1992 — PREVIAS ══════════
+// El Plan 1992 es el plan anterior. Por ahora hereda las previas del 2003.
+// TODO: ajustar cuando se disponga del plan 1992 completo.
+const PV_1992 = (() => {
+  const p = { ...PV_2003 };
+  // Overrides plan 1992 (a completar cuando llegue el plan):
+  // p['ID'] = { 'PREVIA': E };
+  return p;
+})();
+
+// ══════════ MATERIAS INICIALES (sin previas) ══════════
+const INIC_2003 = new Set([
+  'MAT01','MAT03','QUIGEN1','INTCIEBIO1','PRERIELAB',
+  'ECO','INTINGAL',
+  'CTECSOC','EPIST','INGCIENT','TALCOMU',
+]);
+
+// ══════════ IDs de Mat/Física cursados por FQ (para reemplazar con FING) ══════════
+const FQ_MATFIS_IDS = new Set([
+  'MAT01','MAT03','MAT04','MAT05','MAT06','MAT07','MAT08','MAT09',
+  'FIS101','FIS102','FIS103',
+]);
+
+// ══════════ CURSOS DE MAT/FÍSICA POR FING ══════════
+const FING_MATFIS = [
+  { id: 'MATINI',  name: 'Matemática Inicial',                      cr: 4,  fac: 'FING', grp: 'Básicas' },
+  { id: 'CALC1',   name: 'Cálculo Dif. e Int. en Una Variable',     cr: 13, fac: 'FING', grp: 'Básicas' },
+  { id: 'GEOALG1', name: 'Geometría y Álgebra Lineal 1',            cr: 9,  fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS1',    name: 'Física 1',                                cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'CALC2',   name: 'Cálculo Dif. e Int. en Varias Variables', cr: 13, fac: 'FING', grp: 'Básicas' },
+  { id: 'GEOALG2', name: 'Geometría y Álgebra Lineal 2',            cr: 9,  fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS2',    name: 'Física 2',                                cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'CALVEC',  name: 'Cálculo Vectorial',                       cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'PROBEST', name: 'Probabilidad y Estadística',              cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'FIS3',    name: 'Física 3',                                cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'ECUADIF', name: 'Intro a las Ec. Diferenciales',           cr: 10, fac: 'FING', grp: 'Básicas' },
+  { id: 'FISEXP1', name: 'Física Experimental 1',                   cr: 5,  fac: 'FING', grp: 'Básicas' },
+];
+
+// Previas internas entre cursos de FING (Mat/Física)
+const PV_FING_MATFIS = {
+  'CALC1':   [{ 'MATINI': E }, {}],  // sin previa si no cursó MATINI
+  'GEOALG2': { 'GEOALG1': A },
+  'FIS2':    { 'FIS1': A, 'CALC1': A },
+  'CALC2':   { 'CALC1': A },
+  'CALVEC':  { 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'PROBEST': { 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'FIS3':    [{ 'CALC1': A, 'FIS1': A, 'FIS2': A }, { 'CALC1': A, 'FIS1': E }],
+  'ECUADIF': { 'GEOALG2': E, 'CALC2': A, 'GEOALG1': E, 'CALC1': E },
+  'FISEXP1': { 'FIS1': E, 'FIS2': A },
+};
+
+// Tabla de traducción FQ → FING para reconstruir previas automáticamente
+const FQ_TO_FING_PV = {
+  'MAT01': 'CALC1',
+  'MAT03': 'GEOALG1',
+  'MAT04': 'CALC2',
+  'MAT05': 'PROBEST',
+  'MAT06': 'CALVEC',
+  'MAT07': 'ECUADIF',
+  'MAT08': 'ECUADIF',
+  'MAT09': null,
+  'FIS101': 'FIS1',
+  'FIS102': null,   // se maneja con override
+  'FIS103': null,   // se maneja con override
+};
+
+function buildPVFing(pvBase) {
+  const pv = { ...PV_FING_MATFIS };
+  const translate = obj => {
+    const r = {};
+    for (const [pid, lv] of Object.entries(obj)) {
+      if (!(pid in FQ_TO_FING_PV)) { r[pid] = lv; }
+      else if (FQ_TO_FING_PV[pid] !== null) { r[FQ_TO_FING_PV[pid]] = lv; }
+    }
+    return r;
+  };
+  for (const [id, reqs] of Object.entries(pvBase)) {
+    if (FQ_MATFIS_IDS.has(id)) continue;
+    pv[id] = Array.isArray(reqs) ? reqs.map(g => translate(g)) : translate(reqs);
+  }
+  return pv;
+}
+
+const PV_2003_FING = (() => {
+  const p = buildPVFing(PV_2003);
+  // Overrides específicos para ruta FING:
+  // Fenómenos de Transporte y Termodinámica: usan CALVEC (≡MAT06) y ECUADIF (≡MAT07)
+  p['FENTRA']    = [{ 'CALC2': E, 'CALC1': E, 'GEOALG2': E, 'CALVEC': E, 'FIS1': E, 'QUIGEN1': E, 'QUIGEN2': E, 'ECUADIF': C, 'FISQUI101': A }];
+  p['TERAPL']    = [{ 'CALC2': E, 'CALC1': E, 'GEOALG2': E, 'CALVEC': E, 'FIS1': E, 'QUIGEN1': E, 'QUIGEN2': E, 'ECUADIF': C, 'FISQUI101': A }];
+  p['FLU']       = [{ 'FISQUI101': E, 'FIS3': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['TRACALMA1'] = [{ 'FISQUI101': E, 'FIS3': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['IRREAQUI1'] = [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'ECUADIF': E, 'PROBEST': E, 'FENTRA': A, 'FLU': A, 'TERAPL': A }];
+  p['TRACALMA2'] = [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'ECUADIF': E, 'PROBEST': E, 'FENTRA': E, 'TRACALMA1': E }];
+  p['HIGSERV']   = [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'ECUADIF': E, 'PROBEST': E, 'FENTRA': A, 'TERAPL': A, 'FLU': A, 'QUIMLIM': A, 'MICROGEN': A, 'TRACALMA1': A }];
+  p['ELE1']      = { 'CALC2': A, 'FIS3': E };
+  p['MECAPL']    = { 'CALC2': A, 'FIS3': E, 'FISEXP1': A };
+  p['FISSÓLIDO'] = { 'FISEXP1': A };
+  p['FISEXP2']   = { 'FIS3': E, 'FISEXP1': A };
+  p['APLALGLIN'] = { 'CALC1': E, 'GEOALG2': E };
+  p['METESTREG'] = { 'CALC1': E, 'GEOALG1': E, 'PROBEST': E };
+  p['MODPROBENG']= { 'CALC1': E, 'GEOALG1': E, 'PROBEST': E };
+  p['FUNOPT']    = { 'CALVEC': A, 'CALC1': A, 'GEOALG2': A };
+  p['FISTÉRMICA']= { 'CALC1': E, 'FIS1': E, 'FIS2': A };
+  p['INIRINGR']  = { 'GEOALG1': A };
+  p['DISEÑEXP']  = { 'PROBEST': A, 'QUIANA1': A };
+  p['INTINGPRO'] = { 'FIS1': A, 'CALC1': E, 'QUIGEN2': E };
+  p['ENVPOL']    = { 'QUIORGT101': A, 'FENTRA': A };
+  return p;
+})();
+
+const PV_1992_FING = (() => {
+  const p = { ...PV_2003_FING };
+  // Overrides plan 1992 FING (a completar)
+  return p;
+})();
+
+// ══════════ MATERIAS INICIALES FING ══════════
+const INIC_FING = new Set([
+  'MATINI','GEOALG1','FIS1',
+  'QUIGEN1','INTCIEBIO1','PRERIELAB',
+  'ECO','INTINGAL',
+  'CTECSOC','EPIST','INGCIENT','TALCOMU',
+]);
+
+// ══════════ SEMESTRES — PLAN 2003 (FQ) ══════════
+const SEMESTRES_2003 = [
+  { label: '1er Semestre', ids: ['MAT01','MAT03','QUIGEN1','INTCIEBIO1','PRERIELAB'] },
+  { label: '2do Semestre', ids: ['MAT04','QUIGEN2','FIS101','ECO','INTINGAL'] },
+  { label: '3er Semestre', ids: ['FIS102','MAT05','MAT06','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre', ids: ['QUIORG102','QUIANA2','FISQUI101','MAT07','FIS103','INTINGPRO'] },
+  { label: '5to Semestre', ids: ['FISQUI103','QUIORG103','FENTRA','TERAPL','BIOQUIM'] },
+  { label: '6to Semestre', ids: ['FLU','TRACALMA1','MICROGEN','LABMICRO','QUIMLIM'] },
+  { label: '7mo Semestre', ids: ['IRREAQUI1','MICROBIAL','ANALAL','TRACALMA2'] },
+  { label: '8vo Semestre', ids: ['CONCTCAL','NUTRAPL','HIGSSEAL','LABQUIMAL','TOXICAL','HIGSERV'] },
+  { label: '9no Semestre', ids: ['PAS','PROIND1','INGBIOTEC','GESTCAL'] },
+  { label: '10mo Semestre',ids: ['LEGISALIM','PROIND2'] },
+];
+
+// ══════════ SEMESTRES — PLAN 2003 (FING) ══════════
+const SEMESTRES_2003_FING = [
+  { label: '1er Semestre', ids: ['MATINI','GEOALG1','FIS1','QUIGEN1','INTCIEBIO1','PRERIELAB'] },
+  { label: '2do Semestre', ids: ['CALC1','CALC2','GEOALG2','FIS2','QUIGEN2','ECO','INTINGAL'] },
+  { label: '3er Semestre', ids: ['CALVEC','PROBEST','FIS3','MAT06','QUIORGT101','QUIANA1'] },
+  { label: '4to Semestre', ids: ['QUIORG102','QUIANA2','FISQUI101','ECUADIF','INTINGPRO'] },
+  { label: '5to Semestre', ids: ['FISQUI103','QUIORG103','FENTRA','TERAPL','BIOQUIM','FISEXP1'] },
+  { label: '6to Semestre', ids: ['FLU','TRACALMA1','MICROGEN','LABMICRO','QUIMLIM'] },
+  { label: '7mo Semestre', ids: ['IRREAQUI1','MICROBIAL','ANALAL','TRACALMA2'] },
+  { label: '8vo Semestre', ids: ['CONCTCAL','NUTRAPL','HIGSSEAL','LABQUIMAL','TOXICAL','HIGSERV'] },
+  { label: '9no Semestre', ids: ['PAS','PROIND1','INGBIOTEC','GESTCAL'] },
+  { label: '10mo Semestre',ids: ['LEGISALIM','PROIND2'] },
+];
+
+// Plan 1992: placeholder (estructura similar al 2003, a ajustar)
+const SEMESTRES_1992      = SEMESTRES_2003;
+const SEMESTRES_1992_FING = SEMESTRES_2003_FING;
+
+// ══════════ VARIABLES DE PLAN ACTIVO ══════════
+// Plan-dynamic variables (se asignan en applyPlan)
+let OPT_IDS, OPT_O1_IDS, OPT_O2_IDS, ALL, BI, INIC_ACT, PV_ACT, SEMESTRES_ACT, OB_ACT, O1_ACT, O2_ACT;
+let plan = null;
+
+// ══════════ APLICAR PLAN ══════════
+function applyPlan(p) {
+  plan = p;
+  const isFing = ingreso === 'fing';
+
+  let baseOB = isFing
+    ? [...FING_MATFIS, ...OB.filter(s => !FQ_MATFIS_IDS.has(s.id))]
+    : OB;
+
+  if (isFing && matIni === false) baseOB = baseOB.filter(s => s.id !== 'MATINI');
+
+  // Ambos planes tienen la misma estructura de materias (1992 a completar)
+  OB_ACT       = baseOB;
+  O1_ACT       = O1;
+  O2_ACT       = O2;
+  PV_ACT       = isFing ? (p === '1992' ? { ...PV_1992_FING } : { ...PV_2003_FING })
+                        : (p === '1992' ? { ...PV_1992 }       : { ...PV_2003 });
+  INIC_ACT     = isFing ? INIC_FING : INIC_2003;
+  SEMESTRES_ACT = isFing ? (p === '1992' ? SEMESTRES_1992_FING.map(s => ({...s, ids: [...s.ids]})) : SEMESTRES_2003_FING.map(s => ({...s, ids: [...s.ids]})))
+                         : (p === '1992' ? SEMESTRES_1992.map(s => ({...s, ids: [...s.ids]}))       : SEMESTRES_2003.map(s => ({...s, ids: [...s.ids]})));
+
+  if (isFing) {
+    INIC_ACT = new Set(matIni === false
+      ? [...INIC_FING, 'CALC1']
+      : [...INIC_FING]);
+    PV_ACT['CALC1'] = matIni === true  ? { 'MATINI': E }
+                    : matIni === false ? {}
+                    : [{ 'MATINI': E }, {}];
+    // Ajustar posición de CALC1 y MATINI según si cursó Matemática Inicial
+    SEMESTRES_ACT = SEMESTRES_ACT.map((sem, i) => {
+      if (i === 0) {
+        // Quitar CALC1 siempre del 1er semestre (va al 2do o al inicio según matIni)
+        let ids = sem.ids.filter(id => id !== 'CALC1');
+        // Si NO cursó MATINI: quitarla del semestre y poner CALC1 al frente
+        if (matIni === false) ids = ids.filter(id => id !== 'MATINI');
+        return { ...sem, ids: matIni === false ? ['CALC1', ...ids] : ids };
+      }
+      if (i === 1) {
+        let ids = sem.ids.filter(id => id !== 'CALC1');
+        if (matIni === true) {
+          ids = ids.filter(id => id !== 'CALC2');
+          return { ...sem, ids: ['CALC1','CALC2',...ids] };
+        }
+        return { ...sem, ids };
+      }
+      return sem;
+    });
+  }
+
+  OPT_IDS    = new Set([...O1_ACT.map(s => s.id), ...O2_ACT.map(s => s.id)]);
+  OPT_O1_IDS = new Set(O1_ACT.map(s => s.id));
+  OPT_O2_IDS = new Set(O2_ACT.map(s => s.id));
+  ALL        = [...OB_ACT, ...O1_ACT.map(s => ({...s, name: s.name + ' *'})), ...O2_ACT.map(s => ({...s, name: s.name + ' *'}))];
+  BI         = Object.fromEntries(ALL.map(s => [s.id, s]));
+  buildSearchCache();
+  AMIN_ACT        = p === '1992' ? AMIN_1992 : AMIN_2003;
+  const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
+  const ib = document.getElementById('ingreso-badge'); if (ib) ib.textContent = ingreso === 'fing' ? 'FING' : 'FQ';
+  AREAS_ORDER_ACT = p === '1992' ? AREAS_ORDER_1992 : AREAS_ORDER_2003;
+  AM_ACT          = p === '1992' ? AM_1992 : AM;
+  GRUPO_PADRE_ACT = p === '1992' ? GRUPO_PADRE_1992 : GRUPO_PADRE_2003;
+}
+
+// ══════════ MAPA ID → ÁREA ══════════
+const AM = {
+  // ── Matemática ──
+  'MAT01':'Matemática','MAT03':'Matemática','MAT04':'Matemática','MAT05':'Matemática',
+  'MAT07':'Matemática','MAT08':'Matemática','MAT09':'Matemática',
+  'MATINI':'Matemática','CALC1':'Matemática','GEOALG1':'Matemática','CALC2':'Matemática',
+  'GEOALG2':'Matemática','CALVEC':'Matemática','PROBEST':'Matemática','ECUADIF':'Matemática',
+  'APLALGLIN':'Matemática','FUNOPT':'Matemática','METESTREG':'Matemática','MODPROBENG':'Matemática',
+  'DISEÑEXP':'Matemática',
+  // ── Física ──
+  'FIS101':'Física','FIS102':'Física','FIS103':'Física',
+  'FIS1':'Física','FIS2':'Física','FIS3':'Física',
+  'FISEXP1':'Física','FISEXP2':'Física','FISSÓLIDO':'Física',
+  'FISQUI101':'Física',
+  // ── Química ──
+  'QUIGEN1':'Química','QUIGEN2':'Química','QUIORGT101':'Química','QUIORG102':'Química',
+  'QUIORG103':'Química','QUIORG104':'Química','QUIANA1':'Química','QUIANA2':'Química',
+  'QUIANA3':'Química','FISQUI103':'Química','FISQUI104':'Química',
+  'ECOQUIM':'Química','AGROQUIM':'Química','ASEGCALANA':'Química',
+  // ── Ciencias Biológicas ──
+  'INTCIEBIO1':'Cs. Biológicas','INTCIEBIO2':'Cs. Biológicas','FISIOL':'Cs. Biológicas',
+  'BIOQUIM':'Cs. Biológicas','BOTANICA':'Cs. Biológicas','APBIOMOL':'Cs. Biológicas',
+  'BIOINGMOL':'Cs. Biológicas','BIOMOL':'Cs. Biológicas','MICROAMBAG':'Cs. Biológicas',
+  'MICROGEN':'Cs. Biológicas','LABMICRO':'Cs. Biológicas',
+  // ── Informática ──
+  'INIRINGR':'Informática','MAT06':'Informática','TALINFO':'Informática',
+  // ── Ing. de Procesos ──
+  'INTINGPRO':'Ing. de Procesos','INTINGAL':'Ing. de Procesos',
+  'FENTRA':'Ing. de Procesos','TERAPL':'Ing. de Procesos',
+  'FLU':'Ing. de Procesos','TRACALMA1':'Ing. de Procesos','TRACALMA2':'Ing. de Procesos',
+  'IRREAQUI1':'Ing. de Procesos','IRREAQUI2':'Ing. de Procesos','INGBIOTEC':'Ing. de Procesos',
+  'HIGSERV':'Ing. de Procesos','ELE1':'Ing. de Procesos','MECAPL':'Ing. de Procesos',
+  'FISTÉRMICA':'Ing. de Procesos','INGENZFAS':'Ing. de Procesos','ENVPOL':'Ing. de Procesos',
+  // ── Química de Alimentos ──
+  'QUIMLIM':'Qca. de Alimentos','LABQUIMAL':'Qca. de Alimentos',
+  'ANALAL':'Qca. de Alimentos','QUIPRODNAT':'Qca. de Alimentos',
+  // ── Microbiología de Alimentos ──
+  'MICROBIAL':'Microbio. Alimentos','HIGSSEAL':'Microbio. Alimentos',
+  'MICROLACT':'Microbio. Alimentos',
+  // ── Tecnología de Alimentos ──
+  'TECNLECHE':'Tecnol. Alimentos','ENOLOGIA':'Tecnol. Alimentos','ENOBIOFER':'Tecnol. Alimentos',
+  'QCATECGRA':'Tecnol. Alimentos','QCATECGRAT':'Tecnol. Alimentos','TECCARNE':'Tecnol. Alimentos',
+  'TECNFRUTHOR':'Tecnol. Alimentos','INDUSLACT':'Tecnol. Alimentos','TECNPESQ':'Tecnol. Alimentos',
+  'TECNCITR':'Tecnol. Alimentos','POSCOSECHA':'Tecnol. Alimentos','TECNCER':'Tecnol. Alimentos',
+  'FIBFERM':'Tecnol. Alimentos','FRITURAS':'Tecnol. Alimentos','FRITUTAT':'Tecnol. Alimentos',
+  'TECNLECHE2':'Tecnol. Alimentos','ACETOLIVA':'Tecnol. Alimentos',
+  'ANTIOXNAT':'Tecnol. Alimentos','PROPFISALIT':'Tecnol. Alimentos',
+  // ── Calidad de Alimentos ──
+  'NUTRAPL':'Calidad de Alimentos','ALIMSAL':'Calidad de Alimentos',
+  'TOXICAL':'Calidad de Alimentos','EVALSENS':'Calidad de Alimentos','LACHEMATL':'Calidad de Alimentos',
+  // ── Org./Gestión ──
+  'CONCTCAL':'Org./Gestión','GESTCAL':'Org./Gestión','GESTPRO':'Org./Gestión',
+  'SISGESTION':'Org./Gestión','TOXAMBGEO':'Org./Gestión',
+  // ── Cs. Soc. y Eco. ──
+  'ECO':'Cs. Soc. y Eco.','CTECSOC':'Cs. Soc. y Eco.','EPIST':'Cs. Soc. y Eco.',
+  'INGCIENT':'Cs. Soc. y Eco.','TALCOMU':'Cs. Soc. y Eco.','ASESOEMP':'Cs. Soc. y Eco.',
+  'PRERIELAB':'Cs. Soc. y Eco.','REPENSISTAL':'Cs. Soc. y Eco.',
+  'REPGRAIND':'Cs. Soc. y Eco.','INTDISMON':'Cs. Soc. y Eco.',
+  // ── Legal ──
+  'LEGISALIM':'Legal',
+  // ── Actividades Integradoras ──
+  'PROIND1':'Act. Integradoras','PROIND2':'Act. Integradoras','PAS':'Act. Integradoras',
+};
+
+// ══════════ PLAN 2003 — ESTRUCTURA DE ÁREAS ══════════
+const AMIN_2003 = {
+  // Básicas (mín 180 cr)
+  'Matemática':      45,
+  'Física':          30,
+  'Química':         45,
+  'Cs. Biológicas':  25,
+  'Informática':      5,
+  'Materias Básicas': 180,
+  // Formación Profesional Específica (mín 150 cr)
+  'Qca. de Alimentos':   20,
+  'Microbio. Alimentos': 15,
+  'Ing. de Procesos':    55,
+  'Tecnol. Alimentos':   20,
+  'Calidad de Alimentos':12,
+  'Formación Profesional Específica': 150,
+  // Formación Complementaria (mín 35 cr)
+  'Org./Gestión':      0,
+  'Cs. Soc. y Eco.':   0,
+  'Legal':             4,
+  'Formación Complementaria': 35,
+  // Actividades Integradoras (mín 35 cr)
+  'Act. Integradoras': 35,
+};
+
+const AREAS_ORDER_2003 = [
+  'Materias Básicas',
+    'Matemática','Física','Química','Cs. Biológicas','Informática',
+  'Formación Profesional Específica',
+    'Qca. de Alimentos','Microbio. Alimentos','Ing. de Procesos','Tecnol. Alimentos','Calidad de Alimentos',
+  'Formación Complementaria',
+    'Org./Gestión','Cs. Soc. y Eco.','Legal',
+  'Act. Integradoras',
+];
+
+const GRUPO_PADRE_2003 = {
+  'Materias Básicas':                  ['Matemática','Física','Química','Cs. Biológicas','Informática'],
+  'Formación Profesional Específica':  ['Qca. de Alimentos','Microbio. Alimentos','Ing. de Procesos','Tecnol. Alimentos','Calidad de Alimentos'],
+  'Formación Complementaria':          ['Org./Gestión','Cs. Soc. y Eco.','Legal'],
+  'Act. Integradoras':                 ['Act. Integradoras'],
+};
+
+// ══════════ PLAN 1992 — ESTRUCTURA DE ÁREAS ══════════
+// Por ahora hereda del 2003. TODO: ajustar cuando llegue el plan 1992.
+const AMIN_1992       = { ...AMIN_2003 };
+const AREAS_ORDER_1992= [...AREAS_ORDER_2003];
+const GRUPO_PADRE_1992= { ...GRUPO_PADRE_2003 };
+
+const AM_1992 = { ...AM };
+
+// Variables activas (se asignan en applyPlan)
+let AMIN_ACT, AREAS_ORDER_ACT, AM_ACT, GRUPO_PADRE_ACT;
+
+// ══════════ STUBS — materias duales (no aplican en Ing. Alimentos) ══════════
+// Estas variables son requeridas por el motor heredado de Ing. Química.
+const PV_BIO = {};
+const BO     = {};
+const PV_DIN = {};
+const DO     = {};
+
+
+
+// ══════════ FRASES DE TOAST ══════════
+const FR = {
+  exonerada: ['¡Exonerada! Una menos para el título 🎓', '¡Crack! Otro crédito conquistado ⚗️', '¡Exonerada! Merecés un café ☕', '¡Bien jugado! El título se acerca 🏆'],
+  aprobada:  ['¡Aprobada! No era fácil, pero acá estás 👊', 'Aprobada. El esfuerzo valió 💯', '¡Pasaste! A buscar la exoneración 🎯'],
+  cursando:  ['¡En carrera! A darle duro 📚', '¡Dale! Esta también cae 💥', 'Cursando... el desafío empieza 🧪'],
+};
+
+// ══════════ FRASES DEL TICKER ══════════
+const TKF = [
+  '💧 El agua es el principal componente de los alimentos frescos.',
+  '🍞 La fermentación es una de las biotecnologías más antiguas de la humanidad.',
+  '🧪 La pasteurización fue desarrollada por Louis Pasteur en 1864.',
+  '🏭 La liofilización conserva hasta el 95% del valor nutricional del alimento.',
+  '🔬 El HACCP es el sistema de análisis de peligros estándar en la industria alimentaria.',
+  '"La ciencia no conoce fronteras." — Louis Pasteur',
+  '"Nada en la vida debe ser temido, solo comprendido." — Marie Curie',
+  '☕ El café: balance energético entre entalpía y entropía personal.',
+  '🏆 Proyecto Industrial 2 es el jefe final. ¡Vos podés!',
+  '🔄 La vida es un proceso en estado estacionario.',
+  '🎓 Ing. en Alimentos: porque la gastronomía sola era poca ciencia.',
+  '🌾 El 30% de los alimentos producidos en el mundo se pierde o desperdicia.',
+  '⚖️ La energía que ponés estudiando se convierte en créditos. Ley de conservación.',
+];
+
+// ══════════ ESTADO GLOBAL ══════════
+let est = {}, bOp = null, dOp = null, matIni = null, aF = new Set(), areaF = '', qr = '', cel = false;
+let ingreso = 'fq';  // 'fq' | 'fing'
+let soundOn = true, toastsOn = !isMobile(), quimiOn = true, mascot = 'quimi';
+let theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+let _prevTab = 'princ';
+
+// ══════════ PERSISTENCIA ══════════
+function _buildFbPayload() {
+  // Créditos acumulados por área — usa gcr() igual que la barra lateral
+  const cr = {};
+  let crTotal = 0;
+  for (const s of (ALL || [])) {
+    const c = gcr(s.id, gs(s.id));
+    if (c > 0) {
+      const grp = s.grp || 'Otras';
+      cr[grp] = (cr[grp] || 0) + c;
+      crTotal += c;
+    }
+  }
+  cr.total = crTotal;
+
+  // Conteo de materias por estado
+  const vals = Object.values(est);
+  const mat = {
+    exoneradas: vals.filter(v => v === S.E).length,
+    aprobadas:  vals.filter(v => v === S.A).length,
+    cursando:   vals.filter(v => v === S.C).length,
+    habilitadas:vals.filter(v => v === S.H).length,
+  };
+
+  return {
+    // — Perfil del usuario —
+    plan, ingreso, theme, mascot,
+    ...(matIni !== null ? { matIni } : {}),
+    // — Resumen académico —
+    z_cr: cr, z_mat: mat,
+    pctAvance: Math.round(crTotal / META * 100),
+    // — Actividad —
+    lastSeen: new Date().toISOString(),
+    // — Estado raw (para restaurar en otro dispositivo) —
+    z_est: est,
+  };
+}
+
+function sv() {
+  const data = { est, bOp, dOp, matIni, cel, soundOn, toastsOn, quimiOn, mascot, theme, plan, ingreso };
+  try { localStorage.setItem(SK, JSON.stringify(data)); } catch (e) {}
+  window.fbSave?.(_buildFbPayload());
+}
+
+function ld() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SK));
+    if (!d) return;
+    est     = d.z_est || d.est || {};
+    bOp     = d.bOp   || null;
+    dOp     = d.dOp   || null;
+    matIni  = d.matIni !== undefined ? d.matIni : null;
+    cel     = d.cel   || false;
+    soundOn = d.soundOn  !== undefined ? d.soundOn  : true;
+    toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
+    quimiOn = d.quimiOn  !== undefined ? d.quimiOn  : true;
+    mascot  = d.mascot   || 'quimi';
+    if (d.theme) theme = d.theme;
+    if (d.plan)  plan  = d.plan;
+    if (d.ingreso) ingreso = d.ingreso;
+  } catch (e) {}
+}
+
+// ══════════ AUDIO ══════════
+let AC_ = null;
+function getAC() {
+  if (!AC_ || AC_.state === 'closed') AC_ = new (window.AudioContext || window.webkitAudioContext)();
+  return AC_;
+}
+
+async function playTone(freq, dur, vol = 1) {
+  if (!soundOn) return;
+  try {
+    const ac = getAC();
+    if (ac.state === 'suspended') await ac.resume();
+    // Buffer silencioso para calentar el contexto
+    const silence = ac.createBuffer(1, Math.ceil(ac.sampleRate * 0.05), ac.sampleRate);
+    const silSrc = ac.createBufferSource();
+    silSrc.buffer = silence;
+    silSrc.connect(ac.destination);
+    silSrc.start();
+    await new Promise(r => setTimeout(r, 50));
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+    const o = ac.createOscillator();
+    o.frequency.value = freq;
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime + dur);
+  } catch (e) {}
+}
+
+function sndAdvance() { playTone(440, .12, .4); setTimeout(() => playTone(550, .1, .3), 80); }
+function sndBack()    { playTone(330, .15, .4); setTimeout(() => playTone(260, .12, .3), 80); }
+function sndExon()    { [523, 659, 784].forEach((f, i) => setTimeout(() => playTone(f, .18, .5), i * 100)); }
+function sndCarrera() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, .3, .6), i * 120)); }
+
+// ══════════ LÓGICA DE ESTADO ══════════
+const gs = (id) => est[id] ?? S.B;
+
+function crBasicas() {
+  let t = 0;
+  for (const s of ALL)
+    if (s.grp === 'Básicas' && gs(s.id) === S.E)
+      t += s.id === 'INGBIOTRAE' ? (bOp ? BO[bOp].cr : 0) : s.id === 'DINCONPRO' ? (dOp ? DO[dOp].cr : 0) : (s.cr || 0);
+  return t;
+}
+
+function crTotal() {
+  let t = 0;
+  for (const s of ALL) t += gcr(s.id, gs(s.id));
+  return t;
+}
+
+function cp(id) {
+  if (OPT_IDS.has(id) && PV_ACT[id] === undefined) return S.H;  // optativa sin previas → habilitada
+  if (INIC_ACT.has(id)) return S.H;
+  const p = PV_ACT[id];
+  if (!p) return S.H;
+  // Chequear requisito de créditos si aplica
+  if (id in CR_REQ) {
+    const req = CR_REQ[id];
+    const actual = req.type === 'basicas' ? crBasicas() : crTotal();
+    if (actual < req.cr) return S.B;
+  }
+  // TALENCCRE: créditos requeridos distintos según plan
+  if (id === 'TALENCCRE') {
+    const reqs = [
+      { cr: 65,  type: 'ing_proc_fis' },
+      { cr: 24,  type: 'ing_proc_qb'  },
+      { cr: 20,  type: 'act_int'       },
+      { cr: 190, type: 'basicas'       },
+    ];
+    const bas = crBasicas();
+    const crIngProcFis = crArea('Ing. Proc. Físicos');
+    const crIngProcQB  = crArea('Ing. Proc. Q/B');
+    const crActInt     = crArea('Act. Integradoras');
+    const check = (r) => {
+      if (r.type==='basicas')      return bas          >= r.cr;
+      if (r.type==='ing_proc_fis') return crIngProcFis >= r.cr;
+      if (r.type==='ing_proc_qb')  return crIngProcQB  >= r.cr;
+      if (r.type==='act_int')      return crActInt     >= r.cr;
+      return false;
+    };
+    return reqs.every(check) ? S.H : S.B;
+  }
+  if (id === 'DINCONPRO') {
+    // Chequear si al menos una opción tiene previas cumplidas
+    const opts = Object.keys(PV_DIN);
+    for (const op of opts) {
+      const pvd = PV_DIN[op];
+      for (const g of (Array.isArray(pvd) ? pvd : [pvd])) {
+        let ok = true;
+        for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
+        if (ok) return S.H;
+      }
+    }
+    return S.B;
+  }
+  if (id === 'INGBIOTRAE') {
+    // Chequear si al menos una opción tiene previas cumplidas
+    for (const pvs of Object.values(PV_BIO)) {
+      let ok = true;
+      for (const [pid, ms] of Object.entries(pvs)) if (gs(pid) < ms) { ok = false; break; }
+      if (ok) return S.H;
+    }
+    return S.B;
+  }
+  if (id === 'TUTPAR') {
+    // Opción 1: Física 1 exonerada
+    if (gs('FIS1F') >= E) return S.H;
+    // Opción 2: GEOALG1 exonerada Y GEOALG2 aprobada
+    if (gs('GEOALG1') >= E && gs('GEOALG2') >= A) return S.H;
+    // Opción 3: CALC1 exonerada Y CALC2 aprobada
+    if (gs('CALC1') >= E && gs('CALC2') >= A) return S.H;
+    return S.B;
+  }
+  for (const g of (Array.isArray(p) ? p : [p])) {
+    let ok = true;
+    for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
+    if (ok) return S.H;
+  }
+  return S.B;
+}
+
+function rc() {
+  for (const s of ALL) {
+    const c = gs(s.id);
+    if (c === S.B || c === S.H) est[s.id] = cp(s.id);
+  }
+}
+
+function gcr(id, st) {
+  if (st < S.E) return 0;
+  if (id === 'INGBIOTRAE') {
+    return bOp ? BO[bOp].cr : 0;
+  }
+  if (id === 'DINCONPRO') return dOp ? DO[dOp].cr : 0;
+  return BI[id]?.cr ?? 0;
+}
+
+function cst() {
+  let t = 0, ex = 0, ap = 0, cu = 0, ha = 0;
+  for (const s of ALL) {
+    const st = gs(s.id);
+    t += gcr(s.id, st);
+    if (st === S.E) ex++;
+    else if (st === S.A) ap++;
+    else if (st === S.C) cu++;
+    else if (st === S.H) ha++;
+  }
+  return { t, ex, ap, cu, ha };
+}
+
+function acr() {
+  const r = {};
+  for (const s of ALL) {
+    const c = gcr(s.id, gs(s.id)), ar = AM_ACT[s.id];
+    if (ar && c > 0) r[ar] = (r[ar] || 0) + c;
+  }
+  return r;
+}
+
+// Helper: créditos acumulados en un área específica — evita triplicar esta lógica
+function crArea(area) {
+  let t = 0;
+  for (const s of ALL) if (AM_ACT[s.id] === area) t += gcr(s.id, gs(s.id));
+  return t;
+}
+
+function setSt(id, ns, back) {
+  const old = gs(id);
+  est[id] = ns;
+  rc(); rAll(); upCr();
+  if (!back) {
+    if (ns === S.E) sndExon(); else if (ns >= S.C) sndAdvance();
+    if (ns >= S.C && ns !== old) toast(id, ns);
+  } else {
+    sndBack();
+  }
+  chkCel(); sv();
+}
+
+function cycleBack(id) {
+  const cur = gs(id);
+  if (cur <= S.H) {
+    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    if (id === 'DINCONPRO'  && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
+    return;
+  }
+  setSt(id, cur - 1, true);
+}
+
+// ══════════ RENDER ══════════
+const CE = {};
+
+function mkCard(s) {
+  const d = document.createElement('div');
+  d.className   = 'card';
+  d.dataset.id  = s.id;
+  const peekFn = s.id === 'DINCONPRO'  ? `dOp?showPPDin():showPP('${s.id}')` :
+                 s.id === 'INGBIOTRAE' ? `bOp?showPPBio():showPP('${s.id}')` :
+                 `showPP('${s.id}')`;
+  const semLabel = OPT_O1_IDS.has(s.id) ? ' · Impar' : OPT_O2_IDS.has(s.id) ? ' · Par' : '';
+  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}${semLabel}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
+
+  d.addEventListener('click', (e) => {
+    getAC();
+    // Shift+click: mostrar previas sin importar estado
+    if (e.shiftKey) {
+      e.preventDefault(); e.stopPropagation();
+      if (s.id === 'DINCONPRO')  { dOp ? showPPDin() : openDin(); return; }
+      if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
+      showPP(s.id); return;
+    }
+    if (s.id === 'DINCONPRO') {
+      hidePP();
+      const cur = gs('DINCONPRO');
+      if (!dOp)      { openDin(); return; }
+      if (cur === S.B) { showPPDin(); return; }
+      if (cur === S.E && isMobile()) { dOp = null; sv(); setSt('DINCONPRO', S.H, true); openDin(); return; }
+      if (cur === S.E) return;
+      setSt('DINCONPRO', cur + 1, false);
+      return;
+    }
+    if (s.id === 'INGBIOTRAE') {
+      hidePP();
+      const cur = gs('INGBIOTRAE');
+      if (!bOp)      { openBio(); return; }
+      if (cur === S.B) { showPPBio(); return; }
+      if (cur === S.E && isMobile()) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
+      if (cur === S.E) return;
+      setSt('INGBIOTRAE', cur + 1, false);
+      return;
+    }
+    if (gs(s.id) === S.B) {
+      if (OPT_IDS.has(s.id) && PV_ACT[s.id] === undefined && !(s.id in CR_REQ) && s.id !== 'TALENCCRE') { toastWip(); return; }
+      showPP(s.id); return;
+    }
+    hidePP();
+    const cur = gs(s.id);
+    if (cur === S.E) { if (isMobile()) setSt(s.id, S.H, true); }
+    else setSt(s.id, cur + 1, false);
+  });
+
+  d.addEventListener('contextmenu', (e) => {
+    e.preventDefault(); getAC();
+    if (OPT_IDS.has(s.id) && gs(s.id) <= S.H && !(s.id in CR_REQ)) { toastWip(); return; }
+    hidePP(); cycleBack(s.id);
+  });
+
+  if (!CE[s.id]) CE[s.id] = [];
+  CE[s.id].push(d);
+  return d;
+}
+
+function upCard(el, id) {
+  const st = gs(id);
+  el.dataset.st = SN[st];
+  el.querySelector('.cbg').textContent = SL[st];
+  const _m = BI[id]; const _crNote = _m?.crNote ? ' ' + _m.crNote : '';
+  if (id === 'DINCONPRO') {
+    el.querySelector('.cc').textContent = dOp ? DO[dOp].cr + ' créditos' : '— créditos';
+    const nm = el.querySelector('.cn');
+    if (nm) nm.textContent = dOp ? DO[dOp].name : 'Din. y Control / Inst. Industrial';
+  } else {
+    el.querySelector('.cc').textContent  = id === 'INGBIOTRAE' && bOp
+      ? BO[bOp].cr + ' créditos'
+      : _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
+  }
+  if (id === 'INGBIOTRAE') {
+    const nm = el.querySelector('.cn');
+    if (nm) nm.textContent = bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes';
+  }
+}
+
+// ══════════ BÚSQUEDA: expansión de abreviaturas ══════════
+const ABBREV_MAP = [
+  [/\bqca\b/gi,    'quimica'],
+  [/\bqco\b/gi,    'quimico'],
+  [/\btec\b\.?/gi, 'tecnologia'],
+  [/\btrat\b\.?/gi,'tratamiento'],
+  [/\bing\b\.?/gi, 'ingenieria'],
+  [/\blab\b\.?/gi, 'laboratorio'],
+  [/\baplic\b\.?/gi,'aplicada'],
+  [/\bprod\b\.?/gi, 'produccion'],
+  [/\bproc\b\.?/gi, 'procesos'],
+  [/\bind\b\.?/gi,  'industrial'],
+  [/\bintro\b/gi,   'introduccion'],
+  [/\brep\b\.?/gi,  'representacion'],
+  [/\bsint\b\.?/gi, 'sintesis'],
+  [/\bfund\b\.?/gi, 'fundamentos'],
+  [/\borg\b/gi,     'organica'],
+  [/\binorg\b/gi,   'inorganica'],
+  [/\bamb\b/gi,     'ambiental'],
+  [/\bval\b\.?/gi,  'valorizacion'],
+  [/\bgral\b\.?/gi, 'general'],
+  [/\baseg\b\.?/gi, 'aseguramiento'],
+  [/\bfisqui\b/gi,  'fisicoquimica'],
+  [/\bele\b/gi,     'electrotecnica'],
+  [/\bgest\b\.?/gi, 'gestion'],
+  [/\bcal\b/gi,     'calidad'],
+  [/\bflu\b/gi,     'fluidodinamica'],
+  [/\bfen\b/gi,     'fenomenos'],
+  [/\bter\b/gi,     'termodinamica'],
+  [/\bser\b/gi,     'servicios'],
+];
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+// Aliases de búsqueda: texto extra que se añade al índice de cada materia
+const SEARCH_ALIASES = {
+  'METESTREG': 'modelos estadisticos',
+};
+// Caché de texto de búsqueda — se regenera al cambiar de plan
+let SEARCH_CACHE = {};
+function buildSearchCache() {
+  SEARCH_CACHE = {};
+  for (const s of ALL) {
+    const base = norm(s.name);
+    let expanded = base;
+    for (const [re, full] of ABBREV_MAP) expanded = expanded.replace(re, full);
+    const alias = SEARCH_ALIASES[s.id] ? ' ' + SEARCH_ALIASES[s.id] : '';
+    SEARCH_CACHE[s.id] = base + ' ' + expanded + alias;
+  }
+}
+function searchText(id) { return SEARCH_CACHE[id] || norm(BI[id]?.name ?? ''); }
+
+function rAll() {
+  const q = norm(qr);
+  for (const [id, els] of Object.entries(CE)) {
+    const show = (aF.size === 0 || aF.has(SN[gs(id)]))
+      && (!q || searchText(id).includes(q))
+      && (!areaF || AM_ACT[id] === areaF)
+
+    for (const el of els) { upCard(el, id); el.classList.toggle('hd', !show); }
+  }
+  document.querySelectorAll('.sect-label').forEach(lbl => {
+    let next = lbl.nextElementSibling, any = false;
+    while (next && !next.classList.contains('sect-label')) {
+      if (!next.classList.contains('hd')) any = true;
+      next = next.nextElementSibling;
+    }
+    lbl.style.display = any ? '' : 'none';
+  });
+}
+
+// ══════════ SIDEBAR ══════════
+let sbAreasOpen = false;
+let sbGrupoOpen = {}; // track qué grupos padre están abiertos
+
+function buildABSidebar() {
+  const c = document.getElementById('ab-sidebar');
+  c.innerHTML = '';
+  const ac = acr();
+
+  function grpCr(hijas) { return hijas.reduce((s, h) => s + (ac[h] || 0), 0); }
+
+  // Helper interno: crea un botón de área (hija, padre o standalone)
+  function mkAreaBtn({ area, ea, mn, tipo, isOpen }) {
+    const done   = ea >= mn;
+    const active = areaF === area;
+    const isPadre = tipo === 'padre';
+    const isHija  = tipo === 'hija';
+    const barCol  = done ? 'var(--gn)' : (isHija ? 'var(--ac)' : 'var(--a2)');
+    const barH    = isHija ? '2px' : '3px';
+    const fSize   = isHija ? '.65rem' : '.68rem';
+    const fWeight = isHija ? '' : 'font-weight:700;';
+    const crSize  = isHija ? '.54rem' : '.55rem';
+    const arrow   = isPadre ? `<span style="font-size:.55rem;transition:transform .2s;display:inline-block;transform:rotate(${isOpen?'90':'0'}deg)">▶</span>` : '';
+    const crColor = isPadre ? (done ? 'var(--gn)' : 'var(--a2)') : '';
+    const crStyle = crColor ? `color:${crColor};` : '';
+    const arrowMr = isPadre ? 'margin-right:6px;' : '';
+
+    const b = document.createElement('button');
+    b.className = 'nb' + (active ? ' on' : (!isHija && done ? '' : (isHija && done ? ' done' : '')));
+    if (area) b.dataset.area = area;
+    if (isHija) {
+      b.style.paddingLeft = '20px';
+    } else {
+      b.style.cssText = 'margin-top:5px; border:1px solid var(--bd); background:var(--sf2); width:100%; text-align:left; padding:6px 9px;';
+    }
+    b.innerHTML = `<div style="width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${isHija?'2':'3'}px">
+        <span style="font-size:${fSize};${fWeight}${!isHija?'color:var(--tx);':''}flex:1">${area}${done ? ' ✓' : ''}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:${crSize};${crStyle}${arrowMr}">${ea}/${mn}</span>
+        ${arrow}
+      </div>
+      <div style="background:var(--bd);border-radius:100px;height:${barH};overflow:hidden">
+        <div style="height:100%;border-radius:100px;background:${barCol};width:${Math.min(100,Math.round(ea/mn*100))}%;transition:width .6s"></div>
+      </div>
+    </div>`;
+    return b;
+  }
+
+  // Header principal desplegable "Áreas"
+  const hdr = document.createElement('button');
+  hdr.className = 'nb sb-collapsible';
+  hdr.innerHTML = `<span style="flex:1">Áreas</span><span style="font-size:.6rem;transition:transform .2s;display:inline-block;transform:rotate(${sbAreasOpen?'90':'0'}deg)">▶</span>`;
+  hdr.addEventListener('click', () => { sbAreasOpen = !sbAreasOpen; buildABSidebar(); });
+  c.appendChild(hdr);
+  if (!sbAreasOpen) return;
+
+  const padres = GRUPO_PADRE_ACT;
+  let currentPadre = null;
+
+  for (const area of AREAS_ORDER_ACT) {
+    const mn = AMIN_ACT[area];
+    if (mn === undefined) continue;
+
+    const esPadre = !!padres[area];
+    const esHija  = !!(currentPadre && (padres[currentPadre] || []).includes(area));
+
+    if (esHija) {
+      if (!sbGrupoOpen[currentPadre]) continue;
+      const ea = ac[area] || 0;
+      const b = mkAreaBtn({ area, ea, mn, tipo: 'hija' });
+      b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
+      c.appendChild(b);
+
+    } else if (esPadre) {
+      currentPadre = area;
+      const ea = grpCr(padres[area]);
+      const isOpen = !!sbGrupoOpen[area];
+      const btn = mkAreaBtn({ area, ea, mn, tipo: 'padre', isOpen });
+      btn.addEventListener('click', () => { sbGrupoOpen[area] = !sbGrupoOpen[area]; buildABSidebar(); });
+      c.appendChild(btn);
+
+    } else {
+      const ea = ac[area] || 0;
+      const b = mkAreaBtn({ area, ea, mn, tipo: 'standalone' });
+      b.addEventListener('click', () => setAreaF(areaF === area ? '' : area));
+      c.appendChild(b);
+    }
+  }
+}
+
+
+function upCr() {
+  const { t } = cst();
+  document.getElementById('cn').textContent          = t;
+  document.getElementById('cpct').textContent        = Math.round(t / META * 100) + '%';
+  document.getElementById('pbi').style.width         = Math.min(100, t / META * 100) + '%';
+  buildABSidebar();
+}
+
+function switchToTodas() {
+  document.querySelectorAll('.tp').forEach(p => p.classList.remove('on'));
+  document.getElementById('tp-todas').classList.add('on');
+  document.querySelectorAll('.nb[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === 'todas'));
+}
+
+function setAreaF(a) {
+  areaF = a;
+  buildABSidebar();
+  if (a) {
+    const cur = document.querySelector('.nb[data-tab].on')?.dataset.tab || 'princ';
+    if (cur !== 'todas') _prevTab = cur;
+    switchToTodas();
+  } else {
+    switchTab(_prevTab);
+    return;
+  }
+  rAll();
+}
+
+
+// ══════════ TOPOLOGICAL SORT ══════════
+function computeGlobalLevels() {
+  const allIds = ALL.map(s => s.id);
+  const globalLevel = {};
+  for (const id of allIds) globalLevel[id] = 0;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const id of allIds) {
+      const p = PV_ACT[id]; if (!p) continue;
+      for (const g of (Array.isArray(p) ? p : [p]))
+        for (const dep of Object.keys(g)) {
+          const nl = (globalLevel[dep] ?? 0) + 1;
+          if (nl > (globalLevel[id] ?? 0)) { globalLevel[id] = nl; changed = true; }
+        }
+    }
+  }
+  const maxLevel = Math.max(...Object.values(globalLevel), 0);
+  for (const id of allIds) {
+    if (id in CR_REQ) {
+      const cr = CR_REQ[id].cr;
+      globalLevel[id] = Math.round(maxLevel * cr / 400);
+    }
+  }
+  if (globalLevel['TALENCCRE'] !== undefined) globalLevel['TALENCCRE'] = Math.round(maxLevel * 0.7);
+  return { globalLevel, maxLevel };
+}
+
+function topoSort(arr, precomputed) {
+  const { globalLevel } = precomputed || computeGlobalLevels();
+  const isWip = (id) => false; // En Ing. Alimentos todas las optativas tienen previas definidas
+  return [...arr].sort((a, b) => {
+    const wa = isWip(a.id), wb = isWip(b.id);
+    if (wa !== wb) return wa ? 1 : -1;
+    return (globalLevel[a.id] ?? 0) - (globalLevel[b.id] ?? 0);
+  });
+}
+
+// ══════════ GRIDS ══════════
+const WIP_LEVEL = 9999;
+
+let blt = {};
+function bldGrds() {
+  const computed = computeGlobalLevels();
+  if (!blt.t) {
+    const { globalLevel } = computed;
+    const isWip = (id) => false; // En Ing. Alimentos todas las optativas tienen previas definidas
+    const sorted = topoSort(ALL, computed);
+    const byLevel = new Map();
+    for (const s of sorted) {
+      const lv = isWip(s.id) ? WIP_LEVEL : (globalLevel[s.id] ?? 0);
+      if (!byLevel.has(lv)) byLevel.set(lv, []);
+      byLevel.get(lv).push(s);
+    }
+    const container = document.getElementById('g-ta');
+    const levels = [...byLevel.keys()].sort((a,b) => a-b);
+    levels.forEach((lv, i) => {
+      if (i > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'sect-label';
+        sep.textContent = lv === WIP_LEVEL ? '— Sin previas definidas —' : '';
+        container.appendChild(sep);
+      }
+      byLevel.get(lv).forEach(s => container.appendChild(mkCard(s)));
+    });
+    blt.t = true;
+  }
+  if (!blt.p) {
+    const gd = document.createElement('div');
+    gd.className = 'gd';
+    const idMap = Object.fromEntries(OB_ACT.map(s => [s.id, s]));
+    for (const sem of SEMESTRES_ACT) {
+      const lbl = document.createElement('div');
+      lbl.className   = 'sect-label';
+      lbl.textContent = '📅 ' + sem.label;
+      gd.appendChild(lbl);
+      for (const id of sem.ids) {
+        const s = idMap[id];
+        if (s) gd.appendChild(mkCard(s));
+      }
+    }
+    document.getElementById('tp-princ').appendChild(gd);
+    blt.p = true;
+  }
+  if (!blt.o1) {
+    topoSort(O1_ACT, computed).forEach(s => document.getElementById('g-o1').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    blt.o1 = true;
+  }
+  if (!blt.o2) {
+    topoSort(O2_ACT, computed).forEach(s => document.getElementById('g-o2').appendChild(mkCard({ ...s, name: s.name + ' *' })));
+    blt.o2 = true;
+  }
+}
+
+// ══════════ TABS ══════════
+function switchTab(t) {
+  document.querySelectorAll('.tp').forEach(p => p.classList.remove('on'));
+  document.getElementById('tp-' + t).classList.add('on');
+  document.querySelectorAll('.nb[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  if (areaF) { areaF = ''; buildABSidebar(); }
+  rAll(); cSB();
+}
+
+// ══════════ FILTROS ══════════
+function toggleFilterBar() {
+  const fb = document.getElementById('fb-filters');
+  if (!fb.classList.contains('open'))
+    fb.style.top = document.getElementById('filterbar').getBoundingClientRect().bottom + 'px';
+  fb.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  const fb  = document.getElementById('fb-filters');
+  const btn = document.getElementById('fb-toggle-btn');
+  if (fb?.classList.contains('open') && !fb.contains(e.target) && !btn?.contains(e.target))
+    fb.classList.remove('open');
+});
+
+function updateFilterBtn() {
+  const btn = document.getElementById('fb-toggle-btn');
+  if (!btn) return;
+  btn.className   = 'fb-toggle' + (aF.size ? ' has-filter' : '');
+  btn.textContent = aF.size ? `🔽 Filtros (${aF.size})` : '🔽 Filtrar';
+}
+
+function toggleF(s) {
+  aF.has(s) ? aF.delete(s) : aF.add(s);
+  document.querySelectorAll('.ch').forEach(c => c.classList.toggle('on', aF.has(c.dataset.s)));
+  updateFilterBtn(); rAll();
+}
+
+function clearFilters() {
+  aF.clear();
+  document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
+  updateFilterBtn();
+  document.getElementById('fb-filters').classList.remove('open');
+  rAll();
+}
+
+function applyS() {
+  qr = document.getElementById('sq').value;
+  if (qr) {
+    const cur = document.querySelector('.nb[data-tab].on')?.dataset.tab || 'princ';
+    if (cur !== 'todas') _prevTab = cur;
+    switchToTodas();
+    rAll();
+  } else {
+    switchTab(_prevTab); // switchTab ya llama rAll internamente
+  }
+}
+
+// ══════════ MODAL PREVIAS ══════════
+let _ppCurrentId = null;
+let _ppMode = 'req'; // 'req' | 'rev'
+
+// Helper: renderiza una fila de previa
+function renderPPItem(pid, ms, indent = false) {
+  const ok = gs(pid) >= ms;
+  const style = indent ? ' style="margin-left:8px"' : '';
+  return `<div class="pi${ok ? ' met' : ''}"${style}><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+}
+
+// Helper: renderiza una lista de opciones con label
+function renderPPOpts(opts) {
+  return opts.map(opt => {
+    const header = `<div class="pp-opt-label${opt.met ? ' met' : ''}">${opt.label}${opt.met ? ' ✓' : ''}</div>`;
+    return header + opt.items.map(({ id: pid, ms }) => renderPPItem(pid, ms, true)).join('');
+  }).join('');
+}
+
+function buildPPReqRows(id) {
+  const p = PV_ACT[id];
+  // Requisito de créditos (si aplica)
+  let creditRow = '';
+  if (id === 'TALENCCRE') {
+    const labels = {
+      ing_proc_fis: { cr: 65,  label: 'cr. Ing. de Procesos Físicos' },
+      ing_proc_qb:  { cr: 24,  label: 'cr. Ing. de Proc. Q/B' },
+      act_int:      { cr: 20,  label: 'cr. Act. Integradoras' },
+      basicas:      { cr: 190, label: 'cr. Materias Básicas' },
+    };
+    const crIngProcFis = crArea('Ing. Proc. Físicos');
+    const crIngProcQB  = crArea('Ing. Proc. Q/B');
+    const crActInt     = crArea('Act. Integradoras');
+    const bas = crBasicas();
+    const actuals = { ing_proc_fis: crIngProcFis, ing_proc_qb: crIngProcQB, act_int: crActInt, basicas: bas };
+    for (const [type, { cr, label }] of Object.entries(labels)) {
+      const actual = actuals[type], ok = actual >= cr;
+      creditRow += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${cr} ${label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + cr}</span></div>`;
+    }
+  } else if (id in CR_REQ) {
+    const req = CR_REQ[id];
+    const actual = req.type === 'basicas' ? crBasicas() : crTotal();
+    const ok = actual >= req.cr;
+    creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
+  }
+  if (id === 'TUTPAR') {
+    const opts = [
+      { label: 'Opción 1', met: gs('FIS1F') >= E,
+        items: [{ id: 'FIS1F', ms: E }] },
+      { label: 'Opción 2', met: gs('GEOALG1') >= E && gs('GEOALG2') >= A,
+        items: [{ id: 'GEOALG1', ms: E }, { id: 'GEOALG2', ms: A }] },
+      { label: 'Opción 3', met: gs('CALC1') >= E && gs('CALC2') >= A,
+        items: [{ id: 'CALC1', ms: E }, { id: 'CALC2', ms: A }] },
+    ];
+    return creditRow + renderPPOpts(opts);
+  }
+  if (id === 'FIS3F') {
+    const commonRow = renderPPItem('CALC1', A);
+    const opts = [
+      { label: 'Opción 1', met: gs('FIS1F') >= A && gs('FIS2F') >= A,
+        items: [{ id: 'FIS1F', ms: A }, { id: 'FIS2F', ms: A }] },
+      { label: 'Opción 2', met: gs('FIS1F') >= E,
+        items: [{ id: 'FIS1F', ms: E }] },
+    ];
+    return creditRow + commonRow + renderPPOpts(opts);
+  }
+  if (!p || (typeof p === 'object' && !Array.isArray(p) && Object.keys(p).length === 0))
+    return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
+  const groups = Array.isArray(p) ? p : [p];
+  if (groups.length === 1) {
+    return creditRow + Object.entries(groups[0]).map(([pid, ms]) => renderPPItem(pid, ms)).join('');
+  }
+  const opts = groups.map((g, i) => ({
+    label: `Opción ${i + 1}`,
+    met: Object.entries(g).every(([pid, ms]) => gs(pid) >= ms),
+    items: Object.entries(g).map(([pid, ms]) => ({ id: pid, ms })),
+  }));
+  return creditRow + renderPPOpts(opts);
+}
+
+function buildPPRevRows(id) {
+  // Buscar todas las materias para las que `id` es previa
+  const results = [];
+  for (const s of ALL) {
+    const p = PV_ACT[s.id];
+    if (!p) continue;
+    const groups = Array.isArray(p) ? p : [p];
+    let found = false;
+    for (const g of groups) { if (id in g) { found = true; break; } }
+    if (found) results.push(s);
+  }
+  if (results.length === 0) return '<div class="pi"><span class="pn" style="color:var(--tm)">No es previa de ninguna materia.</span></div>';
+  return results.map(s => {
+    const st = gs(s.id);
+    return `<div class="pi${st >= S.H ? ' met' : ''}"><span class="pn">${s.name}</span><span class="pr ${SN[st]}">${SL[st]}</span></div>`;
+  }).join('');
+}
+
+function renderPPModal(id) {
+  const modal = document.getElementById('pp-modal');
+  const isReq = _ppMode === 'req';
+  const rows = isReq ? buildPPReqRows(id) : buildPPRevRows(id);
+  modal.innerHTML = `
+    <h3>🔒 Previas <button class="pp-close" onclick="hidePP()">✕</button></h3>
+    <div class="pp-sub">${BI[id]?.name || id}</div>
+    <div style="display:flex;gap:5px;margin-bottom:8px">
+      <button class="toggle-btn ${isReq ? 'on' : 'off'}" style="flex:1;font-size:.65rem;padding:4px" onclick="switchPPMode('req')">Previas requeridas</button>
+      <button class="toggle-btn ${!isReq ? 'on' : 'off'}" style="flex:1;font-size:.65rem;padding:4px" onclick="switchPPMode('rev')">¿De qué es previa?</button>
+    </div>
+    ${rows}`;
+}
+
+function switchPPMode(mode) {
+  _ppMode = mode;
+  if (_ppCurrentId) renderPPModal(_ppCurrentId);
+}
+
+function showPP(id) {
+  const ov = document.getElementById('ov-pp');
+  _ppCurrentId = id;
+  _ppMode = PV_ACT[id] ? 'req' : 'rev';
+  renderPPModal(id);
+  ov.removeEventListener('click', ppOvClick);
+  ov.classList.add('op'); setModalOpen(true);
+  ov.addEventListener('click', ppOvClick);
+}
+
+function ppOvClick(e) {
+  if (e.target === document.getElementById('ov-pp')) hidePP();
+}
+
+function hidePP() {
+  const ov = document.getElementById('ov-pp');
+  ov.classList.remove('op'); syncModalOpen();
+  ov.removeEventListener('click', ppOvClick);
+}
+function showPPBio() {
+  if (!bOp) return;
+  const ov = document.getElementById('ov-pp'), modal = document.getElementById('pp-modal');
+  const pvs = PV_BIO[bOp];
+  let rows = '';
+  for (const [pid, ms] of Object.entries(pvs)) {
+    const met = gs(pid) >= ms;
+    rows += `<div class="pi${met ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${met ? 'ok' : SN[ms]}">${met ? '✓' : SL[ms]}</span></div>`;
+  }
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${BO[bOp].name}</div>${rows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openBio()">↩ Cambiar opción</div>`;
+  ov.removeEventListener('click', ppOvClick);
+  ov.classList.add('op'); setModalOpen(true);
+  ov.addEventListener('click', ppOvClick);
+}
+
+// ══════════ FEEDBACK ══════════
+let fbType = 'error';
+
+function openFeedback() {
+  fbType = 'error';
+  document.querySelectorAll('.fb-type-btn').forEach(b => b.classList.toggle('on', b.dataset.type === 'error'));
+  document.getElementById('fb-materia').value    = '';
+  document.getElementById('fb-desc').value       = '';
+  document.getElementById('fb-msg').textContent  = '';
+  document.getElementById('fb-msg').style.color  = '';
+  document.getElementById('fb-send-btn').disabled = false;
+  document.getElementById('ov-fb').classList.add('op'); setModalOpen(true);
+}
+
+function closeFeedback() { document.getElementById('ov-fb').classList.remove('op'); syncModalOpen(); }
+
+function selectFbType(btn) {
+  fbType = btn.dataset.type;
+  document.querySelectorAll('.fb-type-btn').forEach(b => b.classList.toggle('on', b === btn));
+  document.getElementById('fb-materia-row').style.display = fbType === 'error' ? '' : 'none';
+}
+
+async function sendFeedback() {
+  const desc = document.getElementById('fb-desc').value.trim();
+  const msg  = document.getElementById('fb-msg');
+  const btn  = document.getElementById('fb-send-btn');
+  if (!desc) {
+    msg.textContent = 'Por favor escribí una descripción.';
+    msg.style.color = 'var(--a3)';
+    return;
+  }
+  btn.disabled    = true;
+  btn.textContent = 'Enviando...';
+  try {
+    await window.fbSaveFeedback({
+      tipo:       fbType,
+      materia:    fbType === 'error' ? document.getElementById('fb-materia').value.trim() : '',
+      descripcion: desc,
+      fecha:      new Date().toISOString(),
+      uid:        window._fbCurrentUser?.uid  || 'anonimo',
+      email:      window._fbCurrentUser?.email || 'anonimo',
+    });
+    msg.textContent = '✓ Reporte enviado. ¡Gracias!';
+    msg.style.color = 'var(--gn)';
+    setTimeout(closeFeedback, 1500);
+  } catch (e) {
+    msg.textContent = 'Error al enviar. Intentá de nuevo.';
+    msg.style.color = 'var(--a3)';
+    btn.disabled    = false;
+    btn.textContent = 'Enviar reporte';
+  }
+}
+
+// ══════════ TOASTS ══════════
+// ══════════ QUIMI ══════════
+let quimiTimer = null;
+
+function quimiSay(msg, mood = 'happy', dur = 3000) {
+  if (!toastsOn || !quimiOn) return;
+  const bubble = document.getElementById('quimi-bubble');
+  if (quimiTimer) { clearTimeout(quimiTimer); quimiTimer = null; }
+  bubble.innerHTML = msg;
+  bubble.dataset.mood = mood;
+  bubble.classList.add('on');
+  quimiSetMood(mood);
+  quimiTimer = setTimeout(() => {
+    bubble.classList.remove('on');
+    setTimeout(() => quimiSetMood('idle'), 300);
+    quimiTimer = null;
+  }, dur);
+}
+
+let ftCurrent = null;
+function floatToast(msg, mood, dur) {
+  if (!toastsOn) return;
+  const c = document.getElementById('ft-container');
+  if (ftCurrent) { ftCurrent.classList.remove('on'); ftCurrent.remove(); ftCurrent = null; }
+  const el = document.createElement('div');
+  el.className = 'ft';
+  el.dataset.mood = mood;
+  el.innerHTML = msg;
+  c.appendChild(el);
+  void el.offsetWidth;
+  el.classList.add('on');
+  ftCurrent = el;
+  setTimeout(() => {
+    el.classList.remove('on');
+    setTimeout(() => { if (ftCurrent === el) ftCurrent = null; el.remove(); }, 300);
+  }, dur);
+}
+
+const MASCOT_IMGS = {
+  quimi:  { idle:'quimi_estatico.png',   happy:'quimi_estatico.png',   aprobada:'quimi_estatico.png',   cursando:'quimi_estatico.png',   wip:'quimi_estatico.png',   exonerada:'quimi_celebrando.png',   celebrate:'quimi_celebrando.png'  },
+  quimpi: { idle:'quimpi_estatico.png',  happy:'quimpi_estatico.png',  aprobada:'quimpi_estatico.png',  cursando:'quimpi_estatico.png',  wip:'quimpi_estatico.png',  exonerada:'quimpi_celebrando.png',  celebrate:'quimpi_celebrando.png' },
+};
+
+function getMascotImgs() { return MASCOT_IMGS[mascot] || MASCOT_IMGS.quimi; }
+
+function applyMascot() {
+  const el  = document.getElementById('quimi');
+  const img = document.getElementById('quimi-img');
+  const cel = document.getElementById('cel-quimi-img');
+  const hlp = document.querySelector('.help-quimi-col img');
+  const imgs = getMascotImgs();
+  if (el)  el.classList.toggle('quimpi', mascot === 'quimpi');
+  if (img) { img.src = imgs[img.dataset.mood] || imgs.idle; }
+  if (cel) {
+    cel.src = mascot === 'quimpi' ? 'quimpi_celebrando.png' : 'quimi_celebrando.png';
+    cel.style.animation = mascot === 'quimpi'
+      ? 'quimpi-rock .45s ease-in-out infinite alternate'
+      : 'quimi-rock-f .45s ease-in-out infinite alternate';
+  }
+  if (hlp) {
+    hlp.src = mascot === 'quimpi' ? 'quimpi_ensenando.png' : 'quimi_ensenando.png';
+    // Quimpi: izquierda, mirando derecha (con flip). Quimi: derecha, mirando izquierda (con flip)
+    hlp.classList.add('mirror');
+    const col = document.querySelector('.help-quimi-col');
+    if (col) {
+      if (mascot === 'quimpi') {
+        col.style.order = '-1';
+        col.style.borderRight = '1px solid var(--bd)';
+        col.style.borderLeft  = 'none';
+      } else {
+        col.style.order = '';
+        col.style.borderLeft  = '1px solid var(--bd)';
+        col.style.borderRight = 'none';
+      }
+    }
+  }
+}
+
+
+function quimiSetMood(mood) {
+  const img = document.getElementById('quimi-img');
+  if (!img) return;
+  const imgs = getMascotImgs();
+  img.src = imgs[mood] || imgs.idle;
+  img.dataset.mood = '';
+  void img.offsetWidth; // fuerza reflow para reiniciar la animación CSS
+  img.dataset.mood = mood;
+}
+
+// ══════════ TOAST ══════════
+function toast(id, st) {
+  const msgs = FR[SN[st]];
+  if (!msgs) return;
+  const msg  = msgs[Math.floor(Math.random() * msgs.length)];
+  const mood = st === S.E ? 'exonerada' : st === S.A ? 'aprobada' : 'cursando';
+  const dur  = st === S.E ? 3800 : 2800;
+  if (quimiOn && !isMobile()) {
+    quimiSay(msg, mood, dur);
+  } else {
+    floatToast(msg, mood, dur);
+  }
+}
+
+// ══════════ TOAST "EN DESARROLLO" ══════════
+function toastWip() {
+  const msg = `<div class="qb-subject">Optativa</div>🚧 Próximamente disponible`;
+  if (quimiOn && !isMobile()) {
+    quimiSay(msg, 'wip', 2800);
+  } else {
+    floatToast(msg, 'wip', 2800);
+  }
+}
+function openMatIniWarn()  {
+  try { if (localStorage.getItem('qp_matini_warn_seen')) return; } catch(e) {}
+  document.getElementById('ov-matini-warn').classList.add('op'); setModalOpen(true);
+}
+function closeMatIniWarn() {
+  document.getElementById('ov-matini-warn').classList.remove('op'); syncModalOpen();
+  try { localStorage.setItem('qp_matini_warn_seen', '1'); } catch(e) {}
+}
+
+function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
+function closeReset() { document.getElementById('ov-r').classList.remove('op'); syncModalOpen(); }
+
+// ══════════ ACTUALIZACIONES ══════════
+const UPD_VERSION = 5;
+function switchUpdTab(tab) {
+  ['v1','v2','v3','v4','v5'].forEach(t => {
+    document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
+    document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
+  });
+}
+function closeUpd() {
+  document.getElementById('ov-upd').classList.remove('op');
+  syncModalOpen();
+  try { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); } catch(e) {}
+}
+function openUpd() {
+  cSB();
+  document.getElementById('ov-upd').classList.add('op');
+  setModalOpen(true);
+}
+function maybeShowUpd() {
+  try {
+    const raw = localStorage.getItem('qp_al_upd_ver');
+    if (raw === null) {
+      // Si nunca vio novedades: si es usuario nuevo (sin welcomed) no mostrar, si es viejo mostrar
+      if (!localStorage.getItem('qp_al_welcomed')) { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); return; }
+      document.getElementById('ov-upd').classList.add('op');
+      setModalOpen(true);
+      return;
+    }
+    const seen = parseInt(raw);
+    if (seen < UPD_VERSION) {
+      document.getElementById('ov-upd').classList.add('op');
+      setModalOpen(true);
+    }
+  } catch(e) {}
+}
+
+function rebuildAllGrids() {
+  Object.keys(CE).forEach(k => delete CE[k]);
+  ['g-ta','tp-princ','g-o1','g-o2'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+  blt = {};
+  bldGrds();
+}
+
+function doReset() {
+  est = {}; bOp = null; dOp = null; cel = false;
+  aF.clear(); areaF = ''; qr = ''; _prevTab = 'princ';
+  document.getElementById('sq').value = '';
+  document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
+  updateFilterBtn();
+  document.getElementById('fb-filters').classList.remove('open');
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv(); closeReset();
+  switchTab('princ');
+}
+
+
+// ══════════ DIN/INST MODAL ══════════
+function openDin() {
+  document.getElementById('din-prereq-section').style.display = 'none';
+  document.getElementById('din-back-btn').style.display       = 'none';
+  document.getElementById('din-confirm-btn').style.display    = '';
+  document.querySelectorAll('input[name="din"]').forEach(r => r.checked = r.value === dOp);
+  document.getElementById('ov-d').classList.add('op'); setModalOpen(true);
+}
+function closeDin() { document.getElementById('ov-d').classList.remove('op'); syncModalOpen(); }
+function confirmDin() {
+  const s = document.querySelector('input[name="din"]:checked');
+  if (!s) return;
+  dOp = s.value;
+  sv(); rc(); rAll(); upCr(); closeDin();
+  if (gs('DINCONPRO') === S.B) showPPDin();
+}
+function showPPDin() {
+  if (!dOp) return;
+  const pvd = PV_DIN[dOp];
+  const pvList = Array.isArray(pvd) ? pvd : [pvd];
+  // Mostrar el grupo de previas más favorable
+  let bestRows = '', bestMet = -1;
+  for (const g of pvList) {
+    let rows = '', met = 0;
+    for (const [pid, ms] of Object.entries(g)) {
+      const ok = gs(pid) >= ms;
+      if (ok) met++;
+      rows += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${BI[pid]?.name || pid}</span><span class="pr ${ok ? 'ok' : SN[ms]}">${ok ? '✓' : SL[ms]}</span></div>`;
+    }
+    if (met > bestMet) { bestMet = met; bestRows = rows; }
+  }
+  const modal = document.getElementById('pp-modal');
+  const ov    = document.getElementById('ov-pp');
+  modal.innerHTML = `<h3>🔒 Previas requeridas <button class="pp-close" onclick="hidePP()">✕</button></h3><div class="pp-sub">${DO[dOp].name}</div>${bestRows}<div class="pp-alts" style="cursor:pointer;color:var(--a2)" onclick="hidePP();openDin()">↩ Cambiar opción</div>`;
+  ov.removeEventListener('click', ppOvClick);
+  ov.classList.add('op'); setModalOpen(true);
+  ov.addEventListener('click', ppOvClick);
+}
+
+function setModalOpen(open) {
+  document.body.classList.toggle('modal-open', open);
+}
+function syncModalOpen() {
+  setModalOpen(!!document.querySelector('.ov.op,#splash.on,#cel.on'));
+}
+
+function openBio() {
+  document.getElementById('bio-prereq-section').style.display = 'none';
+  document.getElementById('bio-back-btn').style.display       = 'none';
+  document.getElementById('bio-confirm-btn').style.display    = '';
+  document.querySelectorAll('input[name="bio"]').forEach(r => r.checked = r.value === bOp);
+  document.getElementById('ov-b').classList.add('op'); setModalOpen(true);
+}
+
+function closeBio() { document.getElementById('ov-b').classList.remove('op'); syncModalOpen(); }
+
+function confirmBio() {
+  const s = document.querySelector('input[name="bio"]:checked');
+  if (!s) return;
+  bOp = s.value;
+  sv(); rc(); rAll(); upCr(); closeBio();
+  if (gs('INGBIOTRAE') === S.B) showPPBio();
+}
+
+function openConfig() {
+  ['cfg-sound','cfg-toasts','cfg-quimi'].forEach(id => {
+    const on = id === 'cfg-sound' ? soundOn : id === 'cfg-toasts' ? toastsOn : quimiOn;
+    document.getElementById(id).textContent = on ? '✔ On' : '✘ Off';
+    document.getElementById(id).className   = 'toggle-btn ' + (on ? 'on' : 'off');
+  });
+  updateCfgPlanBtns();
+  updateCfgIngresoBtns();
+  updateCfgMascotBtns();
+  updateCfgMatIniBtns();
+  document.getElementById('ov-cfg').classList.add('op'); setModalOpen(true);
+}
+
+function closeConfig() {
+  document.getElementById('ov-cfg').classList.remove('op'); syncModalOpen();
+  if (ingreso === 'fing' && matIni === true) setTimeout(() => openMatIniWarn(), 300);
+}
+
+function openHelp() {
+  document.getElementById('ov-help').classList.add('op'); setModalOpen(true);
+  if (isMobile()) switchHelpTab('mob');
+}
+
+function closeHelp() { document.getElementById('ov-help').classList.remove('op'); syncModalOpen(); }
+
+function switchHelpTab(tab) {
+  ['pc','mob'].forEach(t => {
+    document.getElementById('help-' + t).style.display      = t === tab ? '' : 'none';
+    document.getElementById('help-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
+  });
+}
+
+function _updateCfgBtn(elId, val) {
+  const el = document.getElementById(elId);
+  el.textContent = val ? '✔ On' : '✘ Off';
+  el.className   = 'toggle-btn ' + (val ? 'on' : 'off');
+}
+function toggleSound() {
+  soundOn = !soundOn;
+  if (soundOn) sndAdvance();
+  _updateCfgBtn('cfg-sound', soundOn);
+  sv();
+}
+function toggleToasts() {
+  toastsOn = !toastsOn;
+  _updateCfgBtn('cfg-toasts', toastsOn);
+  sv();
+}
+function toggleQuimi() {
+  quimiOn = !quimiOn;
+  _updateCfgBtn('cfg-quimi', quimiOn);
+  applyQuimiVisibility();
+  sv();
+}
+
+function applyQuimiVisibility() {
+  const el = document.getElementById('quimi');
+  if (!el) return;
+  el.style.display = quimiOn ? '' : 'none';
+  if (quimiOn) quimiSetMood('idle');
+}
+
+// ══════════ TEMA ══════════
+function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); sv(); }
+function applyTheme()  {
+  document.body.classList.toggle('light', theme === 'light');
+  document.getElementById('theme-btn').innerHTML = theme === 'dark' ? '🌙 <span class="label">Oscuro</span>' : '☀️ <span class="label">Claro</span>';
+}
+
+// ══════════ CELEBRACIÓN ══════════
+function chkCel() {
+  const t = cst().t;
+  if (t < META) { cel = false; return; }
+  if (cel) return;
+  cel = true; sv(); sndCarrera();
+  setTimeout(() => {
+    document.getElementById('cel').classList.add('on'); setModalOpen(true);
+    launchConfetti();
+    quimiSetMood('celebrate');
+  }, 400);
+}
+
+function closeCel() { document.getElementById('cel').classList.remove('on'); syncModalOpen(); stopConfetti(); }
+
+let confActive = false;
+const CC = ['#e63946','#f4a261','#2a9d8f','#4ea8de','#e9c46a','#c77dff','#f72585','#4cc9f0','#fff','#3fb950'];
+
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  confActive = true;
+  const parts = Array.from({ length: 120 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height * .5,
+    vx: (Math.random() - .5) * 4,
+    vy: Math.random() * 4 + 2,
+    rot: Math.random() * 360,
+    drot: (Math.random() - .5) * 10,
+    color: CC[Math.floor(Math.random() * CC.length)],
+    w: Math.random() * 10 + 5,
+    h: Math.random() * 5 + 3,
+  }));
+  const t0 = Date.now();
+  (function anim() {
+    if (!confActive) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += .1; p.vx *= .99; p.rot += p.drot;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    (Date.now() - t0) / 1000 < 6 ? requestAnimationFrame(anim) : stopConfetti();
+  })();
+}
+
+function stopConfetti() {
+  confActive = false;
+  const c = document.getElementById('confetti-canvas');
+  c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+// ══════════ SIDEBAR MÓVIL ══════════
+function toggleSB() {
+  document.getElementById('sb').classList.toggle('op');
+  document.getElementById('sbov').classList.toggle('op');
+}
+function cSB() {
+  document.getElementById('sb').classList.remove('op');
+  document.getElementById('sbov').classList.remove('op');
+}
+document.getElementById('sbov').onclick = cSB;
+
+// ══════════ TECLADO ══════════
+document.addEventListener('keydown', e => {
+  // 🤫 Combo secreto: Shift+Ctrl+E — exonera todo
+  if (e.shiftKey && e.ctrlKey && !e.altKey && e.code === 'KeyE') {
+    for (const s of ALL) est[s.id] = S.E;
+    if (!bOp) bOp = 'bio';
+    if (!dOp) dOp = 'din';
+    rc(); rAll(); upCr(); chkCel(); sv();
+    return;
+  }
+  // 🤫 Combo secreto: Ctrl+Shift+Y — frase de Quimi
+  if (e.shiftKey && e.ctrlKey && !e.altKey && e.code === 'KeyY') {
+    quimiAmbientSay();
+    return;
+  }
+  if (e.ctrlKey && e.key === 'f') {
+    e.preventDefault();
+    const sq = document.getElementById('sq');
+    sq.focus(); sq.select();
+    return;
+  }
+  if (e.key === 'Escape') {
+    const modals = [
+      ['ov-upd', closeUpd],
+      ['ov-pp',  hidePP],
+      ['ov-cfg', closeConfig],
+      ['ov-help',closeHelp],
+      ['ov-fb',  closeFeedback],
+      ['ov-r',   closeReset],
+      ['ov-b',   closeBio],
+      ['ov-d',   closeDin],
+      ['ov-matini-warn', closeMatIniWarn],
+    ];
+    for (const [id, fn] of modals)
+      if (document.getElementById(id).classList.contains('op')) { fn(); return; }
+    const sq = document.getElementById('sq');
+    if (sq.value) { sq.value = ''; qr = ''; switchTab(_prevTab); return; }
+    if (aF.size)  { clearFilters(); return; }
+    if (areaF)    { setAreaF('');   return; }
+  }
+});
+
+// ══════════ TICKER ══════════
+(() => {
+  let idx = Math.floor(Math.random() * TKF.length);
+  const el = document.getElementById('tkt');
+  el.style.transition = 'opacity .3s';
+  function show() {
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = TKF[idx]; el.style.opacity = '1'; idx = (idx + 1) % TKF.length; }, 300);
+  }
+  show();
+  setInterval(show, 5 * 60 * 1000);
+  document.getElementById('tk').addEventListener('click', show);
+})();
+
+// ══════════ INIT ══════════
+window._applyCloudData = function (d) {
+  if (!d) return;
+  est     = d.z_est || d.est || {};
+  bOp     = d.bOp   || null;
+  dOp     = d.dOp   || null;
+  matIni  = d.matIni !== undefined ? d.matIni : matIni;
+  cel     = d.cel   || false;
+  soundOn = d.soundOn !== undefined ? d.soundOn : true;
+  toastsOn= d.toastsOn !== undefined ? d.toastsOn : !isMobile();
+  quimiOn = d.quimiOn !== undefined ? d.quimiOn : true;
+  mascot  = d.mascot  || mascot;
+  if (d.theme) theme = d.theme;
+  if (d.plan && d.plan !== plan) { plan = d.plan; applyPlan(plan); rebuildAllGrids(); }
+  if (d.ingreso && d.ingreso !== ingreso) { ingreso = d.ingreso; applyPlan(plan); rebuildAllGrids(); }
+  for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
+  rc(); rAll(); upCr(); applyTheme(); applyMascot(); applyQuimiVisibility();
+  try {
+    // Guardar en localStorage solo los campos que ld() sabe leer, no los campos de Firebase (z_cr, z_mat, etc.)
+    const local = JSON.parse(localStorage.getItem(SK) || '{}');
+    const toSave = { est, bOp, dOp, matIni, cel, soundOn, mascot, theme, plan, ingreso,
+                     quimiOn, toastsOn: local.toastsOn ?? !isMobile() };
+    localStorage.setItem(SK, JSON.stringify(toSave));
+  } catch (e) {}
+};
+
+// ══════════ SPLASH ══════════
+let splashPlan = null, splashMascot = null, splashIngreso = null, splashMatIni = null;
+let _splashStep = 1;
+
+function _setSplashStep(step) {
+  _splashStep = step;
+  const p1   = document.getElementById('sp-panel-1');
+  const p2   = document.getElementById('sp-panel-2');
+  const sMI  = document.getElementById('sp-step-mi');
+  const s1   = document.getElementById('sp-step1');
+  const colQ  = document.getElementById('sp-col-quimi');
+  const colQP = document.getElementById('sp-col-quimpi');
+  const ind2  = document.getElementById('sp-step-ind-2');
+  if (step === 1) {
+    p1.style.display = 'flex';
+    p2.classList.remove('active');
+    s1.style.display = 'flex';
+    sMI.style.display = 'none';
+    colQ .classList.remove('sp-visible');
+    colQP.classList.remove('sp-visible');
+  } else if (step === 1.5) {
+    p1.style.display = 'flex';
+    p2.classList.remove('active');
+    s1.style.display = 'none';
+    sMI.style.display = 'flex';
+    colQ .classList.remove('sp-visible');
+    colQP.classList.remove('sp-visible');
+  } else {
+    p1.style.display = 'none';
+    s1.style.display = 'flex';
+    sMI.style.display = 'none';
+    p2.classList.add('active');
+    if (ind2) ind2.textContent = 'Paso 2 de 2';
+    requestAnimationFrame(() => {
+      colQ .classList.add('sp-visible');
+      colQP.classList.add('sp-visible');
+    });
+  }
+}
+
+function splashNextStep() {
+  if (!splashIngreso) return;
+  if (splashIngreso === 'fing') { _setSplashStep(1.5); return; }
+  _setSplashStep(2);
+}
+
+function splashPrevStep() {
+  if (splashIngreso === 'fing') { _setSplashStep(1.5); return; }
+  _setSplashStep(1);
+}
+
+function splashMIPrevStep() { _setSplashStep(1); }
+
+function splashMINextStep() {
+  if (splashMatIni === null) return;
+  _setSplashStep(2);
+}
+
+function selectSplashMatIni(val) {
+  splashMatIni = val;
+  document.getElementById('sp-btn-mi-si').classList.toggle('selected', val === true);
+  document.getElementById('sp-btn-mi-no').classList.toggle('selected', val === false);
+  document.getElementById('sp-mi-next-btn').disabled = false;
+}
+
+function selectSplashIngreso(i) {
+  splashIngreso = i;
+  if (i === 'fq') splashMatIni = null;
+  ['fq','fing'].forEach(v => {
+    const btn = document.getElementById('sp-btn-' + v);
+    if (btn) btn.classList.toggle('selected', v === i);
+  });
+  const nb = document.getElementById('sp-next-btn');
+  if (nb) nb.disabled = false;
+}
+
+function selectSplashMascot(m) {
+  splashMascot = m;
+  splashPlan   = '2003'; // único plan
+  document.getElementById('sp-col-quimi') .classList.toggle('chosen', m === 'quimi');
+  document.getElementById('sp-col-quimpi').classList.toggle('chosen', m === 'quimpi');
+  document.getElementById('splash-start-btn').disabled = false;
+}
+
+// Mantener selectSplashPlan como alias por compatibilidad (no se usa en el HTML)
+function selectSplashPlan(p) { selectSplashMascot(splashMascot || 'quimi'); }
+
+function closeSplash() {
+  if (!splashIngreso) return;
+  if (splashIngreso === 'fing' && splashMatIni === null) return;
+  const isNewMascot = splashMascot !== mascot;
+  const changed = splashIngreso !== ingreso || splashMatIni !== matIni;
+  if (changed) {
+    est = {}; bOp = null; matIni = splashMatIni; cel = false;
+    ingreso = splashIngreso;
+    applyPlan('2003');
+    rebuildAllGrids();
+    rc(); rAll(); upCr();
+  }
+  mascot = splashMascot || 'quimi';
+  applyMascot();
+  document.getElementById('splash').classList.remove('on'); syncModalOpen();
+  try { localStorage.setItem('qp_al_welcomed', '1'); } catch(e) {}
+  sv();
+  if (splashIngreso === 'fing' && splashMatIni === true) setTimeout(() => openMatIniWarn(), 300);
+  if (isNewMascot && mascot === 'quimpi') {
+    setTimeout(() => quimiSay('¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱', 'happy', 4000), 600);
+  } else if (isNewMascot && mascot === 'quimi') {
+    setTimeout(() => quimiSay('¡Hola! Soy Quimi, tu compañero de carrera 🐾', 'happy', 3500), 600);
+  }
+}
+
+function maybeShowSplash() {
+  try {
+    if (!localStorage.getItem('qp_al_welcomed')) {
+      splashPlan    = '2003';
+      splashIngreso = null;
+      splashMascot  = null;
+      _setSplashStep(1);
+      const mob = isMobile();
+      document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
+      document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
+      document.getElementById('splash-start-btn').disabled = true;
+      document.getElementById('splash').classList.add('on'); setModalOpen(true);
+    }
+  } catch(e) { document.getElementById('splash').classList.add('on'); setModalOpen(true); }
+}
+
+// ══════════ CAMBIO DE PLAN ══════════
+function changePlan(p) {
+  if (p === plan) return;
+  applyPlan(p);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  updateCfgPlanBtns();
+}
+function changeMascot(m) {
+  if (m === mascot) return;
+  mascot = m;
+  applyMascot();
+  updateCfgMascotBtns();
+  sv();
+  quimiSay(m === 'quimpi' ? '¡Hola! Soy Quimπ 🐱' : '¡Hola! Soy Quimi 🐾', 'happy', 3000);
+}
+function updateCfgMascotBtns() {
+  ['quimi','quimpi'].forEach(m => {
+    const btn = document.getElementById('cfg-mascot-' + m);
+    if (btn) btn.className = 'toggle-btn ' + (mascot === m ? 'on' : 'off');
+  });
+}
+function updateCfgPlanBtns() {
+  // Solo existe Plan 2003 — botón siempre activo
+}
+function changeIngreso(i) {
+  if (i === ingreso) return;
+  ingreso = i;
+  if (i === 'fq') matIni = null;
+  if (i === 'fing' && matIni === null) matIni = false;
+  applyPlan(plan);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  updateCfgIngresoBtns();
+  updateCfgMatIniBtns();
+}
+function changeMatIni(val) {
+  if (matIni === val) return;
+  matIni = val;
+  applyPlan(plan);
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv();
+  updateCfgMatIniBtns();
+}
+function updateCfgMatIniBtns() {
+  const row = document.getElementById('cfg-row-matini');
+  if (row) row.style.display = ingreso === 'fing' ? '' : 'none';
+  [true, false].forEach(v => {
+    const btn = document.getElementById('cfg-mi-' + (v ? 'si' : 'no'));
+    if (btn) btn.className = 'toggle-btn ' + (matIni === v ? 'on' : 'off');
+  });
+}
+function updateCfgIngresoBtns() {
+  ['fq','fing'].forEach(i => {
+    const btn = document.getElementById('cfg-ing-' + i);
+    if (btn) btn.className = 'toggle-btn ' + (ingreso === i ? 'on' : 'off');
+  });
+}
+
+// ══════════ QUIMI — CLICK ══════════
+const QUIMI_MSGS = [
+  '¡Hola! Soy Quimi, tu compañero de carrera 🐾',
+  '¡Vamos, vos podés! 💪',
+  '¡Otro semestre y al título! 🎓',
+  '¡La química te necesita! ⚗️',
+  '¡Seguí dale que se nota el progreso! 📚',
+  '¡El café y yo te bancamos! ☕',
+  '¡Cada crédito cuenta! ⚖️',
+  '¡No te rindas, campeón! 🏆',
+  '¿Perdido? El botón ❓ del panel lateral tiene todo lo que necesitás saber 😉',
+  '¿Encontraste algo raro? ¡Avisame en "Reportar error" y lo arreglamos! 🐛',
+];
+const QUIMPI_MSGS = [
+  '¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱',
+  '¡Miau! ¡Esta materia cae seguro! 🐱',
+  '¡Vamos, vos podés! 💪',
+  '¡Otro semestre y al título! 🎓',
+  '¡La química te necesita! ⚗️',
+  '¡Seguí dale que se nota el progreso! 📚',
+  '¡El café y yo te bancamos! ☕',
+  '¡Cada crédito cuenta! ⚖️',
+  '¡No te rindas, campeón/a! 🏆',
+  'Estoy segura que serás ingeniero/a algún día 🐱',
+  'Lo sé, vas a llegar. Confío en vos 🌟',
+  'Tengo fe en que este semestre es el tuyo 🐱',
+  '¿Dudas? El botón ❓ del panel lateral tiene toda la ayuda que necesitás 😸',
+  '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
+];
+
+// ══════════ QUIMI — FRASES AUTOMÁTICAS ══════════
+const QUIMI_AMBIENT = [
+  { max: 5,  msgs: [
+    '¡Bienvenido! Empezar es la parte más emocionante 🚀',
+    'El viaje de mil créditos empieza con uno 💪',
+    '¡Todo está por venir! Esto recién arranca 🌱',
+    'Cada gran ingeniero/a estuvo donde vos estás 🐾',
+  ]},
+  { max: 25, msgs: [
+    '¡Ya vas arrancando! El primer tramo siempre es el más duro 🔥',
+    'Poco a poco se llega lejos, seguí así 📚',
+    '¡Los primeros créditos son los más valiosos! 🏅',
+    'Base sólida, carrera sólida. Vas bien 🧱',
+  ]},
+  { max: 50, msgs: [
+    '¡Ya llegaste al cuarto! La mitad está cerca 🎯',
+    'Este es el tramo del carácter. ¡Dale que podés! ⚗️',
+    'Ya no sos principiante, sos un superviviente 💡',
+    '¡Vas por el camino correcto, no pares! 🐾',
+  ]},
+  { max: 75, msgs: [
+    '¡Más de la mitad! El título ya se huele 🎓',
+    'El esfuerzo se nota en cada crédito. ¡Orgullo! 🏆',
+    'Ya sos de los que llegaron lejos. Seguí 🚀',
+    '¡Vos sí que sos crack! El final se acerca 🌟',
+  ]},
+  { max: 100, msgs: [
+    '¡Casi llegás! Unos pocos créditos más y es tuyo 🎓',
+    '¡Tan cerca del título que casi lo toco! 🏅',
+    'La recta final. ¡No aflojes ahora! 💪',
+    '¡Leyenda en progreso! Casi ingeniero/a 🐾',
+  ]},
+];
+
+function quimiAmbientSay() {
+  if (!toastsOn || !quimiOn) return;
+  const pct = Math.round(cst().t / META * 100);
+  const bucket = QUIMI_AMBIENT.find(b => pct <= b.max) || QUIMI_AMBIENT[QUIMI_AMBIENT.length - 1];
+  const msg = bucket.msgs[Math.floor(Math.random() * bucket.msgs.length)];
+  quimiSay(msg, 'happy', 5500);
+}
+
+// Dice una frase entre 2 y 4 minutos al azar, indefinidamente
+(function scheduleAmbient() {
+  const delay = (120 + Math.random() * 120) * 1000;
+  setTimeout(() => {
+    // Alterna aleatoriamente entre frase de porcentaje y frase de click
+    if (Math.random() < 0.5) {
+      quimiAmbientSay();
+    } else {
+      if (!toastsOn || !quimiOn) { scheduleAmbient(); return; }
+      const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
+      quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 4000);
+    }
+    scheduleAmbient();
+  }, delay);
+})();
+
+document.getElementById('quimi').addEventListener('click', () => {
+  const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
+  quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 2800);
+});
+
+function init() {
+  ld();
+  if (!plan) plan = '2003';
+  if (plan !== '2003') plan = '2003'; // único plan disponible
+  if (!ingreso) ingreso = 'fq';
+  // Usuarios FING con localStorage anterior a la feature de Matemática Inicial
+  // tienen matIni=null; applyPlan no agrega CALC1 a ningún semestre con null.
+  if (ingreso === 'fing' && matIni === null) matIni = false;
+  applyPlan(plan);
+  for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
+  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
+  applyMascot();
+  applyQuimiVisibility();
+  quimiSetMood('idle');
+}
+
+init();
+</script>
+</body>
+</html>
