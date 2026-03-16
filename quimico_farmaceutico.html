@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QuimPath — Químico Farmacéutico</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💊</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
 
@@ -1007,7 +1007,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   <!-- ══ SIDEBAR ══ -->
   <aside id="sb">
     <div class="sl">
-      <h1>💊 QuimPath</h1>
+      <h1>🔬 QuimPath</h1>
       <p>Q. Farmacéutico · FQ</p>
       <div id="plan-badge">Plan 2015</div>
     </div>
@@ -1106,7 +1106,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     </div>
     <!-- Centro -->
     <div class="splash-content-col">
-      <div class="splash-logo" style="font-size:1.5rem;text-align:center">💊</div>
+      <div class="splash-logo" style="font-size:1.5rem;text-align:center">🔬</div>
       <div class="splash-title">QuimPath</div>
       <div class="splash-sub">Tu mapa interactivo de la carrera — Q. Farmacéutico</div>
       <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
@@ -1729,9 +1729,9 @@ const TKF = [
 
 // ══════════ FRASES DE REACCIÓN ══════════
 const FR = {
-  cursando:  ['📖 ¡A darle duro!', '📚 ¡Che, ya arrancaste!', '🔬 ¡Dale que se puede!'],
-  aprobada:  ['✅ ¡Bien hecho, la aprobaste!', '👏 ¡Aprobada! ¡A seguir!', '🎯 ¡Un paso más!'],
-  exonerada: ['🏆 ¡¡EXONERADA!! ¡La clavaste!', '🎉 ¡Exonerada! ¡Sos una bestia!', '💊 ¡Exonerada! El título te espera'],
+  exonerada: ['¡Exonerada! Una menos para el título 🎓', '¡Crack! Otro crédito conquistado ⚗️', '¡Exonerada! Merecés un café ☕', '¡Bien jugado! El título se acerca 🏆'],
+  aprobada:  ['¡Aprobada! No era fácil, pero acá estás 👊', 'Aprobada. El esfuerzo valió 💯', '¡Pasaste! A buscar la exoneración 🎯'],
+  cursando:  ['¡En carrera! A darle duro 📚', '¡Dale! Esta también cae 💥', 'Cursando... el desafío empieza 🧪'],
 };
 
 // ══════════ ESTADO GLOBAL ══════════
@@ -2871,7 +2871,7 @@ const QUIMI_MSGS = [
   '¡Hola! Soy Quimi, tu compañero de carrera 🐾',
   '¡Vamos, vos podés! 💪',
   '¡Otro semestre y al título! 🎓',
-  '¡La farmacia te necesita! 💊',
+  '¡La química te necesita! ⚗️',
   '¡Seguí dale que se nota el progreso! 📚',
   '¡El café y yo te bancamos! ☕',
   '¡Cada crédito cuenta! ⚖️',
@@ -2884,25 +2884,25 @@ const QUIMPI_MSGS = [
   '¡Miau! ¡Esta materia cae seguro! 🐱',
   '¡Vamos, vos podés! 💪',
   '¡Otro semestre y al título! 🎓',
-  '¡La farmacia te necesita! 💊',
+  '¡La química te necesita! ⚗️',
   '¡Seguí dale que se nota el progreso! 📚',
   '¡El café y yo te bancamos! ☕',
   '¡Cada crédito cuenta! ⚖️',
-  '¡No te rindás, campeón/a! 🏆',
-  'Estoy segura que serás Químico/a Farmacéutico/a algún día 🐱',
+  '¡No te rindas, campeón/a! 🏆',
+  'Estoy segura que serás estudiante de química algún día 🐱',
   'Lo sé, vas a llegar. Confío en vos 🌟',
   'Tengo fe en que este semestre es el tuyo 🐱',
   '¿Dudas? El botón ❓ del panel lateral tiene toda la ayuda que necesitás 😸',
-  '¿Algo no funciona bien? Podés reportarlo en "Reportar error" 🐱',
+  '¿Algo no funciona bien? Podés reportarlo en "Reportar error", ¡yo también quiero que todo esté perfecto! 🐱',
 ];
 
 // ══════════ QUIMI — FRASES AUTOMÁTICAS ══════════
 const QUIMI_AMBIENT = [
   { max: 5,  msgs: [
     '¡Bienvenido! Empezar es la parte más emocionante 🚀',
-    'El viaje de cada crédito empieza con uno 💪',
+    'El viaje de mil créditos empieza con uno 💪',
     '¡Todo está por venir! Esto recién arranca 🌱',
-    'Cada gran Farmacéutico/a estuvo donde vos estás 🐾',
+    'Cada gran estudiante de química estuvo donde vos estás 🐾',
   ]},
   { max: 25, msgs: [
     '¡Ya vas arrancando! El primer tramo siempre es el más duro 🔥',
@@ -2911,8 +2911,8 @@ const QUIMI_AMBIENT = [
     'Base sólida, carrera sólida. Vas bien 🧱',
   ]},
   { max: 50, msgs: [
-    '¡Ya llegaste a la mitad del camino! ¡Dale! 🎯',
-    'Este es el tramo del carácter. ¡Dale que podés! 💊',
+    '¡Ya llegaste al cuarto! La mitad está cerca 🎯',
+    'Este es el tramo del carácter. ¡Dale que podés! ⚗️',
     'Ya no sos principiante, sos un superviviente 💡',
     '¡Vas por el camino correcto, no pares! 🐾',
   ]},
