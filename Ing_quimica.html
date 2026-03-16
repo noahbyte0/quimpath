@@ -1191,7 +1191,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
         </div>
         <div id="splash-cards-pc" style="margin-bottom:18px">
           <div class="splash-instructions">
-            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada</div></div>
+            <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado en loop: Habilitada → Cursando → Aprobada → Exonerada → Habilitada</div></div>
             <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic derecho</span> — Retroceder el estado de la materia</div></div>
             <div class="si-row"><span class="si-ic">🔒</span><div><span class="si-title">Materia bloqueada</span> — Clic para ver qué previas te faltan</div></div>
             <div class="si-row"><span class="si-ic">⚙️</span><div><span class="si-title">Configuración</span> — Ajustá sonidos, notificaciones y plan desde el panel lateral</div></div>
@@ -1434,7 +1434,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
   </div>
   <div id="help-pc">
     <div class="help-section"><h3>Controles</h3>
-      <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado: Habilitada → Cursando → Aprobada → Exonerada.</span></div>
+      <div class="wlc-row"><span class="wlc-key">Clic izquierdo</span><span class="wlc-val">Avanzar estado en loop: Habilitada → Cursando → Aprobada → Exonerada → Habilitada.</span></div>
       <div class="wlc-row"><span class="wlc-key">Clic derecho</span><span class="wlc-val">Retroceder el estado de la materia.</span></div>
       <div class="wlc-row"><span class="wlc-key">Materia bloqueada</span><span class="wlc-val">Clic para ver qué previas te faltan.</span></div>
     </div>
@@ -2530,8 +2530,7 @@ function mkCard(s) {
       const cur = gs('DINCONPRO');
       if (!dOp)      { openDin(); return; }
       if (cur === S.B) { showPPDin(); return; }
-      if (cur === S.E && isMobile()) { dOp = null; sv(); setSt('DINCONPRO', S.H, true); openDin(); return; }
-      if (cur === S.E) return;
+      if (cur === S.E) { dOp = null; sv(); setSt('DINCONPRO', S.H, true); openDin(); return; }
       setSt('DINCONPRO', cur + 1, false);
       return;
     }
@@ -2540,8 +2539,7 @@ function mkCard(s) {
       const cur = gs('INGBIOTRAE');
       if (!bOp)      { openBio(); return; }
       if (cur === S.B) { showPPBio(); return; }
-      if (cur === S.E && isMobile()) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
-      if (cur === S.E) return;
+      if (cur === S.E) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
       setSt('INGBIOTRAE', cur + 1, false);
       return;
     }
@@ -2551,7 +2549,7 @@ function mkCard(s) {
     }
     hidePP();
     const cur = gs(s.id);
-    if (cur === S.E) { if (isMobile()) setSt(s.id, S.H, true); }
+    if (cur === S.E) { setSt(s.id, S.H, true); }
     else setSt(s.id, cur + 1, false);
   });
 
