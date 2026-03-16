@@ -1762,7 +1762,7 @@ const PV_2021 = {
   'H2FUEENE':  { 'FISQUI103': A },
   'HIDVERPRO': { 'FISQUI104': A },
   'BATAPLMOV': { 'FISQUI104': A },
-  'FUNPROCEL': [{ 'FLU': E, 'IRREAQUI1': A, 'TRACALMA1': A }, { 'FLU': E, 'IRREAQUI1': A, 'TRACALMA2': A }],
+  'FUNPROCEL': { 'FLU': E, 'IRREAQUI1': A, 'TRACALMA2': A },
   'ENVPOLIND': { 'FENTRA': A, 'QUIORGT101': E },
   'BIODIEST':  { 'FISQUI103': A, 'QUIORG102I': A },
   'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
@@ -1795,7 +1795,7 @@ const PV_2021 = {
   'ELEGESLOG': {},  // habilitada por créditos (≥225 cr totales)
   'ANAFAL':    { 'FISQUI103': A },
   'TEORES':    { 'INTINGQUI': E },
-  'METESTREG': { 'MAT03': A, 'MAT04': A, 'MAT05': A },
+  'METESTREG': { 'MAT03': E, 'MAT04': E, 'MAT05': E },
   'HERELE':    { 'FISQUI104': A },
   'INSIND':    { 'ELE1': E, 'TERAPL': E, 'FENTRA': E, 'MECAPL': A },
   'INTPRERIEL':{},  // habilitada por créditos (≥270 cr totales)
@@ -1940,7 +1940,7 @@ const PV_2021_FING = (() => {
   p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
   p['CONCAL']     = { 'PROBEST': E };
   p['INIRINGR']   = { 'GEOALG1': A };
-  p['METESTREG']  = { 'GEOALG2': A, 'CALC2': A, 'PROBEST': A };
+  p['METESTREG']  = { 'GEOALG2': E, 'CALC2': E, 'PROBEST': E };
   p['ASEGCALANA'] = { 'QUIANA3': A, 'PROBEST': A };
   p['TECPOL']     = { 'FIS3F': E, 'QUIORGT101': A };
   // TUTPAR unificada para FING (lógica especial en cp() y buildPPReqRows())
@@ -2622,6 +2622,10 @@ const ABBREV_MAP = [
   [/\bser\b/gi,     'servicios'],
 ];
 const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+// Aliases de búsqueda: texto extra que se añade al índice de cada materia
+const SEARCH_ALIASES = {
+  'METESTREG': 'modelos estadisticos',
+};
 // Caché de texto de búsqueda — se regenera al cambiar de plan
 let SEARCH_CACHE = {};
 function buildSearchCache() {
@@ -2630,7 +2634,8 @@ function buildSearchCache() {
     const base = norm(s.name);
     let expanded = base;
     for (const [re, full] of ABBREV_MAP) expanded = expanded.replace(re, full);
-    SEARCH_CACHE[s.id] = base + ' ' + expanded;
+    const alias = SEARCH_ALIASES[s.id] ? ' ' + SEARCH_ALIASES[s.id] : '';
+    SEARCH_CACHE[s.id] = base + ' ' + expanded + alias;
   }
 }
 function searchText(id) { return SEARCH_CACHE[id] || norm(BI[id]?.name ?? ''); }
