@@ -1716,6 +1716,7 @@ const CR_REQ = {
   'INTPRERIEL':{ cr: 270, type: 'total',  label: 'créditos totales' },
   'TUTPAR':    { cr: 55,  type: 'total',  label: 'créditos totales' },
   'ELEGESLOG': { cr: 225, type: 'total',  label: 'créditos totales' },
+  'GESCAL':    { cr: 130, type: 'total',  label: 'créditos totales' },
 };
 
 const PV_2021 = {
@@ -1765,7 +1766,7 @@ const PV_2021 = {
   'ENVPOLIND': { 'FENTRA': A, 'QUIORGT101': E },
   'BIODIEST':  { 'FISQUI103': A, 'QUIORG102I': A },
   'MEDELEINGP':{ 'FIS102': E, 'FIS103LAB': A, 'FLU': A },
-  'CONCAL':    { 'MAT05': A },
+  'CONCAL':    { 'MAT05': E },
   'INIRINGR':  { 'MAT03': A },
   'TUTPARMAT1':  { 'MAT01': E },
   'TUTPARMAT4':  { 'MAT04': E },
@@ -1773,7 +1774,7 @@ const PV_2021 = {
   'TUTPAR':      {},
   'PRAADING':  { 'ADMGRAING': A },
   'INTSISGES': {},
-  'TRATRESSOLID':{ 'INGAMB': A },
+  'TRATRESSOLID':{ 'INTINGBIO': A, 'IRREAQUI1': E, 'INGAMB': A },
   'CIETECSOC': {},
   'QCASOLACUA':{ 'QUIINO1': A },
   'INTCIEBIO1':{},
@@ -1784,7 +1785,7 @@ const PV_2021 = {
   'INTEVAGESA':{ 'INTINGBIO': A },
   'QUIBIOINT': { 'QUIINO1': A, 'LABQCAINO': A },
   'QUIBIOINP': { 'QUIINO1': A },
-  'TRATAGUARES':{ 'INGAMB': A, 'FLU': A, 'INTINGBIO': A },
+  'TRATAGUARES':{ 'INGAMB': A, 'FLU': A, 'INTINGBIO': A, 'IRREAQUI1': E },
   'GESRRHH':   {},  // habilitada por créditos (≥270 cr totales)
   'TALENCCRE': {},  // habilitada por créditos (según plan)
   'COSING':   {},  // habilitada por créditos (≥100 cr totales)
@@ -1798,14 +1799,13 @@ const PV_2021 = {
   'HERELE':    { 'FISQUI104': A },
   'INSIND':    { 'ELE1': E, 'TERAPL': E, 'FENTRA': E, 'MECAPL': A },
   'INTPRERIEL':{},  // habilitada por créditos (≥270 cr totales)
-  'GESCAL':    {},
+  'GESCAL':    { 'CONCAL': A },
   'SENEINT':   {},
-  'SISGESCAL': { 'QUIANA3': A, 'GESCAL': A },
   'REPGRAIND': {},
   'ASEGCALANA':{ 'QUIANA3': A, 'MAT05': A },
-  'PROTERBIO': [{ 'FISQUI103': A }, { 'FISQUI101': A }],
+  'PROTERBIO': { 'FISQUI103': E, 'FISQUI101': E },
   'ENEAPLIND': { 'TRACALMA1': A, 'TERAPL': E },
-  'INDCAR':    { 'TECSERIND2': A, 'INTINGBIO': A },
+  'INDCAR':    { 'TECSERIND2': A, 'INTINGBIO': A, 'TRACALMA2': A },
   'QCATECGRA': { 'FISQUI101': A, 'QUIORG102I': A, 'FISQUI103': A },
   'TECPOL':    { 'FIS101': A, 'QUIORGT101': A },
   'QUIANA3':   { 'QUIANA2': A, 'QUIANA1': A },
@@ -1845,7 +1845,7 @@ const PV_2000 = (() => {
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
-  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E };
+  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E, 'INGAMB': A };
   p['PAS']        = { 'TECSERIND1': E, 'IRREAQUI1': E, 'TRACALMA1': E, 'TRACALMA2': E, 'FLU': E, 'TERAPL': E, 'FENTRA': E, 'IRREAQUI2': A, 'TECSERIND2': A };
   return p;
 })();
@@ -1938,7 +1938,7 @@ const PV_2021_FING = (() => {
   p['MEDELEINGP'] = { 'FIS3F': E, 'FISEXPF': A, 'FLU': A };
   // Overrides optativas para FING
   p['OPTICA']     = { 'FIS3F': E, 'CALVEC': A };
-  p['CONCAL']     = { 'PROBEST': A };
+  p['CONCAL']     = { 'PROBEST': E };
   p['INIRINGR']   = { 'GEOALG1': A };
   p['METESTREG']  = { 'GEOALG2': A, 'CALC2': A, 'PROBEST': A };
   p['ASEGCALANA'] = { 'QUIANA3': A, 'PROBEST': A };
@@ -1954,7 +1954,7 @@ const PV_2000_FING = (() => {
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
-  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E };
+  p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E, 'INGAMB': A };
   return p;
 })();
 
