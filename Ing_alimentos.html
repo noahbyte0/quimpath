@@ -865,6 +865,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   .splash-card  { padding: 10px; }
   .splash-card .sc-icon { font-size: 1.1rem; margin-bottom: 3px; }
   .splash-footer { padding-top: 12px; }
+  .splash-mascot-label { display: none; }
 }
 
 
@@ -1181,7 +1182,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
         <div class="sp-step-ind" id="sp-step-ind-2">Paso 2 de 2</div>
         <div class="splash-plan-sel">
-          <div class="splash-plan-label">¿Quién te acompaña en la carrera?</div>
+          <div class="splash-plan-label splash-mascot-label">¿Quién te acompaña en la carrera?</div>
         </div>
         <div id="splash-cards-pc" style="margin-bottom:18px">
           <div class="splash-instructions">
@@ -3608,6 +3609,8 @@ function _setSplashStep(step) {
       colQ .classList.add('sp-visible');
       colQP.classList.add('sp-visible');
     });
+    // En mobile las mascotas están ocultas → auto-seleccionar quimi para habilitar Empezar
+    if (isMobile() && !splashMascot) selectSplashMascot('quimi');
   }
 }
 

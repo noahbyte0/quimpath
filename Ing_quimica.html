@@ -865,6 +865,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
   .splash-card  { padding: 10px; }
   .splash-card .sc-icon { font-size: 1.1rem; margin-bottom: 3px; }
   .splash-footer { padding-top: 12px; }
+  .splash-mascot-label { display: none; }
 }
 
 
@@ -1182,7 +1183,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
         <div class="sp-step-ind" id="sp-step-ind-2">Paso 2 de 2</div>
         <div class="splash-plan-sel">
-          <div class="splash-plan-label">¿Qué plan de estudios seguís?<br><span class="smc-hint" style="font-size:.6rem;opacity:.7">(también elige tu compañero/a)</span></div>
+          <div class="splash-plan-label splash-mascot-label">¿Qué plan de estudios seguís?<br><span class="smc-hint" style="font-size:.6rem;opacity:.7">(también elige tu compañero/a)</span></div>
           <div class="splash-plan-btns">
             <button class="splash-plan-btn" id="sp-btn-2021" onclick="selectSplashPlan('2021')">📋 Plan 2021<span class="smc-hint"> · Quimi 🐾</span></button>
             <button class="splash-plan-btn" id="sp-btn-2000" onclick="selectSplashPlan('2000')">📋 Plan 2000<span class="smc-hint"> · Quimπ 🐱</span></button>
@@ -3635,6 +3636,8 @@ function _setSplashStep(step) {
       colQ .classList.add('sp-visible');
       colQP.classList.add('sp-visible');
     });
+    // En mobile las mascotas están ocultas → auto-seleccionar quimi para habilitar Empezar
+    if (isMobile() && !splashMascot) selectSplashMascot('quimi');
   }
 }
 
