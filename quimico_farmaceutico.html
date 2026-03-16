@@ -2840,11 +2840,11 @@ function maybeShowSplash() {
   try {
     if (!localStorage.getItem('qp_qf_welcomed')) {
       splashMascot  = null;
-      _setSplashStep();
       const mob = isMobile();
       document.getElementById('splash-cards-pc').style.display  = mob ? 'none' : '';
       document.getElementById('splash-cards-mob').style.display = mob ? '' : 'none';
       document.getElementById('splash-start-btn').disabled = true;
+      _setSplashStep();
       document.getElementById('splash').classList.add('on'); setModalOpen(true);
     }
   } catch(e) { document.getElementById('splash').classList.add('on'); setModalOpen(true); }
