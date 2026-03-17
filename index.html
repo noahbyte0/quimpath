@@ -508,16 +508,14 @@ function castVote(id) {
 }
 
 function updatePollSummary(data) {
-  const total = Object.values(data.votes).reduce((a,b) => a+b, 0);
   const summary = document.getElementById('poll-summary');
   if (!summary) return;
   if (data.voted) {
+    const total = Object.values(data.votes).reduce((a,b) => a+b, 0);
     const winner = POLL_OPTS.reduce((a,b) => (data.votes[b.id]||0) > (data.votes[a.id]||0) ? b : a);
     summary.textContent = `${total} ${total===1?'voto':'votos'} — ${winner.icon} ${winner.name} va ganando.`;
   } else {
-    summary.textContent = total > 0
-      ? `${total} ${total===1?'voto':'votos'} — ¡Sumá el tuyo!`
-      : 'Tu voto ayuda a decidir qué planificador se construye primero.';
+    summary.textContent = 'Tu voto ayuda a decidir qué planificador se construye primero.';
   }
 }
 
