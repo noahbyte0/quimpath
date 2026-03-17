@@ -429,6 +429,7 @@
     <div style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--tm);margin-bottom:20px">¿Qué planificador querés ver a continuación?</div>
     <div id="poll-options" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
     <div id="poll-msg" style="font-family:'Space Mono',monospace;font-size:.62rem;color:var(--tm);text-align:center;min-height:16px;margin-bottom:12px"></div>
+    <button id="poll-undo" onclick="unvote()" style="display:none;width:100%;padding:8px;border-radius:8px;border:1px solid var(--yw);background:transparent;color:var(--yw);font-family:'Syne',sans-serif;font-size:.78rem;cursor:pointer;margin-bottom:8px;transition:opacity .15s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">↩ Deshacer voto</button>
     <button onclick="closePoll()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--tm);font-family:'Syne',sans-serif;font-size:.78rem;cursor:pointer;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='var(--a3)';this.style.color='var(--a3)'" onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--tm)'">Cerrar</button>
   </div>
 </div>
@@ -453,6 +454,8 @@
 
 <script>
 const POLL_KEY  = 'qp_poll_v1';
+let adminMode = false;
+let _adminKeys = new Set();
 const POLL_OPTS = [
   { id: 'bioquimico', icon: '🧬', name: 'Bioquímico Clínico' },
   { id: 'quimico',    icon: '🧪', name: 'Químico' },
@@ -482,7 +485,7 @@ function renderPollOptions(data) {
         <span class="poll-opt-icon">${opt.icon}</span>
         <span class="poll-opt-name">${opt.name}</span>
       </div>
-      ${data.voted ? `
+      ${adminMode ? `
         <div class="poll-opt-bar-wrap"><div class="poll-opt-bar" style="width:${pct}%"></div></div>
         <span class="poll-opt-pct">${pct}%</span>
       ` : '<span style="color:var(--ac);font-size:.85rem">→</span>'}
@@ -490,11 +493,15 @@ function renderPollOptions(data) {
     container.appendChild(div);
   });
   const msg = document.getElementById('poll-msg');
-  if (data.voted) {
-    msg.textContent = total === 1 ? '¡Gracias por votar! 1 voto registrado.' : `¡Gracias por votar! ${total} votos en total.`;
+  if (adminMode) {
+    msg.textContent = `👁 Admin — ${total} ${total===1?'voto':'votos'} en total.`;
+  } else if (data.voted) {
+    msg.textContent = '¡Gracias por votar! Tu voto fue registrado.';
   } else {
-    msg.textContent = total > 0 ? `${total} ${total === 1 ? 'voto' : 'votos'} hasta ahora.` : '';
+    msg.textContent = '';
   }
+  const undo = document.getElementById('poll-undo');
+  if (undo) undo.style.display = data.voted ? '' : 'none';
 }
 
 function castVote(id) {
@@ -505,18 +512,13 @@ function castVote(id) {
   savePollData(data);
   renderPollOptions(data);
   updatePollSummary(data);
+  window.fbCastVote?.(id);
 }
 
 function updatePollSummary(data) {
   const summary = document.getElementById('poll-summary');
   if (!summary) return;
-  if (data.voted) {
-    const total = Object.values(data.votes).reduce((a,b) => a+b, 0);
-    const winner = POLL_OPTS.reduce((a,b) => (data.votes[b.id]||0) > (data.votes[a.id]||0) ? b : a);
-    summary.textContent = `${total} ${total===1?'voto':'votos'} — ${winner.icon} ${winner.name} va ganando.`;
-  } else {
-    summary.textContent = 'Tu voto ayuda a decidir qué planificador se construye primero.';
-  }
+  summary.textContent = 'Tu voto ayuda a decidir qué planificador se construye primero.';
 }
 
 function openPoll() {
@@ -546,7 +548,87 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializar resumen en la card
   updatePollSummary(getPollData());
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePoll(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePoll();
+  if (e.shiftKey && (e.key === 'V' || e.key === 'B')) {
+    _adminKeys.add(e.key);
+    if (_adminKeys.has('V') && _adminKeys.has('B')) {
+      adminMode = !adminMode;
+      renderPollOptions(getPollData());
+      _adminKeys.clear();
+    }
+  } else {
+    _adminKeys.clear();
+  }
+});
+
+function unvote() {
+  const data = getPollData();
+  if (!data.voted) return;
+  const prevVote = data.voted;
+  if (data.votes[prevVote] > 0) data.votes[prevVote]--;
+  data.voted = null;
+  savePollData(data);
+  renderPollOptions(data);
+  updatePollSummary(data);
+  window.fbUnvote?.(prevVote);
+}
+</script>
+
+<script type="module">
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDWP8CFJcqAXfWvPGVktfF_ZcNrxLnY5tM",
+  authDomain:        "quimpath.firebaseapp.com",
+  projectId:         "quimpath",
+  storageBucket:     "quimpath.firebasestorage.app",
+  messagingSenderId: "550304707214",
+  appId:             "1:550304707214:web:ceb0c5df17b39edc3f0fdf"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+const POLL_DOC = doc(db, 'poll', 'encuesta_v1');
+
+// Asegura que el documento exista
+async function ensurePollDoc() {
+  const snap = await getDoc(POLL_DOC);
+  if (!snap.exists()) {
+    await setDoc(POLL_DOC, { bioquimico: 0, quimico: 0 });
+  }
+}
+
+// Castear voto en Firestore
+window.fbCastVote = async function(id) {
+  try {
+    await ensurePollDoc();
+    await updateDoc(POLL_DOC, { [id]: increment(1) });
+  } catch(e) { console.warn('Firebase vote error:', e); }
+};
+
+// Deshacer voto en Firestore
+window.fbUnvote = async function(id) {
+  try {
+    await updateDoc(POLL_DOC, { [id]: increment(-1) });
+  } catch(e) { console.warn('Firebase unvote error:', e); }
+};
+
+// Escuchar cambios en tiempo real y re-renderizar
+try {
+  await ensurePollDoc();
+  onSnapshot(POLL_DOC, snap => {
+    if (!snap.exists()) return;
+    const remote = snap.data(); // { bioquimico: N, quimico: N }
+    const local  = getPollData();
+    // Mezclar votos remotos con estado local (si ya votó)
+    local.votes = { bioquimico: remote.bioquimico || 0, quimico: remote.quimico || 0 };
+    savePollData(local);
+    renderPollOptions(local);
+    updatePollSummary(local);
+  });
+} catch(e) { console.warn('Firebase poll no disponible:', e); }
 </script>
 </body>
 </html>
