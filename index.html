@@ -21,7 +21,11 @@
       --yw:  #d29922;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    @media (hover: none) {
+      button:focus, a:focus, div:focus,
+      button:focus-visible, a:focus-visible, div:focus-visible { outline: none; }
+    }
 
     html, body {
       min-height: 100dvh;
