@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="QuimPath — Planificador de Ingeniería en Alimentos (UdelaR). Plan 2003. Seguí tus materias, previas y créditos en tiempo real.">
   <title>QuimPath — Ingeniería en Alimentos</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +579,7 @@ body.modal-open #quimi { opacity: 0; pointer-events: none; }
 #quimi.quimpi #quimi-img[data-mood="exonerada"] { animation: quimpi-jump .5s cubic-bezier(.34,1.56,.64,1); }
 #quimi.quimpi #quimi-img[data-mood="celebrate"] { animation: quimpi-rock .45s ease-in-out infinite alternate; }
 
-#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; animation: quimi-rock-f .45s ease-in-out infinite alternate; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+#cel-quimi-img { width: 130px; height: 130px; object-fit: contain; margin: 0 auto 8px; display: block; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
 
 /* ══ FLOATING TOASTS (fallback sin mascota) ══ */
 #ft-container {
@@ -1042,7 +1043,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <div class="sl">
       <h1>🔬 QuimPath</h1>
       <p>Ing. en Alimentos / <span id="ingreso-badge">FQ</span></p>
-      <div id="plan-badge" style="display:none"></div>
     </div>
 
     <div class="cb">
@@ -1181,7 +1181,9 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="splash-sub">Tu mapa interactivo de la carrera — Ing. en Alimentos</div>
       <div id="sp-step2" style="display:flex;flex-direction:column;flex:1">
         <div class="sp-step-ind" id="sp-step-ind-2">Paso 2 de 2</div>
-        <div class="splash-plan-sel"></div>
+        <div class="splash-plan-sel">
+          <div class="splash-plan-label splash-mascot-label">¿Quién te acompaña en la carrera?</div>
+        </div>
         <div id="splash-cards-pc" style="margin-bottom:18px">
           <div class="splash-instructions">
             <div class="si-row"><span class="si-ic">🖱️</span><div><span class="si-title">Clic izquierdo</span> — Avanzar estado en loop: Habilitada → Cursando → Aprobada → Exonerada → Habilitada</div></div>
@@ -1261,87 +1263,18 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 </div></div>
 
 
-<!-- ══ MODAL: Reiniciar ══ -->
+
 <!-- ══ MODAL: Actualizaciones ══ -->
 <div class="ov" id="ov-upd">
-  <div class="md" style="max-width:480px">
+  <div class="md" style="max-width:400px;text-align:center">
     <h2>🆕 Novedades de QuimPath</h2>
-    <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
-    <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v5" onclick="switchUpdTab('v5')" style="flex:1;text-align:center">v1.5 — Actual</button>
-      <button class="toggle-btn off" id="upd-tab-v4" onclick="switchUpdTab('v4')" style="flex:1;text-align:center">v1.4</button>
-      <button class="toggle-btn off" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3</button>
-      <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
-      <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
+    <p class="sub" style="margin-bottom:20px">Últimas actualizaciones del programa:</p>
+    <div style="padding:28px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--sf2);margin-bottom:16px">
+      <div style="font-size:1.8rem;margin-bottom:10px">🔬</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--tx);margin-bottom:6px">Por ahora todo tranquilo por acá</div>
+      <div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.6">Las novedades de Ing. en Alimentos<br>aparecerán aquí cuando estén disponibles.</div>
     </div>
-
-    <!-- v5 — nueva versión -->
-    <div id="upd-v5" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de previas</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se modificaron previas de: Transferencia de Calor y Masa 1, Intro a la Ing. Bioquímica, Ing. Bioquímica / Trat. Efluentes, Trat. y Val. Residuos Sólidos, Diseño de Procesos Químicos, Pasantía, Tec. y Serv. Industriales 2.</span></div>
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Fix</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Usuarios FING podían ver Cálculo 1 desaparecer de la currícula sugerida.</span></div>
-    </div>
-
-    <!-- v4 — historial -->
-    <div id="upd-v4" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron las previas de Intro a la Ing. de Procesos (examen de Química General 2, examen de Matemática 01 y aprobado de Física 101).</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores.</span></div>
-    </div>
-
-    <!-- v3 — historial -->
-    <div id="upd-v3" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de datos</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Proyecto Industrial 1 y 2 y Pasantía movidos al área correcta (Avanzadas) en Plan 2021.</span></div>
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 Botón "Previas" en cards</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Las materias habilitadas, cursando, aprobadas y exoneradas ahora muestran un botón Previas. Shift+Click sigue funcionando como atajo.</span></div>
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">📐 Matemática Inicial (ingreso FING)</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se añadió la posibilidad de activar Matemática Inicial. Desde ⚙️ Configuración podés activarla.</span></div>
-    </div>
-
-    <!-- v2 — historial -->
-    <div id="upd-v2" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🏫 Ingreso por FING</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se agregaron Matemática y Física del ingreso por Facultad de Ingeniería. Para activarlo, andá a ⚙️ Configuración → <strong>Ingreso por</strong> → FING.</span></div>
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🔍 ¿De qué es previa?</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el cartel de previas de cualquier materia ahora podés ver para qué otras materias te sirve como previa.</span></div>
-    </div>
-
-    <!-- v1 — historial -->
-    <div id="upd-v1" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔓 Previas agregadas</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Evaluación Gestión Amb.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op I (T+L)</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Química Bioinorgánica Op II (T)</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Aguas Residuales</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Trat. y Val. Residuos Sólidos</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de RRHH en Prod. Bienes y Serv.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Taller Encararé: Crear</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inic. Entorno de Prog. R para Ing.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 01</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Matemática 04</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Tutoría entre Pares - Fisicoquímica 101</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Práctica de Administración Ing.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Herramientas de Electroquímica</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Métodos Estadísticos Reg. y Clas.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sist. Gestión de Calidad Lab.</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Instrumentación Industrial</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Prevención Riesgos Lab.</span></div>
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">✅ Materias habilitadas (sin previas)</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Economía</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Inglés Científico</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Epistemología</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Iniciación Prod. Audiovisual y Multimedia</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro a los Sistemas de Gestión</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Sensibilización e Intercambio</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Rep. Gráfica Ind. de Procesos</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Gestión de Calidad</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Intro Ciencias Biológicas 1</span></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Ciencia Tecnología y Sociedad</span></div>
-    </div>
-
-    <div class="ma" style="margin-top:14px">
+    <div class="ma" style="margin-top:0">
       <button class="bpr" onclick="closeUpd()" style="width:100%">¡Entendido! 👍</button>
     </div>
   </div>
@@ -1355,9 +1288,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <button class="bdn" onclick="doReset()">Sí, reiniciar</button>
   </div>
 </div></div>
-
-<!-- ══ MODAL: Aviso Matemática Inicial ══ -->
-
 
 <!-- ══ MODAL: Orientación Bioquímica ══ -->
 <div class="ov" id="ov-b"><div class="md">
@@ -1467,7 +1397,7 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 <div id="cel"><div class="celi">
   <img id="cel-quimi-img" src="quimi_celebrando.png" alt="Quimi celebrando"/>
   <h1>¡450 CRÉDITOS!</h1>
-  <p>¡Sos Ingeniero/a Químico/a! 🏆<br>¡Lo sabía desde el primer semestre, campeón! 🐾</p>
+  <p>¡Sos Ingeniero/a en Alimentos! 🏆<br>¡Lo sabía desde el primer semestre, campeón! 🐾</p>
   <button class="bpr" onclick="closeCel()">¡Vamos! 🚀</button>
 </div></div>
 
@@ -1649,10 +1579,10 @@ const O1 = [
   { id: 'FISIOL',     name: 'Fisiología',                          cr: 7,  fac: 'FQ',        grp: 'Básicas' },
   { id: 'REPGRAIND',  name: 'Representación Gráfica para la Ind.', cr: 4,  fac: 'FING',      grp: 'Cs. Soc. y Eco.' },
   // ── Sem 5 ──
-  { id: 'DISEÑEXP',   name: 'Diseño y Análisis de Experimentos',   cr: 6,  fac: 'FAgro',     grp: 'Matemática' },
+  { id: 'DISENEXP',   name: 'Diseño y Análisis de Experimentos',   cr: 6,  fac: 'FAgro',     grp: 'Matemática' },
   { id: 'ECOQUIM',    name: 'Ecología Química',                    cr: 6,  fac: 'FQ',        grp: 'Básicas' },
   { id: 'ELE1',       name: 'Electrotécnica 1',                    cr: 9,  fac: 'FING',      grp: 'Ing. de Procesos' },
-  { id: 'FISSÓLIDO',  name: 'Física del Estado Sólido',            cr: 8,  fac: 'FQ',        grp: 'Básicas' },
+  { id: 'FISSOLIDO',  name: 'Física del Estado Sólido',            cr: 8,  fac: 'FQ',        grp: 'Básicas' },
   { id: 'FUNOPT',     name: 'Fundamentos de Optimización',         cr: 6,  fac: 'FING',      grp: 'Básicas' },
   { id: 'QUIANA3',    name: 'Química Analítica 3',                 cr: 10, fac: 'FQ',        grp: 'Básicas' },
   { id: 'QUIPRODNAT', name: 'Química de Productos Naturales',      cr: 5,  fac: 'FQ',        grp: 'Qca. de Alimentos' },
@@ -1689,7 +1619,7 @@ const O2 = [
   // ── Sem 4 ──
   { id: 'APLALGLIN',  name: 'Aplicaciones del Álgebra Lineal',     cr: 9,  fac: 'FING',      grp: 'Básicas' },
   { id: 'ASESOEMP',   name: 'Asesoramiento a Emprendedores',       cr: 4,  fac: 'FQ',        grp: 'Cs. Soc. y Eco.' },
-  { id: 'FISTÉRMICA', name: 'Física Térmica',                      cr: 10, fac: 'FING',      grp: 'Ing. de Procesos' },
+  { id: 'FISTERMICA', name: 'Física Térmica',                      cr: 10, fac: 'FING',      grp: 'Ing. de Procesos' },
   { id: 'INIRINGR',   name: 'Inic. Entorno Programación R',        cr: 3,  fac: 'FING',      grp: 'Informática' },
   { id: 'MAT08',      name: 'Matemática 08',                       cr: 4,  fac: 'FQ',        grp: 'Básicas' },
   { id: 'MAT09',      name: 'Matemática 09',                       cr: 4,  fac: 'FQ',        grp: 'Básicas' },
@@ -1752,8 +1682,8 @@ const PV_2003 = {
   'INTINGPRO':  { 'FIS101': A, 'MAT01': E, 'QUIGEN2': E },
   'FISQUI103':  { 'FISQUI101': A },
   'QUIORG103':  { 'QUIORGT101': A, 'QUIANA1': A },
-  'FENTRA':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'ECUADIF': C, 'FISQUI101': A }],
-  'TERAPL':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'ECUADIF': C, 'FISQUI101': A }],
+  'FENTRA':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'MAT07': A, 'FISQUI101': A }],
+  'TERAPL':     [{ 'MAT04': E, 'MAT01': E, 'MAT03': E, 'QUIGEN1': E, 'QUIGEN2': E, 'FIS101': E, 'MAT07': A, 'FISQUI101': A }],
   'BIOQUIM':    { 'INTCIEBIO1': A, 'FISQUI101': A, 'QUIORG102': A, 'QUIANA2': A },
   'FLU':        [{ 'FISQUI101': E, 'FIS102': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }],
   'TRACALMA1':  [{ 'FISQUI101': E, 'FIS102': E, 'QUIANA1': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }],
@@ -1785,13 +1715,13 @@ const PV_2003 = {
   'FISQUI104':  { 'FISQUI103': A },
   'ECOQUIM':    { 'QUIORGT101': A, 'QUIORG102': A, 'BIOQUIM': C },
   'QUIPRODNAT': { 'QUIORG103': A, 'QUIORG104': A, 'BIOQUIM': A },
-  'DISEÑEXP':   { 'MAT05': A, 'QUIANA1': A },
+  'DISENEXP':   { 'MAT05': A, 'QUIANA1': A },
   'FUNOPT':     { 'MAT06': A, 'MAT01': A, 'MAT03': A },
   'ELE1':       { 'MAT04': A, 'FIS102': E },
-  'FISSÓLIDO':  { 'FIS103': A },
+  'FISSOLIDO':  { 'FIS103': A },
   'INTCIEBIO2': { 'INTCIEBIO1': A, 'PRERIELAB': A },
   'ASESOEMP':   { 'INTINGAL': A },
-  'FISTÉRMICA': { 'MAT01': E, 'FIS101': E, 'FIS102': A },
+  'FISTERMICA': { 'MAT01': E, 'FIS101': E, 'FIS102': A },
   'APLALGLIN':  { 'MAT01': E, 'MAT03': E },
   'METESTREG':  { 'MAT01': E, 'MAT03': E, 'MAT05': E },
   'MODPROBENG': { 'MAT01': E, 'MAT03': E, 'MAT05': E },
@@ -1935,15 +1865,15 @@ const PV_2003_FING = (() => {
   p['HIGSERV']   = [{ 'FISQUI103': E, 'QUIANA1': E, 'QUIANA2': E, 'ECUADIF': E, 'PROBEST': E, 'FENTRA': A, 'TERAPL': A, 'FLU': A, 'QUIMLIM': A, 'MICROGEN': A, 'TRACALMA1': A }];
   p['ELE1']      = { 'CALC2': A, 'FIS3': E };
   p['MECAPL']    = { 'CALC2': A, 'FIS3': E, 'FISEXP1': A };
-  p['FISSÓLIDO'] = { 'FISEXP1': A };
+  p['FISSOLIDO'] = { 'FISEXP1': A };
   p['FISEXP2']   = { 'FIS3': E, 'FISEXP1': A };
   p['APLALGLIN'] = { 'CALC1': E, 'GEOALG2': E };
   p['METESTREG'] = { 'CALC1': E, 'GEOALG1': E, 'PROBEST': E };
   p['MODPROBENG']= { 'CALC1': E, 'GEOALG1': E, 'PROBEST': E };
   p['FUNOPT']    = { 'CALVEC': A, 'CALC1': A, 'GEOALG2': A };
-  p['FISTÉRMICA']= { 'CALC1': E, 'FIS1': E, 'FIS2': A };
+  p['FISTERMICA']= { 'CALC1': E, 'FIS1': E, 'FIS2': A };
   p['INIRINGR']  = { 'GEOALG1': A };
-  p['DISEÑEXP']  = { 'PROBEST': A, 'QUIANA1': A };
+  p['DISENEXP']  = { 'PROBEST': A, 'QUIANA1': A };
   p['INTINGPRO'] = { 'FIS1': A, 'CALC1': E, 'QUIGEN2': E };
   p['ENVPOL']    = { 'QUIORGT101': A, 'FENTRA': A };
   return p;
@@ -2056,7 +1986,6 @@ function applyPlan(p) {
   BI         = Object.fromEntries(ALL.map(s => [s.id, s]));
   buildSearchCache();
   AMIN_ACT        = p === '1992' ? AMIN_1992 : AMIN_2003;
-  const pb = document.getElementById('plan-badge'); if (pb) pb.textContent = 'Plan ' + p;
   const ib = document.getElementById('ingreso-badge'); if (ib) ib.textContent = ingreso === 'fing' ? 'FING' : 'FQ';
   AREAS_ORDER_ACT = p === '1992' ? AREAS_ORDER_1992 : AREAS_ORDER_2003;
   AM_ACT          = p === '1992' ? AM_1992 : AM;
@@ -2071,11 +2000,11 @@ const AM = {
   'MATINI':'Matemática','CALC1':'Matemática','GEOALG1':'Matemática','CALC2':'Matemática',
   'GEOALG2':'Matemática','CALVEC':'Matemática','PROBEST':'Matemática','ECUADIF':'Matemática',
   'APLALGLIN':'Matemática','FUNOPT':'Matemática','METESTREG':'Matemática','MODPROBENG':'Matemática',
-  'DISEÑEXP':'Matemática',
+  'DISENEXP':'Matemática',
   // ── Física ──
   'FIS101':'Física','FIS102':'Física','FIS103':'Física',
   'FIS1':'Física','FIS2':'Física','FIS3':'Física',
-  'FISEXP1':'Física','FISEXP2':'Física','FISSÓLIDO':'Física',
+  'FISEXP1':'Física','FISEXP2':'Física','FISSOLIDO':'Física',
   'FISQUI101':'Física',
   // ── Química ──
   'QUIGEN1':'Química','QUIGEN2':'Química','QUIORGT101':'Química','QUIORG102':'Química',
@@ -2095,7 +2024,7 @@ const AM = {
   'FLU':'Ing. de Procesos','TRACALMA1':'Ing. de Procesos','TRACALMA2':'Ing. de Procesos',
   'IRREAQUI1':'Ing. de Procesos','IRREAQUI2':'Ing. de Procesos','INGBIOTEC':'Ing. de Procesos',
   'HIGSERV':'Ing. de Procesos','ELE1':'Ing. de Procesos','MECAPL':'Ing. de Procesos',
-  'FISTÉRMICA':'Ing. de Procesos','INGENZFAS':'Ing. de Procesos','ENVPOL':'Ing. de Procesos',
+  'FISTERMICA':'Ing. de Procesos','INGENZFAS':'Ing. de Procesos','ENVPOL':'Ing. de Procesos',
   // ── Química de Alimentos ──
   'QUIMLIM':'Qca. de Alimentos','LABQUIMAL':'Qca. de Alimentos',
   'ANALAL':'Qca. de Alimentos','QUIPRODNAT':'Qca. de Alimentos',
@@ -2326,7 +2255,7 @@ function crBasicas() {
   let t = 0;
   for (const s of ALL)
     if (s.grp === 'Básicas' && gs(s.id) === S.E)
-      t += s.id === 'INGBIOTRAE' ? (bOp ? BO[bOp].cr : 0) : s.id === 'DINCONPRO' ? (dOp ? DO[dOp].cr : 0) : (s.cr || 0);
+      t += s.cr || 0;
   return t;
 }
 
@@ -2347,58 +2276,6 @@ function cp(id) {
     const actual = req.type === 'basicas' ? crBasicas() : crTotal();
     if (actual < req.cr) return S.B;
   }
-  // TALENCCRE: créditos requeridos distintos según plan
-  if (id === 'TALENCCRE') {
-    const reqs = [
-      { cr: 65,  type: 'ing_proc_fis' },
-      { cr: 24,  type: 'ing_proc_qb'  },
-      { cr: 20,  type: 'act_int'       },
-      { cr: 190, type: 'basicas'       },
-    ];
-    const bas = crBasicas();
-    const crIngProcFis = crArea('Ing. Proc. Físicos');
-    const crIngProcQB  = crArea('Ing. Proc. Q/B');
-    const crActInt     = crArea('Act. Integradoras');
-    const check = (r) => {
-      if (r.type==='basicas')      return bas          >= r.cr;
-      if (r.type==='ing_proc_fis') return crIngProcFis >= r.cr;
-      if (r.type==='ing_proc_qb')  return crIngProcQB  >= r.cr;
-      if (r.type==='act_int')      return crActInt     >= r.cr;
-      return false;
-    };
-    return reqs.every(check) ? S.H : S.B;
-  }
-  if (id === 'DINCONPRO') {
-    // Chequear si al menos una opción tiene previas cumplidas
-    const opts = Object.keys(PV_DIN);
-    for (const op of opts) {
-      const pvd = PV_DIN[op];
-      for (const g of (Array.isArray(pvd) ? pvd : [pvd])) {
-        let ok = true;
-        for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
-        if (ok) return S.H;
-      }
-    }
-    return S.B;
-  }
-  if (id === 'INGBIOTRAE') {
-    // Chequear si al menos una opción tiene previas cumplidas
-    for (const pvs of Object.values(PV_BIO)) {
-      let ok = true;
-      for (const [pid, ms] of Object.entries(pvs)) if (gs(pid) < ms) { ok = false; break; }
-      if (ok) return S.H;
-    }
-    return S.B;
-  }
-  if (id === 'TUTPAR') {
-    // Opción 1: Física 1 exonerada
-    if (gs('FIS1F') >= E) return S.H;
-    // Opción 2: GEOALG1 exonerada Y GEOALG2 aprobada
-    if (gs('GEOALG1') >= E && gs('GEOALG2') >= A) return S.H;
-    // Opción 3: CALC1 exonerada Y CALC2 aprobada
-    if (gs('CALC1') >= E && gs('CALC2') >= A) return S.H;
-    return S.B;
-  }
   for (const g of (Array.isArray(p) ? p : [p])) {
     let ok = true;
     for (const [pid, ms] of Object.entries(g)) if (gs(pid) < ms) { ok = false; break; }
@@ -2416,10 +2293,6 @@ function rc() {
 
 function gcr(id, st) {
   if (st < S.E) return 0;
-  if (id === 'INGBIOTRAE') {
-    return bOp ? BO[bOp].cr : 0;
-  }
-  if (id === 'DINCONPRO') return dOp ? DO[dOp].cr : 0;
   return BI[id]?.cr ?? 0;
 }
 
@@ -2467,11 +2340,7 @@ function setSt(id, ns, back) {
 
 function cycleBack(id) {
   const cur = gs(id);
-  if (cur <= S.H) {
-    if (id === 'INGBIOTRAE' && bOp) { bOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
-    if (id === 'DINCONPRO'  && dOp) { dOp = null; sv(); rc(); rAll(); upCr(); sndBack(); }
-    return;
-  }
+  if (cur <= S.H) return;
   setSt(id, cur - 1, true);
 }
 
@@ -2482,41 +2351,18 @@ function mkCard(s) {
   const d = document.createElement('div');
   d.className   = 'card';
   d.dataset.id  = s.id;
-  const peekFn = s.id === 'DINCONPRO'  ? `dOp?showPPDin():showPP('${s.id}')` :
-                 s.id === 'INGBIOTRAE' ? `bOp?showPPBio():showPP('${s.id}')` :
-                 `showPP('${s.id}')`;
   const semLabel = OPT_O1_IDS.has(s.id) ? ' · Impar' : OPT_O2_IDS.has(s.id) ? ' · Par' : '';
-  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}${semLabel}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();${peekFn}">Previas</button></div>`;
+  d.innerHTML   = `<div class="ci"><span class="ci-emoji"></span><span class="cbg"></span></div><div class="cn">${s.name}</div><div class="cm2"><span class="cc"></span></div><div class="cf-row"><span class="cf">${s.fac}${semLabel}</span><button class="pp-peek-btn" title="Ver previas" onclick="event.stopPropagation();showPP('${s.id}')">Previas</button></div>`;
 
   d.addEventListener('click', (e) => {
     getAC();
     // Shift+click: mostrar previas sin importar estado
     if (e.shiftKey) {
       e.preventDefault(); e.stopPropagation();
-      if (s.id === 'DINCONPRO')  { dOp ? showPPDin() : openDin(); return; }
-      if (s.id === 'INGBIOTRAE') { bOp ? showPPBio() : openBio(); return; }
       showPP(s.id); return;
     }
-    if (s.id === 'DINCONPRO') {
-      hidePP();
-      const cur = gs('DINCONPRO');
-      if (!dOp)      { openDin(); return; }
-      if (cur === S.B) { showPPDin(); return; }
-      if (cur === S.E) { dOp = null; sv(); setSt('DINCONPRO', S.H, true); openDin(); return; }
-      setSt('DINCONPRO', cur + 1, false);
-      return;
-    }
-    if (s.id === 'INGBIOTRAE') {
-      hidePP();
-      const cur = gs('INGBIOTRAE');
-      if (!bOp)      { openBio(); return; }
-      if (cur === S.B) { showPPBio(); return; }
-      if (cur === S.E) { bOp = null; sv(); setSt('INGBIOTRAE', S.H, true); openBio(); return; }
-      setSt('INGBIOTRAE', cur + 1, false);
-      return;
-    }
     if (gs(s.id) === S.B) {
-      if (OPT_IDS.has(s.id) && PV_ACT[s.id] === undefined && !(s.id in CR_REQ) && s.id !== 'TALENCCRE') { toastWip(); return; }
+      if (OPT_IDS.has(s.id) && PV_ACT[s.id] === undefined && !(s.id in CR_REQ)) { toastWip(); return; }
       showPP(s.id); return;
     }
     hidePP();
@@ -2541,19 +2387,7 @@ function upCard(el, id) {
   el.dataset.st = SN[st];
   el.querySelector('.cbg').textContent = SL[st];
   const _m = BI[id]; const _crNote = _m?.crNote ? ' ' + _m.crNote : '';
-  if (id === 'DINCONPRO') {
-    el.querySelector('.cc').textContent = dOp ? DO[dOp].cr + ' créditos' : '— créditos';
-    const nm = el.querySelector('.cn');
-    if (nm) nm.textContent = dOp ? DO[dOp].name : 'Din. y Control / Inst. Industrial';
-  } else {
-    el.querySelector('.cc').textContent  = id === 'INGBIOTRAE' && bOp
-      ? BO[bOp].cr + ' créditos'
-      : _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
-  }
-  if (id === 'INGBIOTRAE') {
-    const nm = el.querySelector('.cn');
-    if (nm) nm.textContent = bOp ? BO[bOp].name : 'Ing. Bioquímica / Trat. Efluentes';
-  }
+  el.querySelector('.cc').textContent = _m?.cr != null ? _m.cr + ' créditos' + _crNote : '—';
 }
 
 // ══════════ BÚSQUEDA: expansión de abreviaturas ══════════
@@ -2769,7 +2603,6 @@ function computeGlobalLevels() {
       globalLevel[id] = Math.round(maxLevel * cr / 400);
     }
   }
-  if (globalLevel['TALENCCRE'] !== undefined) globalLevel['TALENCCRE'] = Math.round(maxLevel * 0.7);
   return { globalLevel, maxLevel };
 }
 
@@ -2919,48 +2752,11 @@ function buildPPReqRows(id) {
   const p = PV_ACT[id];
   // Requisito de créditos (si aplica)
   let creditRow = '';
-  if (id === 'TALENCCRE') {
-    const labels = {
-      ing_proc_fis: { cr: 65,  label: 'cr. Ing. de Procesos Físicos' },
-      ing_proc_qb:  { cr: 24,  label: 'cr. Ing. de Proc. Q/B' },
-      act_int:      { cr: 20,  label: 'cr. Act. Integradoras' },
-      basicas:      { cr: 190, label: 'cr. Materias Básicas' },
-    };
-    const crIngProcFis = crArea('Ing. Proc. Físicos');
-    const crIngProcQB  = crArea('Ing. Proc. Q/B');
-    const crActInt     = crArea('Act. Integradoras');
-    const bas = crBasicas();
-    const actuals = { ing_proc_fis: crIngProcFis, ing_proc_qb: crIngProcQB, act_int: crActInt, basicas: bas };
-    for (const [type, { cr, label }] of Object.entries(labels)) {
-      const actual = actuals[type], ok = actual >= cr;
-      creditRow += `<div class="pi${ok ? ' met' : ''}"><span class="pn">${cr} ${label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + cr}</span></div>`;
-    }
-  } else if (id in CR_REQ) {
+  if (id in CR_REQ) {
     const req = CR_REQ[id];
     const actual = req.type === 'basicas' ? crBasicas() : crTotal();
     const ok = actual >= req.cr;
     creditRow = `<div class="pi${ok ? ' met' : ''}"><span class="pn">${req.cr} ${req.label}</span><span class="pr ${ok ? 'ok' : 'bloqueada'}">${ok ? '✓' : actual + '/' + req.cr}</span></div>`;
-  }
-  if (id === 'TUTPAR') {
-    const opts = [
-      { label: 'Opción 1', met: gs('FIS1F') >= E,
-        items: [{ id: 'FIS1F', ms: E }] },
-      { label: 'Opción 2', met: gs('GEOALG1') >= E && gs('GEOALG2') >= A,
-        items: [{ id: 'GEOALG1', ms: E }, { id: 'GEOALG2', ms: A }] },
-      { label: 'Opción 3', met: gs('CALC1') >= E && gs('CALC2') >= A,
-        items: [{ id: 'CALC1', ms: E }, { id: 'CALC2', ms: A }] },
-    ];
-    return creditRow + renderPPOpts(opts);
-  }
-  if (id === 'FIS3F') {
-    const commonRow = renderPPItem('CALC1', A);
-    const opts = [
-      { label: 'Opción 1', met: gs('FIS1F') >= A && gs('FIS2F') >= A,
-        items: [{ id: 'FIS1F', ms: A }, { id: 'FIS2F', ms: A }] },
-      { label: 'Opción 2', met: gs('FIS1F') >= E,
-        items: [{ id: 'FIS1F', ms: E }] },
-    ];
-    return creditRow + commonRow + renderPPOpts(opts);
   }
   if (!p || (typeof p === 'object' && !Array.isArray(p) && Object.keys(p).length === 0))
     return creditRow || '<div class="pi"><span class="pn" style="color:var(--tm)">Sin previas requeridas.</span></div>';
@@ -3213,44 +3009,10 @@ function toastWip() {
     floatToast(msg, 'wip', 2800);
   }
 }
+function openUpd()  { cSB(); document.getElementById('ov-upd').classList.add('op'); setModalOpen(true); }
+function closeUpd() { document.getElementById('ov-upd').classList.remove('op'); syncModalOpen(); }
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); syncModalOpen(); }
-
-// ══════════ ACTUALIZACIONES ══════════
-const UPD_VERSION = 5;
-function switchUpdTab(tab) {
-  ['v1','v2','v3','v4','v5'].forEach(t => {
-    document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
-    document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
-  });
-}
-function closeUpd() {
-  document.getElementById('ov-upd').classList.remove('op');
-  syncModalOpen();
-  try { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); } catch(e) {}
-}
-function openUpd() {
-  cSB();
-  document.getElementById('ov-upd').classList.add('op');
-  setModalOpen(true);
-}
-function maybeShowUpd() {
-  try {
-    const raw = localStorage.getItem('qp_al_upd_ver');
-    if (raw === null) {
-      // Si nunca vio novedades: si es usuario nuevo (sin welcomed) no mostrar, si es viejo mostrar
-      if (!localStorage.getItem('qp_al_welcomed')) { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); return; }
-      document.getElementById('ov-upd').classList.add('op');
-      setModalOpen(true);
-      return;
-    }
-    const seen = parseInt(raw);
-    if (seen < UPD_VERSION) {
-      document.getElementById('ov-upd').classList.add('op');
-      setModalOpen(true);
-    }
-  } catch(e) {}
-}
 
 function rebuildAllGrids() {
   Object.keys(CE).forEach(k => delete CE[k]);
@@ -3281,6 +3043,7 @@ function openDin() {
   document.getElementById('ov-d').classList.add('op'); setModalOpen(true);
 }
 function closeDin() { document.getElementById('ov-d').classList.remove('op'); syncModalOpen(); }
+function dinBack() { openDin(); }
 function confirmDin() {
   const s = document.querySelector('input[name="din"]:checked');
   if (!s) return;
@@ -3327,7 +3090,7 @@ function openBio() {
 }
 
 function closeBio() { document.getElementById('ov-b').classList.remove('op'); syncModalOpen(); }
-
+function bioBack() { openBio(); }
 function confirmBio() {
   const s = document.querySelector('input[name="bio"]:checked');
   if (!s) return;
@@ -3474,8 +3237,6 @@ document.addEventListener('keydown', e => {
   // 🤫 Combo secreto: Shift+Ctrl+E — exonera todo
   if (e.shiftKey && e.ctrlKey && !e.altKey && e.code === 'KeyE') {
     for (const s of ALL) est[s.id] = S.E;
-    if (!bOp) bOp = 'bio';
-    if (!dOp) dOp = 'din';
     rc(); rAll(); upCr(); chkCel(); sv();
     return;
   }
@@ -3841,7 +3602,7 @@ function init() {
   if (ingreso === 'fing' && matIni === null) matIni = false;
   applyPlan(plan);
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
-  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
+  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash();
   applyMascot();
   applyQuimiVisibility();
   quimiSetMood('idle');
