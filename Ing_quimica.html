@@ -1286,14 +1286,16 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
     <!-- v7 — nueva versión -->
     <div id="upd-v7" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🐛 Correcciones varias</div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">📐 Plan 2000 — Química Inorgánica</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el Plan 2000, Química Inorgánica ahora aparece separada en Teórico (T, 6 créditos) y Laboratorio (L, 5 créditos), reflejando que son cursos independientes.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Correcciones varias</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores de datos y visualización.</span></div>
     </div>
 
     <!-- v6 — historial -->
     <div id="upd-v6" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
-      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">📐 Plan 2000 — Química Inorgánica</div>
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el Plan 2000, Química Inorgánica ahora aparece separada en Teórico (6 créditos) y Laboratorio (5 créditos), reflejando que son cursos independientes.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🐛 Correcciones varias</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores de datos y visualización.</span></div>
     </div>
 
     <!-- v5 — historial -->
@@ -2035,7 +2037,7 @@ function applyPlan(p) {
       .flatMap(s => {
         if (s.id === 'QUIINO1') return [
           { ...s, name: 'Química Inorgánica (T)', cr: 6 },
-          { id: 'QUIINO1LAB', name: 'Lab. de Química Inorgánica (Plan 2000)', cr: 5, fac: 'FQ', grp: 'Básicas' }
+          { id: 'QUIINO1LAB', name: 'Química Inorgánica (L)', cr: 5, fac: 'FQ', grp: 'Básicas' }
         ];
         if (s.id === 'QUIORG102I') return [{ ...s, name: 'Química Orgánica 102', cr: 6 }];
         return [s];
