@@ -1277,14 +1277,26 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
     <h2>🆕 Novedades de QuimPath</h2>
     <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v5" onclick="switchUpdTab('v5')" style="flex:1;text-align:center">v1.5 — Actual</button>
+      <button class="toggle-btn on" id="upd-tab-v7" onclick="switchUpdTab('v7')" style="flex:1;text-align:center">v1.7 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v6" onclick="switchUpdTab('v6')" style="flex:1;text-align:center">v1.6</button>
+      <button class="toggle-btn off" id="upd-tab-v5" onclick="switchUpdTab('v5')" style="flex:1;text-align:center">v1.5</button>
       <button class="toggle-btn off" id="upd-tab-v4" onclick="switchUpdTab('v4')" style="flex:1;text-align:center">v1.4</button>
       <button class="toggle-btn off" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3</button>
-      <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
-      <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
     </div>
 
-    <!-- v5 — nueva versión -->
+    <!-- v7 — nueva versión -->
+    <div id="upd-v7" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🐛 Correcciones varias</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores de datos y visualización.</span></div>
+    </div>
+
+    <!-- v6 — historial -->
+    <div id="upd-v6" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">📐 Plan 2000 — Química Inorgánica</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el Plan 2000, Química Inorgánica ahora aparece separada en Teórico (6 créditos) y Laboratorio (5 créditos), reflejando que son cursos independientes.</span></div>
+    </div>
+
+    <!-- v5 — historial -->
     <div id="upd-v5" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Correcciones de previas</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se modificaron previas de: Transferencia de Calor y Masa 1, Intro a la Ing. Bioquímica, Ing. Bioquímica / Trat. Efluentes, Trat. y Val. Residuos Sólidos, Diseño de Procesos Químicos, Pasantía, Tec. y Serv. Industriales 2.</span></div>
@@ -1838,6 +1850,7 @@ const INIC_2021 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI'
 
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
+  p['QUIINO1LAB'] = { 'QUIGEN2': A, 'QUIINO1': C };
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
@@ -1945,8 +1958,9 @@ const PV_2021_FING = (() => {
 })();
 
 const PV_2000_FING = (() => {
-  // Parte desde PV_2021_FING y agrega los 3 overrides propios del plan 2000
+  // Parte desde PV_2021_FING y agrega los overrides propios del plan 2000
   const p = { ...PV_2021_FING };
+  p['QUIINO1LAB'] = { 'QUIGEN2': A, 'QUIINO1': C };
   p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['QUIBIOINT']  = { 'QUIINO1': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
@@ -1969,11 +1983,11 @@ const SEMESTRES_2021_FING = [
   { label: '10mo Semestre', ids: ['PROIND2','PAS'] },
 ];
 
-const SEMESTRES_2000_FING = SEMESTRES_2021_FING.map((sem, i) =>
-  i === 7
-    ? { ...sem, ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] }
-    : sem
-);
+const SEMESTRES_2000_FING = SEMESTRES_2021_FING.map((sem, i) => {
+  if (i === 4) return { ...sem, ids: sem.ids.flatMap(id => id === 'QUIINO1' ? ['QUIINO1','QUIINO1LAB'] : [id]) };
+  if (i === 7) return { ...sem, ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] };
+  return sem;
+});
 
 const SEMESTRES_2021 = [
   { label: '1er Semestre',  ids: ['MAT01','MAT03','QUIGEN1','PRERIELAB'] },
@@ -1993,7 +2007,7 @@ const SEMESTRES_2000 = [
   { label: '2do Semestre',  ids: ['MAT04','FIS101','QUIGEN2','INTINGQUI'] },
   { label: '3er Semestre',  ids: ['MAT05','MAT06','FIS102','QUIORGT101','QUIANA1'] },
   { label: '4to Semestre',  ids: ['MAT07','MAT08','FIS103LAB','FISQUI101','QUIANA2','QUIORG102I','INTINGPRO'] },
-  { label: '5to Semestre',  ids: ['QUIINO1','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
+  { label: '5to Semestre',  ids: ['QUIINO1','QUIINO1LAB','FISQUI103','QUIORG103L','FENTRA','TERAPL'] },
   { label: '6to Semestre',  ids: ['MAT09','FISQUI104','FLU','TRACALMA1','COM1'] },
   { label: '7mo Semestre',  ids: ['IRREAQUI1','TECSERIND1','TRACALMA2','ELE1'] },
   { label: '8vo Semestre',  ids: ['IRREAQUI2','TECSERIND2','DINCONPRO','INTINGBIO','MECAPL'] },
@@ -2018,10 +2032,13 @@ function applyPlan(p) {
   if (p === '2000') {
     OB_ACT = baseOB
       .filter(s => s.id !== 'INGAMB')
-      .map(s => {
-        if (s.id === 'QUIINO1')    return { ...s, name: 'Química Inorgánica (T+Lab)', cr: 11 };
-        if (s.id === 'QUIORG102I') return { ...s, name: 'Química Orgánica 102', cr: 6 };
-        return s;
+      .flatMap(s => {
+        if (s.id === 'QUIINO1') return [
+          { ...s, name: 'Química Inorgánica (T)', cr: 6 },
+          { id: 'QUIINO1LAB', name: 'Lab. de Química Inorgánica (Plan 2000)', cr: 5, fac: 'FQ', grp: 'Básicas' }
+        ];
+        if (s.id === 'QUIORG102I') return [{ ...s, name: 'Química Orgánica 102', cr: 6 }];
+        return [s];
       });
     OB_ACT.push({ id: 'TECSERIND2', name: 'Tec. y Serv. Industriales 2', cr: 6, fac: 'FING/IIQ', grp: 'Esp. Ing. Química' });
     O1_ACT = isFing ? O1.filter(s => s.id !== 'LABQCAINO' && !TUTPAR_IDS.has(s.id)) : O1.filter(s => s.id !== 'LABQCAINO');
@@ -2097,7 +2114,7 @@ const AM = {
   // FING physics
   'FIS1F':'Física','FIS2F':'Física','FIS3F':'Física','FISEXPF':'Física',
   'QUIGEN1':'Química','PRERIELAB':'Química','QUIGEN2':'Química','QUIORGT101':'Química',
-  'QUIANA1':'Química','QUIANA2':'Química','QUIORG102I':'Química','QUIINO1':'Química','QUIORG103L':'Química',
+  'QUIANA1':'Química','QUIANA2':'Química','QUIORG102I':'Química','QUIINO1':'Química','QUIINO1LAB':'Química','QUIORG103L':'Química',
   'FISQUI103':'Química','FISQUI104':'Química','LABQCAINO':'Química','QUIANA3':'Química',
   'CATADS':'Química','HERELE':'Química','ASEGCALANA':'Química','QCASOLACUA':'Química',
   'QUIBIOINT':'Química','QUIBIOINP':'Química',
@@ -3112,6 +3129,8 @@ async function sendFeedback() {
   try {
     await window.fbSaveFeedback({
       carrera:    'ing_quimica',
+      plan:       plan,
+      ingreso:    ingreso,
       tipo:       fbType,
       materia:    fbType === 'error' ? document.getElementById('fb-materia').value.trim() : '',
       descripcion: desc,
@@ -3246,11 +3265,13 @@ function openReset()  { document.getElementById('ov-r').classList.add('op'); set
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); syncModalOpen(); }
 
 // ══════════ ACTUALIZACIONES ══════════
-const UPD_VERSION = 5;
+const UPD_VERSION = 7;
 function switchUpdTab(tab) {
-  ['v1','v2','v3','v4','v5'].forEach(t => {
-    document.getElementById('upd-' + t).style.display      = t === tab ? 'flex' : 'none';
-    document.getElementById('upd-tab-' + t).className      = 'toggle-btn ' + (t === tab ? 'on' : 'off');
+  ['v3','v4','v5','v6','v7'].forEach(t => {
+    const el    = document.getElementById('upd-' + t);
+    const tabEl = document.getElementById('upd-tab-' + t);
+    if (el)    el.style.display = t === tab ? 'flex' : 'none';
+    if (tabEl) tabEl.className  = 'toggle-btn ' + (t === tab ? 'on' : 'off');
   });
 }
 function closeUpd() {
