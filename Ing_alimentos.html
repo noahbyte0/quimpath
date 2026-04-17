@@ -1266,15 +1266,32 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
 
 <!-- ══ MODAL: Actualizaciones ══ -->
 <div class="ov" id="ov-upd">
-  <div class="md" style="max-width:400px;text-align:center">
+  <div class="md" style="max-width:480px">
     <h2>🆕 Novedades de QuimPath</h2>
-    <p class="sub" style="margin-bottom:20px">Últimas actualizaciones del programa:</p>
-    <div style="padding:28px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--sf2);margin-bottom:16px">
-      <div style="font-size:1.8rem;margin-bottom:10px">🔬</div>
-      <div style="font-size:.82rem;font-weight:700;color:var(--tx);margin-bottom:6px">Por ahora todo tranquilo por acá</div>
-      <div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.6">Las novedades de Ing. en Alimentos<br>aparecerán aquí cuando estén disponibles.</div>
+    <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="toggle-btn on" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
     </div>
-    <div class="ma" style="margin-top:0">
+
+    <!-- v2 — actual -->
+    <div id="upd-v2" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Corrección de previas</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Matemática 06 tenía incorrectamente como previas Matemática 04 y 03. Las previas correctas son Matemática 01 y Matemática 03.</span></div>
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Correcciones varias</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Se corrigieron errores menores de datos y visualización.</span></div>
+    </div>
+
+    <!-- v1 — historial -->
+    <div id="upd-v1" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="padding:28px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--sf2);text-align:center">
+        <div style="font-size:1.8rem;margin-bottom:10px">🔬</div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--tx);margin-bottom:6px">Lanzamiento inicial</div>
+        <div style="font-size:.68rem;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.6">Planificador de Ing. en Alimentos<br>disponible en QuimPath.</div>
+      </div>
+    </div>
+
+    <div class="ma" style="margin-top:14px">
       <button class="bpr" onclick="closeUpd()" style="width:100%">¡Entendido! 👍</button>
     </div>
   </div>
@@ -1671,7 +1688,7 @@ const PV_2003 = {
   'FIS101':     { 'MAT01': A },
   'FIS102':     { 'FIS101': A },
   'MAT05':      { 'MAT04': A },
-  'MAT06':      [{ 'MAT04': A, 'MAT03': A }],
+  'MAT06':      [{ 'MAT01': A, 'MAT03': A }],
   'QUIORGT101': { 'QUIGEN2': A },
   'QUIANA1':    { 'QUIGEN2': A },
   'QUIORG102':  { 'QUIORGT101': A },
@@ -3009,8 +3026,32 @@ function toastWip() {
     floatToast(msg, 'wip', 2800);
   }
 }
+const UPD_VERSION = 2;
+function switchUpdTab(tab) {
+  ['v1','v2'].forEach(t => {
+    const el    = document.getElementById('upd-' + t);
+    const tabEl = document.getElementById('upd-tab-' + t);
+    if (el)    el.style.display = t === tab ? 'flex' : 'none';
+    if (tabEl) tabEl.className  = 'toggle-btn ' + (t === tab ? 'on' : 'off');
+  });
+}
+function maybeShowUpd() {
+  try {
+    const raw = localStorage.getItem('qp_al_upd_ver');
+    if (raw === null) {
+      if (!localStorage.getItem('qp_al_welcomed')) { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); return; }
+      document.getElementById('ov-upd').classList.add('op'); setModalOpen(true); return;
+    }
+    if (parseInt(raw) < UPD_VERSION) {
+      document.getElementById('ov-upd').classList.add('op'); setModalOpen(true);
+    }
+  } catch(e) {}
+}
 function openUpd()  { cSB(); document.getElementById('ov-upd').classList.add('op'); setModalOpen(true); }
-function closeUpd() { document.getElementById('ov-upd').classList.remove('op'); syncModalOpen(); }
+function closeUpd() {
+  document.getElementById('ov-upd').classList.remove('op'); syncModalOpen();
+  try { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); } catch(e) {}
+}
 function openReset()  { document.getElementById('ov-r').classList.add('op'); setModalOpen(true); }
 function closeReset() { document.getElementById('ov-r').classList.remove('op'); syncModalOpen(); }
 
@@ -3602,7 +3643,7 @@ function init() {
   if (ingreso === 'fing' && matIni === null) matIni = false;
   applyPlan(plan);
   for (const id of INIC_ACT) if (!est[id]) est[id] = S.H;
-  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash();
+  rc(); bldGrds(); rAll(); upCr(); applyTheme(); maybeShowSplash(); maybeShowUpd();
   applyMascot();
   applyQuimiVisibility();
   quimiSetMood('idle');
