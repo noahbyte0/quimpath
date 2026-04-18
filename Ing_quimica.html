@@ -1853,9 +1853,11 @@ const INIC_2021 = new Set(['MAT01', 'MAT03', 'QUIGEN1', 'PRERIELAB', 'INTINGQUI'
 const PV_2000 = (() => {
   const p = { ...PV_2021 };
   p['QUIINO1LAB'] = { 'QUIGEN2': A, 'QUIINO1': C };
-  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
-  p['QUIBIOINT']  = { 'QUIINO1': A };
+  p['TRACALMA1']  = [{ 'FIS102': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIINO1LAB': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['QUIAMB']     = { 'QUIORGT101': A, 'QUIINO1': A, 'QUIINO1LAB': A };
+  p['QUIBIOINT']  = { 'QUIINO1': A, 'QUIINO1LAB': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
+  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E, 'INGAMB': A };
   p['PAS']        = { 'TECSERIND1': E, 'IRREAQUI1': E, 'TRACALMA1': E, 'TRACALMA2': E, 'FLU': E, 'TERAPL': E, 'FENTRA': E, 'IRREAQUI2': A, 'TECSERIND2': A };
   return p;
@@ -1963,9 +1965,11 @@ const PV_2000_FING = (() => {
   // Parte desde PV_2021_FING y agrega los overrides propios del plan 2000
   const p = { ...PV_2021_FING };
   p['QUIINO1LAB'] = { 'QUIGEN2': A, 'QUIINO1': C };
-  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
-  p['QUIBIOINT']  = { 'QUIINO1': A };
+  p['TRACALMA1']  = [{ 'FIS2F': E, 'FISQUI101': E, 'QUIANA1': A, 'QUIINO1': A, 'QUIINO1LAB': A, 'QUIORGT101': A, 'FENTRA': A, 'TERAPL': A, 'INTINGPRO': E }];
+  p['QUIAMB']     = { 'QUIORGT101': A, 'QUIINO1': A, 'QUIINO1LAB': A };
+  p['QUIBIOINT']  = { 'QUIINO1': A, 'QUIINO1LAB': A };
   p['QUIBIOINP']  = { 'QUIINO1': A };
+  p['TECSERIND2'] = { 'IRREAQUI1': A, 'TECSERIND1': A };
   p['TRATRESSOLID'] = { 'INTINGBIO': A, 'IRREAQUI1': E, 'INGAMB': A };
   return p;
 })();

@@ -3038,11 +3038,7 @@ function switchUpdTab(tab) {
 function maybeShowUpd() {
   try {
     const raw = localStorage.getItem('qp_al_upd_ver');
-    if (raw === null) {
-      if (!localStorage.getItem('qp_al_welcomed')) { localStorage.setItem('qp_al_upd_ver', UPD_VERSION); return; }
-      document.getElementById('ov-upd').classList.add('op'); setModalOpen(true); return;
-    }
-    if (parseInt(raw) < UPD_VERSION) {
+    if (raw === null || parseInt(raw) < UPD_VERSION) {
       document.getElementById('ov-upd').classList.add('op'); setModalOpen(true);
     }
   } catch(e) {}
@@ -3458,6 +3454,7 @@ function closeSplash() {
   document.getElementById('splash').classList.remove('on'); syncModalOpen();
   try { localStorage.setItem('qp_al_welcomed', '1'); } catch(e) {}
   sv();
+  maybeShowUpd();
   if (isNewMascot && mascot === 'quimpi') {
     setTimeout(() => quimiSay('¡Hola! Soy Quimπ, ¡es un gusto tenerte aquí! 🐱', 'happy', 4000), 600);
   } else if (isNewMascot && mascot === 'quimi') {
