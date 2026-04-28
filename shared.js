@@ -752,3 +752,15 @@ window._applyCloudData = function (d) {
     localStorage.setItem(SK, JSON.stringify(toSave));
   } catch (e) {}
 };
+
+// ── Acceso rápido a la Tabla Periódica en el topbar ──
+(function () {
+  const btns = document.querySelector('.tb-btns');
+  if (!btns) return;
+  const a = document.createElement('a');
+  a.href = 'tabla_periodica.html';
+  a.className = 'tb-btn';
+  a.style.textDecoration = 'none';
+  a.innerHTML = '⚛ <span class="label">Tabla</span>';
+  btns.appendChild(a);
+})();
