@@ -137,7 +137,13 @@
 
     /* ── CATEGORY LEGEND ── */
     .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 24px; justify-content: center; max-width: 900px; animation: fadeUp .5s .4s ease both; }
-    .leg-item { display: flex; align-items: center; gap: 5px; font-family: 'Space Mono', monospace; font-size: .55rem; color: var(--tm); cursor: default; }
+    .leg-item { display: flex; align-items: center; gap: 5px; font-family: 'Space Mono', monospace; font-size: .55rem; color: var(--tm); cursor: default; transition: color .15s; }
+    .leg-item:hover { color: var(--tx); }
+
+    /* Category filter dim */
+    #pt-grid.filtering .el    { opacity: .1; transition: opacity .18s; }
+    #pt-grid.filtering .el-ph { opacity: .08; transition: opacity .18s; }
+    #pt-grid.filtering .el.hl { opacity: 1; }
     .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
 
     /* ── MODAL ── */
@@ -556,6 +562,7 @@ function buildGrid() {
     const isFBlock = e.row >= 9;
     const el = document.createElement('div');
     el.className = 'el';
+    el.dataset.cat = e.cat;
     if (isFBlock) el.setAttribute('data-fa', '1');
     el.style.cssText = `--c:${e.col};--r:${e.row};--ec:${c.color};--eg:${c.glow};--eb:${c.bg};--ed:${delay(e.row, e.col)}`;
     el.title = `${e.name} (Z=${e.z})`;
@@ -567,11 +574,26 @@ function buildGrid() {
 
 // ── Legend ──
 function buildLegend() {
-  const leg = document.getElementById('legend');
+  const leg    = document.getElementById('legend');
+  const pgrid  = document.getElementById('pt-grid');
+  const cells  = () => pgrid.querySelectorAll('.el');
+
   Object.entries(CAT).forEach(([key, val]) => {
     const item = document.createElement('div');
     item.className = 'leg-item';
     item.innerHTML = `<span class="leg-dot" style="background:${val.color}"></span>${val.name}`;
+
+    item.addEventListener('mouseenter', () => {
+      pgrid.classList.add('filtering');
+      cells().forEach(el => {
+        el.classList.toggle('hl', el.dataset.cat === key);
+      });
+    });
+    item.addEventListener('mouseleave', () => {
+      pgrid.classList.remove('filtering');
+      cells().forEach(el => el.classList.remove('hl'));
+    });
+
     leg.appendChild(item);
   });
 }
