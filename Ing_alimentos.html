@@ -1783,6 +1783,25 @@ function maybeShowSplash() {
 }
 
 // ══════════ CAMBIO DE PLAN ══════════
+function rebuildAllGrids() {
+  Object.keys(CE).forEach(k => delete CE[k]);
+  ['g-ta','tp-princ','g-o1','g-o2'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+  blt = {};
+  bldGrds();
+}
+
+function doReset() {
+  est = {}; bOp = null; dOp = null; cel = false;
+  aF.clear(); areaF = ''; qr = ''; _prevTab = 'princ';
+  document.getElementById('sq').value = '';
+  document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
+  updateFilterBtn();
+  document.getElementById('fb-filters').classList.remove('open');
+  rebuildAllGrids();
+  rc(); rAll(); upCr(); sv(); closeReset();
+  switchTab('princ');
+}
+
 function changePlan(p) {
   if (p === plan) return;
   applyPlan(p);
