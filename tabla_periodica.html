@@ -276,21 +276,32 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       :root { --cs: 46px; --cg: 2px; }
-      .el-sym { font-size: 1.1rem; }
+      .el-sym,
+      .el[data-fa="1"] .el-sym { font-size: 1.1rem; }
       .el-z, .el-mass { font-size: .42rem; }
     }
     @media (max-width: 600px) {
-      :root { --cs: 36px; --cg: 2px; }
-      .el-sym { font-size: .92rem; }
-      .el-z   { font-size: .38rem; }
+      :root { --cs: 34px; --cg: 2px; }
+      .el-sym,
+      .el[data-fa="1"] .el-sym { font-size: .82rem; }
+      .el-z,
+      .el[data-fa="1"] .el-z   { font-size: .34rem; }
       .el-mass { display: none; }
-      .grp-lbl, .per-lbl { font-size: .4rem; }
+      .grp-lbl, .per-lbl { font-size: .38rem; }
       .hdr p { display: none; }
     }
     @media (max-width: 420px) {
-      :root { --cs: 30px; --cg: 1px; }
-      .el-sym { font-size: .78rem; }
-      .el-z   { display: none; }
+      :root { --cs: 27px; --cg: 1px; }
+      .el-sym,
+      .el[data-fa="1"] .el-sym { font-size: .66rem; }
+      .el-z,
+      .el[data-fa="1"] .el-z   { display: none; }
+      .grp-lbl { display: none; }
+    }
+    @media (max-width: 360px) {
+      :root { --cs: 23px; --cg: 1px; }
+      .el-sym,
+      .el[data-fa="1"] .el-sym { font-size: .56rem; }
     }
   </style>
 </head>
