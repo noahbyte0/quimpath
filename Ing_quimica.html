@@ -3444,6 +3444,8 @@ function toggleQuimi() {
   quimiOn = !quimiOn;
   _updateCfgBtn('cfg-quimi', quimiOn);
   applyQuimiVisibility();
+  if (quimiOn) scheduleAmbient();
+  else { clearTimeout(_ambientTimer); _ambientTimer = null; }
   sv();
 }
 
@@ -3867,21 +3869,21 @@ function quimiAmbientSay() {
   quimiSay(msg, 'happy', 5500);
 }
 
-// Dice una frase entre 2 y 4 minutos al azar, indefinidamente
-(function scheduleAmbient() {
-  const delay = (120 + Math.random() * 120) * 1000;
-  setTimeout(() => {
-    // Alterna aleatoriamente entre frase de porcentaje y frase de click
+// Dice una frase entre 2 y 4 minutos al azar; se detiene cuando quimiOn es false
+let _ambientTimer = null;
+function scheduleAmbient() {
+  if (!quimiOn) return;
+  _ambientTimer = setTimeout(() => {
     if (Math.random() < 0.5) {
       quimiAmbientSay();
     } else {
-      if (!toastsOn || !quimiOn) { scheduleAmbient(); return; }
       const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;
       quimiSay(msgs[Math.floor(Math.random() * msgs.length)], 'happy', 4000);
     }
     scheduleAmbient();
-  }, delay);
-})();
+  }, (120 + Math.random() * 120) * 1000);
+}
+scheduleAmbient();
 
 document.getElementById('quimi').addEventListener('click', () => {
   const msgs = mascot === 'quimpi' ? QUIMPI_MSGS : QUIMI_MSGS;

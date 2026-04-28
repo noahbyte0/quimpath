@@ -1017,7 +1017,6 @@ textarea.fb-input { resize: vertical; min-height: 80px; }
       <div class="lb">Créditos exonerados</div>
       <div class="cm-row">
         <span class="nm" id="cn">0</span>
-        <!-- TODO: ajustar total de créditos del Plan 2015 -->
         <span class="tt">/ 450</span>
         <span class="pct-lbl" id="cpct">0%</span>
       </div>
@@ -2360,10 +2359,6 @@ function hidePP() {
   ov.removeEventListener('click', ppOvClick);
 }
 
-// Stubs para showPPBio/showPPDin (heredados del motor, no se usan en Q. Farm.)
-function showPPBio() {}
-function showPPDin() {}
-
 // ══════════ FEEDBACK ══════════
 let fbType = 'error';
 
@@ -2558,16 +2553,6 @@ function doReset() {
   rc(); rAll(); upCr(); sv(); closeReset();
   switchTab('princ');
 }
-
-// Stubs Din/Bio (heredados del motor)
-function openDin() {}
-function closeDin() {}
-function confirmDin() {}
-function openBio() {}
-function closeBio() {}
-function confirmBio() {}
-function bioBack() {}
-function dinBack() {}
 
 function setModalOpen(open) {
   document.body.classList.toggle('modal-open', open);
