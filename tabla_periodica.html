@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla Periódica — QuimPath</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:  #0d1117;
+      --sf:  #161b22;
+      --sf2: #1c2128;
+      --bd:  #30363d;
+      --tx:  #e6edf3;
+      --tm:  #7d8590;
+      --ac:  #2a9d8f;
+      --a2:  #4ea8de;
+      --cs:  60px;
+      --cg:  3px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--tx); font-family: 'Syne', sans-serif; min-height: 100dvh; overflow-x: hidden; }
+
+    #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .22; }
+
+    .page { position: relative; z-index: 1; min-height: 100dvh; padding: 36px 20px 64px; display: flex; flex-direction: column; align-items: center; }
+
+    /* ── HEADER ── */
+    .hdr { text-align: center; margin-bottom: 32px; animation: fadeUp .5s ease both; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Space Mono', monospace; font-size: .62rem;
+      color: var(--tm); text-decoration: none;
+      border: 1px solid var(--bd); border-radius: 100px;
+      padding: 4px 12px; margin-bottom: 18px;
+      transition: color .15s, border-color .15s;
+    }
+    .back-btn:hover { color: var(--ac); border-color: var(--ac); }
+    .hdr h1 {
+      font-size: clamp(1.5rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--ac) 0%, var(--a2) 55%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      display: inline-block; margin-bottom: 8px;
+    }
+    .hdr p { font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--tm); }
+
+    /* ── SCROLL WRAPPER ── */
+    .tbl-outer { width: 100%; overflow-x: auto; padding-bottom: 8px; }
+    .tbl-inner { width: max-content; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
+
+    /* Group label row */
+    .grp-row {
+      display: grid;
+      grid-template-columns: 22px repeat(18, var(--cs));
+      gap: var(--cg);
+      margin-bottom: 2px;
+    }
+    .grp-lbl {
+      font-family: 'Space Mono', monospace; font-size: .48rem; color: var(--tm);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Main layout: period labels + grid */
+    .tbl-body { display: flex; gap: var(--cg); }
+    .per-col {
+      display: grid;
+      grid-template-rows: repeat(7, var(--cs)) 18px repeat(2, calc(var(--cs) * .88));
+      gap: var(--cg);
+      width: 22px; flex-shrink: 0;
+    }
+    .per-lbl {
+      font-family: 'Space Mono', monospace; font-size: .48rem; color: var(--tm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .per-lbl.gap { /* row 8 spacer */ }
+
+    /* ── PERIODIC TABLE GRID ── */
+    #pt-grid {
+      display: grid;
+      grid-template-columns: repeat(18, var(--cs));
+      grid-template-rows: repeat(7, var(--cs)) 18px repeat(2, calc(var(--cs) * .88));
+      gap: var(--cg);
+    }
+
+    /* ── ELEMENT CELL ── */
+    .el {
+      grid-column: var(--c);
+      grid-row: var(--r);
+      position: relative;
+      background: var(--eb);
+      border: 1px solid color-mix(in srgb, var(--ec) 35%, transparent);
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 3px 2px 2px;
+      overflow: hidden;
+      transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s, border-color .15s, z-index 0s .15s;
+      animation: elIn .45s var(--ed) both;
+      user-select: none;
+    }
+    .el::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--ec) 18%, transparent), transparent 70%);
+      opacity: 0; transition: opacity .15s;
+      border-radius: 4px;
+    }
+    .el:hover { transform: scale(1.2); z-index: 20; border-color: var(--ec); box-shadow: 0 0 14px var(--eg), 0 6px 24px rgba(0,0,0,.6); transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s, border-color .15s; }
+    .el:hover::before { opacity: 1; }
+    .el:active { transform: scale(1.1); }
+
+    .el-z   { font-size: .5rem; font-family: 'Space Mono', monospace; color: var(--ec); line-height: 1; align-self: flex-start; padding-left: 3px; }
+    .el-sym { font-size: 1.38rem; font-weight: 800; color: var(--tx); line-height: 1; margin: 1px 0; }
+    .el-mass{ font-size: .41rem; font-family: 'Space Mono', monospace; color: var(--tm); line-height: 1; }
+
+    /* Placeholder cells (57-71, 89-103) */
+    .el-ph {
+      grid-column: var(--c);
+      grid-row: var(--r);
+      background: transparent;
+      border: 1px dashed color-mix(in srgb, var(--ec) 50%, transparent);
+      border-radius: 5px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1px;
+      animation: elIn .45s var(--ed) both;
+    }
+    .el-ph .ph-range { font-family: 'Space Mono', monospace; font-size: .48rem; color: var(--ec); line-height: 1; }
+    .el-ph .ph-arrow { font-size: .55rem; color: color-mix(in srgb, var(--ec) 60%, transparent); }
+
+    /* Lanthanide/actinide rows (row 9-10) — slightly smaller text */
+    .el[data-fa="1"] .el-sym { font-size: 1.18rem; }
+    .el[data-fa="1"] .el-z   { font-size: .44rem; }
+    .el[data-fa="1"] .el-mass{ font-size: .38rem; }
+
+    /* ── CATEGORY LEGEND ── */
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 24px; justify-content: center; max-width: 900px; animation: fadeUp .5s .4s ease both; }
+    .leg-item { display: flex; align-items: center; gap: 5px; font-family: 'Space Mono', monospace; font-size: .55rem; color: var(--tm); cursor: default; }
+    .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+    /* ── MODAL ── */
+    .mbg {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .mbg.open { opacity: 1; pointer-events: auto; }
+    .mbox {
+      background: var(--sf);
+      border: 1px solid var(--bd);
+      border-radius: 18px;
+      width: 100%; max-width: 440px;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(22px) scale(.97);
+      transition: transform .22s cubic-bezier(.34,1.56,.64,1);
+    }
+    .mbg.open .mbox { transform: translateY(0) scale(1); }
+
+    /* Modal top banner */
+    .m-banner {
+      padding: 28px 24px 22px;
+      background: radial-gradient(ellipse at 70% 50%, var(--m-glow, rgba(42,157,143,.12)), transparent 65%);
+      border-bottom: 1px solid var(--bd);
+      display: flex; align-items: flex-start; gap: 18px;
+      position: relative; overflow: hidden;
+    }
+    /* Orbital ring decoration */
+    .m-ring {
+      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+      width: 78px; height: 78px;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--m-color, white) 20%, transparent);
+      animation: spin 9s linear infinite;
+      pointer-events: none;
+    }
+    .m-ring::after {
+      content: ''; position: absolute;
+      width: 7px; height: 7px;
+      background: var(--m-color, white);
+      border-radius: 50%;
+      top: -3.5px; left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 6px var(--m-color, white);
+    }
+    .m-ring2 {
+      position: absolute; right: 32px; top: 50%; transform: translateY(-50%) rotate(60deg);
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--m-color, white) 15%, transparent);
+      animation: spinr 6s linear infinite;
+      pointer-events: none;
+    }
+    .m-ring2::after {
+      content: ''; position: absolute;
+      width: 5px; height: 5px;
+      background: color-mix(in srgb, var(--m-color, white) 60%, transparent);
+      border-radius: 50%;
+      bottom: -2.5px; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .m-sym-wrap { flex-shrink: 0; }
+    .m-z    { font-family: 'Space Mono', monospace; font-size: .68rem; color: var(--m-color, var(--tm)); margin-bottom: 2px; }
+    .m-sym  { font-size: 3.2rem; font-weight: 800; color: var(--tx); line-height: 1; }
+    .m-name { font-size: 1rem; font-weight: 700; color: var(--tx); line-height: 1.2; margin-bottom: 6px; }
+    .m-cat  {
+      display: inline-block;
+      font-family: 'Space Mono', monospace; font-size: .52rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      border: 1px solid var(--m-color, var(--bd));
+      color: var(--m-color, var(--tm));
+      background: color-mix(in srgb, var(--m-color, transparent) 10%, transparent);
+      border-radius: 100px; padding: 2px 8px;
+    }
+
+    /* Modal body */
+    .m-body { padding: 20px 24px 22px; }
+    .m-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 16px;
+    }
+    .m-field { display: flex; flex-direction: column; gap: 3px; }
+    .m-label { font-family: 'Space Mono', monospace; font-size: .5rem; text-transform: uppercase; letter-spacing: 1px; color: var(--tm); }
+    .m-val   { font-size: .82rem; font-weight: 600; color: var(--tx); }
+    .m-val.mono { font-family: 'Space Mono', monospace; font-size: .72rem; }
+
+    .m-ox { display: flex; gap: 4px; flex-wrap: wrap; }
+    .m-ox span {
+      font-family: 'Space Mono', monospace; font-size: .62rem;
+      border: 1px solid var(--m-color, var(--bd));
+      color: var(--m-color, var(--tm));
+      border-radius: 4px; padding: 1px 5px;
+      background: color-mix(in srgb, var(--m-color, transparent) 8%, transparent);
+    }
+
+    .m-desc { font-size: .78rem; color: var(--tm); line-height: 1.6; border-top: 1px solid var(--bd); padding-top: 14px; }
+
+    .m-close {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--sf2); border: 1px solid var(--bd);
+      color: var(--tm); border-radius: 8px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: .8rem; z-index: 10;
+      transition: color .15s, border-color .15s;
+    }
+    .m-close:hover { color: var(--tx); border-color: var(--tm); }
+
+    .phase-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: .78rem; font-weight: 600;
+    }
+    .phase-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes elIn   { from { opacity: 0; transform: scale(.75); } to { opacity: 1; transform: scale(1); } }
+    @keyframes spin   { to { transform: translateY(-50%) rotate(360deg); } }
+    @keyframes spinr  { to { transform: translateY(-50%) rotate(calc(60deg + 360deg)); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      :root { --cs: 46px; --cg: 2px; }
+      .el-sym { font-size: 1.1rem; }
+      .el-z, .el-mass { font-size: .42rem; }
+    }
+    @media (max-width: 600px) {
+      :root { --cs: 36px; --cg: 2px; }
+      .el-sym { font-size: .92rem; }
+      .el-z   { font-size: .38rem; }
+      .el-mass { display: none; }
+      .grp-lbl, .per-lbl { font-size: .4rem; }
+      .hdr p { display: none; }
+    }
+    @media (max-width: 420px) {
+      :root { --cs: 30px; --cg: 1px; }
+      .el-sym { font-size: .78rem; }
+      .el-z   { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="page">
+
+  <header class="hdr">
+    <div><a class="back-btn" href="index.html">← Volver a QuimPath</a></div>
+    <div style="font-size:2rem;margin-bottom:6px">⚛️</div>
+    <h1>Tabla Periódica</h1>
+    <p>Hacé click en cualquier elemento para ver su información completa</p>
+  </header>
+
+  <div class="tbl-outer">
+    <div class="tbl-inner">
+      <!-- Group labels -->
+      <div class="grp-row" id="grp-row"></div>
+      <!-- Period labels + grid -->
+      <div class="tbl-body">
+        <div class="per-col" id="per-col"></div>
+        <div id="pt-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" id="legend"></div>
+
+</div>
+
+<!-- Modal -->
+<div class="mbg" id="mbg" onclick="closeMod(event)">
+  <div class="mbox" id="mbox">
+    <button class="m-close" onclick="closeMod()">✕</button>
+    <div class="m-banner" id="m-banner">
+      <div class="m-ring" id="m-ring"></div>
+      <div class="m-ring2" id="m-ring2"></div>
+      <div class="m-sym-wrap">
+        <div class="m-z" id="m-z"></div>
+        <div class="m-sym" id="m-sym"></div>
+      </div>
+      <div>
+        <div class="m-name" id="m-name"></div>
+        <div class="m-cat" id="m-cat"></div>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="m-grid" id="m-grid"></div>
+      <div class="m-desc" id="m-desc"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Category definitions ──
+const CAT = {
+  'hydrogen':         { color:'#e6edf3', glow:'rgba(230,237,243,.28)', bg:'rgba(230,237,243,.055)', name:'Hidrógeno' },
+  'alkali-metal':     { color:'#ff7b7b', glow:'rgba(255,123,123,.28)', bg:'rgba(255,123,123,.06)',  name:'Metal alcalino' },
+  'alkaline-earth':   { color:'#ffb347', glow:'rgba(255,179,71,.28)',  bg:'rgba(255,179,71,.06)',   name:'Metal alcalinotérreo' },
+  'transition-metal': { color:'#4ea8de', glow:'rgba(78,168,222,.28)',  bg:'rgba(78,168,222,.06)',   name:'Metal de transición' },
+  'post-transition':  { color:'#63e6be', glow:'rgba(99,230,190,.28)',  bg:'rgba(99,230,190,.06)',   name:'Metal post-transición' },
+  'metalloid':        { color:'#bf5af2', glow:'rgba(191,90,242,.28)',  bg:'rgba(191,90,242,.06)',   name:'Metaloide' },
+  'nonmetal':         { color:'#6ee87a', glow:'rgba(110,232,122,.28)', bg:'rgba(110,232,122,.06)',  name:'No metal' },
+  'halogen':          { color:'#26d4f0', glow:'rgba(38,212,240,.28)',  bg:'rgba(38,212,240,.06)',   name:'Halógeno' },
+  'noble-gas':        { color:'#ffd60a', glow:'rgba(255,214,10,.28)',  bg:'rgba(255,214,10,.06)',   name:'Gas noble' },
+  'lanthanide':       { color:'#f984c7', glow:'rgba(249,132,199,.28)', bg:'rgba(249,132,199,.055)', name:'Lantánido' },
+  'actinide':         { color:'#b0e050', glow:'rgba(176,224,80,.28)',  bg:'rgba(176,224,80,.055)',  name:'Actínido' },
+};
+
+// ── Phase icons ──
+const PHASE_COLOR = { 'gas':'#4ea8de', 'líquido':'#f984c7', 'sólido':'#63e6be', 'sintético':'#ffb347' };
+const PHASE_ICON  = { 'gas':'☁', 'líquido':'💧', 'sólido':'◆', 'sintético':'⚗' };
+
+// ── Element data ──
+// { z, sym, name, mass, cat, row, col, cfg, ox, phase, year, by, desc }
+const E = [
+  {z:1,  sym:'H',  name:'Hidrógeno',    mass:'1.008',   cat:'hydrogen',        row:1, col:1,  cfg:'1s¹',                     ox:['+1','-1'],           phase:'gas',     year:1766, by:'H. Cavendish',      desc:'El elemento más abundante del universo; forma el 75% de la materia bariónica. Su fusión en las estrellas produce toda la energía que vemos en el cosmos.'},
+  {z:2,  sym:'He', name:'Helio',        mass:'4.003',   cat:'noble-gas',       row:1, col:18, cfg:'1s²',                     ox:[],                    phase:'gas',     year:1868, by:'Janssen / Lockyer',  desc:'Segundo elemento más abundante. Descubierto primero en el Sol (helio = ἥλιος). Es el único elemento que permanece líquido cerca del cero absoluto sin presión.'},
+  {z:3,  sym:'Li', name:'Litio',        mass:'6.941',   cat:'alkali-metal',    row:2, col:1,  cfg:'[He] 2s¹',                ox:['+1'],                phase:'sólido',  year:1817, by:'J.A. Arfwedson',    desc:'Metal más ligero; tan blando que se corta con un cuchillo. Clave en baterías de ion-litio que alimentan autos eléctricos y smartphones.'},
+  {z:4,  sym:'Be', name:'Berilio',      mass:'9.012',   cat:'alkaline-earth',  row:2, col:2,  cfg:'[He] 2s²',                ox:['+2'],                phase:'sólido',  year:1798, by:'L.N. Vauquelin',    desc:'Metal ligero y rígido, transparente a los rayos X. Usado en ventanas de detectores de rayos X, instrumentos de precisión y aleaciones aeroespaciales.'},
+  {z:5,  sym:'B',  name:'Boro',         mass:'10.81',   cat:'metalloid',       row:2, col:13, cfg:'[He] 2s² 2p¹',            ox:['+3'],                phase:'sólido',  year:1808, by:'Gay-Lussac / Davy',  desc:'Semimetal con formas alótropas de dureza excepcional. Esencial en vidrio borosilicato (Pyrex), fibra de vidrio y ácido bórico antiséptico.'},
+  {z:6,  sym:'C',  name:'Carbono',      mass:'12.011',  cat:'nonmetal',        row:2, col:14, cfg:'[He] 2s² 2p²',            ox:['+4','+2','-4'],      phase:'sólido',  year:null, by:'Prehistórico',       desc:'Base de toda la química orgánica. Existe como diamante (el mineral natural más duro), grafito (lubricante), grafeno y fulerenos. Cada ser vivo está construido con carbono.'},
+  {z:7,  sym:'N',  name:'Nitrógeno',    mass:'14.007',  cat:'nonmetal',        row:2, col:15, cfg:'[He] 2s² 2p³',            ox:['+5','+3','-3'],      phase:'gas',     year:1772, by:'D. Rutherford',      desc:'Forma el 78% de la atmósfera. Esencial en proteínas, ADN y ARN. El nitrógeno líquido a −196°C se usa en criopreservación y gastronomía molecular.'},
+  {z:8,  sym:'O',  name:'Oxígeno',      mass:'15.999',  cat:'nonmetal',        row:2, col:16, cfg:'[He] 2s² 2p⁴',            ox:['-2'],                phase:'gas',     year:1774, by:'Scheele / Priestley', desc:'Tercer elemento más abundante del universo. Esencial para la respiración aeróbica. El ozono (O₃) en la estratosfera protege la Tierra de la radiación UV.'},
+  {z:9,  sym:'F',  name:'Flúor',        mass:'18.998',  cat:'halogen',         row:2, col:17, cfg:'[He] 2s² 2p⁵',            ox:['-1'],                phase:'gas',     year:1886, by:'H. Moissan',         desc:'Elemento más electronegativo de todos; tan reactivo que corroe casi cualquier material. El fluoruro en pastas dentales previene caries; el PTFE (Teflón) es flúor unido al carbono.'},
+  {z:10, sym:'Ne', name:'Neón',         mass:'20.180',  cat:'noble-gas',       row:2, col:18, cfg:'[He] 2s² 2p⁶',            ox:[],                    phase:'gas',     year:1898, by:'Ramsay / Travers',   desc:'Gas noble inerte que emite luz rojo-naranja brillante al ionizarse. Los icónicos letreros de neón datan de 1910; hoy su color salmón es inconfundible.'},
+  {z:11, sym:'Na', name:'Sodio',        mass:'22.990',  cat:'alkali-metal',    row:3, col:1,  cfg:'[Ne] 3s¹',                ox:['+1'],                phase:'sólido',  year:1807, by:'H. Davy',            desc:'Metal suave que reacciona violentamente con agua. El cloruro de sodio (sal) es fundamental para la vida y fue durante siglos moneda de cambio (salario).'},
+  {z:12, sym:'Mg', name:'Magnesio',     mass:'24.305',  cat:'alkaline-earth',  row:3, col:2,  cfg:'[Ne] 3s²',                ox:['+2'],                phase:'sólido',  year:1755, by:'J. Black',           desc:'Metal ligero central en la clorofila, el pigmento verde de las plantas. Esencial para la fotosíntesis y segundo catión más abundante en el interior celular.'},
+  {z:13, sym:'Al', name:'Aluminio',     mass:'26.982',  cat:'post-transition', row:3, col:13, cfg:'[Ne] 3s² 3p¹',            ox:['+3'],                phase:'sólido',  year:1825, by:'H.C. Ørsted',        desc:'Metal más abundante en la corteza terrestre. Ligero, resistente a la corrosión y 100% reciclable. Su producción consume enormes cantidades de electricidad.'},
+  {z:14, sym:'Si', name:'Silicio',      mass:'28.085',  cat:'metalloid',       row:3, col:14, cfg:'[Ne] 3s² 3p²',            ox:['+4','-4'],           phase:'sólido',  year:1824, by:'J.J. Berzelius',     desc:'Semiconductor que dio nombre a Silicon Valley. Segundo elemento más abundante en la corteza terrestre. Cada chip de computadora está hecho de silicio ultrapuro.'},
+  {z:15, sym:'P',  name:'Fósforo',      mass:'30.974',  cat:'nonmetal',        row:3, col:15, cfg:'[Ne] 3s² 3p³',            ox:['+5','+3','-3'],      phase:'sólido',  year:1669, by:'H. Brand',           desc:'Primer elemento descubierto en tiempos modernos. Esencial para el ADN, ARN y ATP. Su escasez futura amenaza la agricultura mundial.'},
+  {z:16, sym:'S',  name:'Azufre',       mass:'32.06',   cat:'nonmetal',        row:3, col:16, cfg:'[Ne] 3s² 3p⁴',            ox:['+6','+4','-2'],      phase:'sólido',  year:null, by:'Prehistórico',       desc:'Conocido desde la antigüedad como "azufre" bíblico. Clave en la producción de ácido sulfúrico (el químico más producido del mundo) y en los aminoácidos cisteína y metionina.'},
+  {z:17, sym:'Cl', name:'Cloro',        mass:'35.45',   cat:'halogen',         row:3, col:17, cfg:'[Ne] 3s² 3p⁵',            ox:['+7','+5','-1'],      phase:'gas',     year:1774, by:'C.W. Scheele',       desc:'Gas amarillo-verdoso; usado como arma química en la Primera Guerra Mundial. Hoy desinfecta el agua potable de millones de personas y es base de la industria del PVC.'},
+  {z:18, sym:'Ar', name:'Argón',        mass:'39.948',  cat:'noble-gas',       row:3, col:18, cfg:'[Ne] 3s² 3p⁶',            ox:[],                    phase:'gas',     year:1894, by:'Rayleigh / Ramsay',  desc:'Gas noble más abundante en la atmósfera (0,93%). Provee atmósfera inerte en soldadura, lámparas de incandescencia y en el envejecimiento de vinos finos.'},
+  {z:19, sym:'K',  name:'Potasio',      mass:'39.098',  cat:'alkali-metal',    row:4, col:1,  cfg:'[Ar] 4s¹',                ox:['+1'],                phase:'sólido',  year:1807, by:'H. Davy',            desc:'Esencial para la función nerviosa y muscular; mantiene el potencial de membrana celular. Abundante en bananas, papas y legumbres.'},
+  {z:20, sym:'Ca', name:'Calcio',       mass:'40.078',  cat:'alkaline-earth',  row:4, col:2,  cfg:'[Ar] 4s²',                ox:['+2'],                phase:'sólido',  year:1808, by:'H. Davy',            desc:'Mineral más abundante del cuerpo humano (99% en huesos y dientes). El carbonato de calcio forma rocas calizas, mármol y conchas marinas.'},
+  {z:21, sym:'Sc', name:'Escandio',     mass:'44.956',  cat:'transition-metal',row:4, col:3,  cfg:'[Ar] 3d¹ 4s²',            ox:['+3'],                phase:'sólido',  year:1879, by:'L.F. Nilson',        desc:'Primer metal de transición. Aleado con aluminio forma materiales ultraligeros para palos de béisbol, bicicletas y componentes aeroespaciales.'},
+  {z:22, sym:'Ti', name:'Titanio',      mass:'47.867',  cat:'transition-metal',row:4, col:4,  cfg:'[Ar] 3d² 4s²',            ox:['+4','+3'],           phase:'sólido',  year:1791, by:'W. Gregor',          desc:'Metal ligero y biocompatible. Mismo módulo elástico que el hueso humano; esencial en implantes dentales, prótesis y estructuras aeroespaciales de alta temperatura.'},
+  {z:23, sym:'V',  name:'Vanadio',      mass:'50.942',  cat:'transition-metal',row:4, col:5,  cfg:'[Ar] 3d³ 4s²',            ox:['+5','+4','+3','+2'], phase:'sólido',  year:1801, by:'A.M. del Río',       desc:'Metal duro descubierto en México. Las aleaciones vanadio-acero se usan en herramientas de corte, motores de autos y reactores nucleares.'},
+  {z:24, sym:'Cr', name:'Cromo',        mass:'51.996',  cat:'transition-metal',row:4, col:6,  cfg:'[Ar] 3d⁵ 4s¹',            ox:['+6','+3','+2'],      phase:'sólido',  year:1797, by:'L.N. Vauquelin',     desc:'Metal brillante con nombre derivado del griego χρῶμα (color) por la variedad de colores de sus compuestos. Da color verde a las esmeraldas y rojo al rubí.'},
+  {z:25, sym:'Mn', name:'Manganeso',    mass:'54.938',  cat:'transition-metal',row:4, col:7,  cfg:'[Ar] 3d⁵ 4s²',            ox:['+7','+4','+2'],      phase:'sólido',  year:1774, by:'J.G. Gahn',          desc:'Metal esencial en la producción de acero (95% de su uso). Cofactor de enzimas antioxidantes superóxido dismutasa. El permanganato es un potente oxidante.'},
+  {z:26, sym:'Fe', name:'Hierro',       mass:'55.845',  cat:'transition-metal',row:4, col:8,  cfg:'[Ar] 3d⁶ 4s²',            ox:['+3','+2'],           phase:'sólido',  year:null, by:'Prehistórico',       desc:'Metal más usado por la humanidad. Forma el núcleo sólido de la Tierra. La hemoglobina lo usa para transportar oxígeno. La Edad del Hierro definió civilizaciones enteras.'},
+  {z:27, sym:'Co', name:'Cobalto',      mass:'58.933',  cat:'transition-metal',row:4, col:9,  cfg:'[Ar] 3d⁷ 4s²',            ox:['+3','+2'],           phase:'sólido',  year:1735, by:'G. Brandt',          desc:'Metal magnético que da el azul cobalto a cerámicas desde el Antiguo Egipto. Es el único componente metálico de la vitamina B₁₂, esencial para la función neurológica.'},
+  {z:28, sym:'Ni', name:'Níquel',       mass:'58.693',  cat:'transition-metal',row:4, col:10, cfg:'[Ar] 3d⁸ 4s²',            ox:['+2'],                phase:'sólido',  year:1751, by:'A.F. Cronstedt',     desc:'Metal resistente a la corrosión. Usado en monedas, catalizadores de hidrogenación, baterías recargables y recubrimientos protectores. El acero inoxidable contiene 8-12% de níquel.'},
+  {z:29, sym:'Cu', name:'Cobre',        mass:'63.546',  cat:'transition-metal',row:4, col:11, cfg:'[Ar] 3d¹⁰ 4s¹',           ox:['+2','+1'],           phase:'sólido',  year:null, by:'Prehistórico',       desc:'Uno de los primeros metales trabajados por el hombre. El mejor conductor eléctrico después de la plata. Antibacteriano natural; las superficies de cobre reducen infecciones hospitalarias.'},
+  {z:30, sym:'Zn', name:'Zinc',         mass:'65.38',   cat:'transition-metal',row:4, col:12, cfg:'[Ar] 3d¹⁰ 4s²',           ox:['+2'],                phase:'sólido',  year:1746, by:'A.S. Marggraf',      desc:'Esencial para el sistema inmunológico y la cicatrización de heridas. La galvanización con zinc protege el acero de la oxidación. El latón es una aleación cobre-zinc.'},
+  {z:31, sym:'Ga', name:'Galio',        mass:'69.723',  cat:'post-transition', row:4, col:13, cfg:'[Ar] 3d¹⁰ 4s² 4p¹',       ox:['+3'],                phase:'sólido',  year:1875, by:'P.É.L. de Boisbaudran',desc:'Metal que se funde en la palma de la mano (29.8°C). El nitruro de galio (GaN) es el semiconductor de los LEDs de alta eficiencia y pantallas 4K modernas.'},
+  {z:32, sym:'Ge', name:'Germanio',     mass:'72.630',  cat:'metalloid',       row:4, col:14, cfg:'[Ar] 3d¹⁰ 4s² 4p²',       ox:['+4','+2'],           phase:'sólido',  year:1886, by:'C.A. Winkler',       desc:'Semimetal predicho por Mendeléiev como "eka-silicio" antes de su descubrimiento. Fue el material del primer transistor práctico en 1947 y es clave en fibras ópticas.'},
+  {z:33, sym:'As', name:'Arsénico',     mass:'74.922',  cat:'metalloid',       row:4, col:15, cfg:'[Ar] 3d¹⁰ 4s² 4p³',       ox:['+5','+3','-3'],      phase:'sólido',  year:null, by:'Prehistórico',       desc:'Veneno histórico conocido como "polvo de herencia". Paradójicamente, el arsfenamina (arsénico) fue el primer antibiótico moderno de Ehrlich (1909).'},
+  {z:34, sym:'Se', name:'Selenio',      mass:'78.971',  cat:'nonmetal',        row:4, col:16, cfg:'[Ar] 3d¹⁰ 4s² 4p⁴',       ox:['+6','+4','-2'],      phase:'sólido',  year:1817, by:'J.J. Berzelius',     desc:'No metal esencial en trazas para humanos; cofactor de glutatión peroxidasa. Las celdas solares de teluro de cadmio-selenio transforman luz en electricidad eficientemente.'},
+  {z:35, sym:'Br', name:'Bromo',        mass:'79.904',  cat:'halogen',         row:4, col:17, cfg:'[Ar] 3d¹⁰ 4s² 4p⁵',       ox:['+5','+1','-1'],      phase:'líquido', year:1826, by:'A.J. Balard',        desc:'Único no metal líquido a temperatura ambiente. Los retardantes de llama bromados protegen plásticos electrónicos. Los bromuros históricamente se usaron como sedantes.'},
+  {z:36, sym:'Kr', name:'Kriptón',      mass:'83.798',  cat:'noble-gas',       row:4, col:18, cfg:'[Ar] 3d¹⁰ 4s² 4p⁶',       ox:['+2'],                phase:'gas',     year:1898, by:'Ramsay / Travers',   desc:'Gas noble que formó compuestos en 1962 (KrF₂), desafiando la idea de que los gases nobles son totalmente inertes. Definió el metro estándar de 1960 a 1983.'},
+  {z:37, sym:'Rb', name:'Rubidio',      mass:'85.468',  cat:'alkali-metal',    row:5, col:1,  cfg:'[Kr] 5s¹',                ox:['+1'],                phase:'sólido',  year:1861, by:'Bunsen / Kirchhoff',  desc:'Metal alcalino descubierto por espectroscopía (sus líneas rojas dieron su nombre). Las trampas de rubidio enfriadas con láser crearon los primeros condensados de Bose-Einstein.'},
+  {z:38, sym:'Sr', name:'Estroncio',    mass:'87.62',   cat:'alkaline-earth',  row:5, col:2,  cfg:'[Kr] 5s²',                ox:['+2'],                phase:'sólido',  year:1790, by:'A. Crawford',        desc:'Da el color rojo carmesí brillante a los fuegos artificiales y bengalas. El Sr-90 radiactivo de pruebas nucleares es un preocupante contaminante que imita al calcio en huesos.'},
+  {z:39, sym:'Y',  name:'Itrio',        mass:'88.906',  cat:'transition-metal',row:5, col:3,  cfg:'[Kr] 4d¹ 5s²',            ox:['+3'],                phase:'sólido',  year:1794, by:'J. Gadolin',         desc:'Metal que da nombre a Ytterby, Suecia, donde se descubrieron 4 elementos. Usado en fósforos rojos de televisión, superconductores YBaCuO y láseres de granate de itrio-aluminio.'},
+  {z:40, sym:'Zr', name:'Zirconio',     mass:'91.224',  cat:'transition-metal',row:5, col:4,  cfg:'[Kr] 4d² 5s²',            ox:['+4'],                phase:'sólido',  year:1789, by:'M.H. Klaproth',      desc:'Metal resistente a la corrosión con bajo coeficiente de absorción neutrónica. Esencial como revestimiento de barras de combustible nuclear. La zirconia (ZrO₂) imita al diamante.'},
+  {z:41, sym:'Nb', name:'Niobio',       mass:'92.906',  cat:'transition-metal',row:5, col:5,  cfg:'[Kr] 4d⁴ 5s¹',            ox:['+5'],                phase:'sólido',  year:1801, by:'C. Hatchett',        desc:'Metal superconductor a muy bajas temperaturas. Los imanes superconductores de niobio-titanio generan los campos magnéticos de los escáneres MRI hospitalarios.'},
+  {z:42, sym:'Mo', name:'Molibdeno',    mass:'95.95',   cat:'transition-metal',row:5, col:6,  cfg:'[Kr] 4d⁵ 5s¹',            ox:['+6'],                phase:'sólido',  year:1781, by:'P.J. Hjelm',         desc:'Metal refractario con alto punto de fusión (2623°C). La nitrogenasa bacteriana usa molibdeno para fijar el nitrógeno atmosférico, base de toda la vida en la Tierra.'},
+  {z:43, sym:'Tc', name:'Tecnecio',     mass:'[98]',    cat:'transition-metal',row:5, col:7,  cfg:'[Kr] 4d⁵ 5s²',            ox:['+7'],                phase:'sólido',  year:1937, by:'Perrier / Segrè',    desc:'Primer elemento producido artificialmente, sintetizado en el ciclotrón de Berkeley. El Tc-99m es el radioisótopo más usado en medicina nuclear (50 millones de diagnósticos/año).'},
+  {z:44, sym:'Ru', name:'Rutenio',      mass:'101.07',  cat:'transition-metal',row:5, col:8,  cfg:'[Kr] 4d⁷ 5s¹',            ox:['+8','+4','+3'],      phase:'sólido',  year:1844, by:'K.K. Klaus',         desc:'Metal del grupo platino nombrado por Ruthenia (Rusia). Catalizador en síntesis de amoníaco, celdas de combustible de óxido sólido y producción de ácido acético.'},
+  {z:45, sym:'Rh', name:'Rodio',        mass:'102.906', cat:'transition-metal',row:5, col:9,  cfg:'[Kr] 4d⁸ 5s¹',            ox:['+3'],                phase:'sólido',  year:1803, by:'W.H. Wollaston',     desc:'Metal precioso extremadamente raro. Componente del catalizador de tres vías en convertidores catalíticos que reduce NOₓ en los gases de escape de automóviles.'},
+  {z:46, sym:'Pd', name:'Paladio',      mass:'106.42',  cat:'transition-metal',row:5, col:10, cfg:'[Kr] 4d¹⁰',               ox:['+4','+2'],           phase:'sólido',  year:1803, by:'W.H. Wollaston',     desc:'Metal precioso que puede absorber 900 veces su volumen en hidrógeno. Catalizador esencial en convertidores catalíticos y en reacciones de acoplamiento de Suzuki (Premio Nobel 2010).'},
+  {z:47, sym:'Ag', name:'Plata',        mass:'107.868', cat:'transition-metal',row:5, col:11, cfg:'[Kr] 4d¹⁰ 5s¹',           ox:['+1'],                phase:'sólido',  year:null, by:'Prehistórico',       desc:'Mejor conductor eléctrico y térmico de todos los elementos. Propiedades antimicrobianas conocidas desde la antigüedad. La fotografía analógica se basó en la reducción de haluros de plata.'},
+  {z:48, sym:'Cd', name:'Cadmio',       mass:'112.414', cat:'transition-metal',row:5, col:12, cfg:'[Kr] 4d¹⁰ 5s²',           ox:['+2'],                phase:'sólido',  year:1817, by:'Stromeyer / Hermann', desc:'Metal tóxico preocupante por bioacumulación. Usado en baterías Ni-Cd recargables, el pigmento amarillo cadmio fue favorito de pintores impresionistas.'},
+  {z:49, sym:'In', name:'Indio',        mass:'114.818', cat:'post-transition', row:5, col:13, cfg:'[Kr] 4d¹⁰ 5s² 5p¹',       ox:['+3'],                phase:'sólido',  year:1863, by:'Reich / Richter',    desc:'Metal blando que "grita" al doblarse. El óxido de indio-estaño (ITO) es el recubrimiento conductor transparente de cada pantalla táctil de smartphone.'},
+  {z:50, sym:'Sn', name:'Estaño',       mass:'118.710', cat:'post-transition', row:5, col:14, cfg:'[Kr] 4d¹⁰ 5s² 5p²',       ox:['+4','+2'],           phase:'sólido',  year:null, by:'Prehistórico',       desc:'Metal conocido desde la Edad del Bronce (aleación Cu-Sn). Protege al cobre en las latas de conserva. A −13°C sufre la "peste del estaño", desintegrándose en polvo gris.'},
+  {z:51, sym:'Sb', name:'Antimonio',    mass:'121.760', cat:'metalloid',       row:5, col:15, cfg:'[Kr] 4d¹⁰ 5s² 5p³',       ox:['+5','+3','-3'],      phase:'sólido',  year:null, by:'Prehistórico',       desc:'Semimetal conocido desde el antiguo Egipto como kohl cosmético. Sus aleaciones con plomo endurecen las placas de baterías de autos y los tipos de imprenta.'},
+  {z:52, sym:'Te', name:'Teluro',       mass:'127.60',  cat:'metalloid',       row:5, col:16, cfg:'[Kr] 4d¹⁰ 5s² 5p⁴',       ox:['+6','+4','-2'],      phase:'sólido',  year:1782, by:'F.J. von Reichenstein',desc:'Semimetal raro; la corteza terrestre contiene más oro que teluro. Las celdas solares de teluro de cadmio son las más baratas por vatio, rivalizando con el silicio.'},
+  {z:53, sym:'I',  name:'Yodo',         mass:'126.904', cat:'halogen',         row:5, col:17, cfg:'[Kr] 4d¹⁰ 5s² 5p⁵',       ox:['+7','+5','+1','-1'], phase:'sólido',  year:1811, by:'B. Courtois',        desc:'Halógeno sólido violáceo que sublima a gas morado. Esencial para la síntesis de hormonas tiroideas. La deficiencia de yodo es la causa más común de discapacidad intelectual prevenible.'},
+  {z:54, sym:'Xe', name:'Xenón',        mass:'131.293', cat:'noble-gas',       row:5, col:18, cfg:'[Kr] 4d¹⁰ 5s² 5p⁶',       ox:['+8','+6','+4','+2'], phase:'gas',     year:1898, by:'Ramsay / Travers',   desc:'Gas noble anestésico y propulsor iónico de naves espaciales. Los motores de iones del Dawn y otros sondas lo ioniza para generar empuje con eficiencia extraordinaria.'},
+  {z:55, sym:'Cs', name:'Cesio',        mass:'132.905', cat:'alkali-metal',    row:6, col:1,  cfg:'[Xe] 6s¹',                ox:['+1'],                phase:'sólido',  year:1860, by:'Bunsen / Kirchhoff',  desc:'Metal alcalino más reactivo descubierto naturalmente. El cesio-133 define el segundo en el SI: 9.192.631.770 oscilaciones de su radiación son exactamente 1 segundo.'},
+  {z:56, sym:'Ba', name:'Bario',        mass:'137.327', cat:'alkaline-earth',  row:6, col:2,  cfg:'[Xe] 6s²',                ox:['+2'],                phase:'sólido',  year:1808, by:'H. Davy',            desc:'El sulfato de bario, insoluble y radiopaco, se traga como "papilla de bario" para radiografiar el tracto digestivo. El nitrato de bario da el color verde a los fuegos artificiales.'},
+  // Lanthanides — row 9
+  {z:57, sym:'La', name:'Lantano',      mass:'138.905', cat:'lanthanide',      row:9, col:3,  cfg:'[Xe] 5d¹ 6s²',            ox:['+3'],                phase:'sólido',  year:1839, by:'C.G. Mosander',      desc:'Primer lantánido; su nombre viene del griego λανθάνειν (esconderse). Catalizador en craqueo catalítico de petróleo y componente del metal mischmetal para encendedores.'},
+  {z:58, sym:'Ce', name:'Cerio',        mass:'140.116', cat:'lanthanide',      row:9, col:4,  cfg:'[Xe] 4f¹ 5d¹ 6s²',        ox:['+4','+3'],           phase:'sólido',  year:1803, by:'Berzelius / Hisinger', desc:'Lantánido más abundante. La cerita (CeO₂) pule el vidrio de lentes ópticas y pantallas. El oxígeno que almacena en su red cristalina lo hace catalizador excepcional en convertidores.'},
+  {z:59, sym:'Pr', name:'Praseodimio',  mass:'140.908', cat:'lanthanide',      row:9, col:5,  cfg:'[Xe] 4f³ 6s²',            ox:['+3'],                phase:'sólido',  year:1885, by:'C.A. von Welsbach',  desc:'Nombre del griego πράσιος (verde) por su color. Componente de los imanes de neodimio-hierro-boro más potentes. Las lentes de vidrio de praseodimio protegen a soldadores.'},
+  {z:60, sym:'Nd', name:'Neodimio',     mass:'144.242', cat:'lanthanide',      row:9, col:6,  cfg:'[Xe] 4f⁴ 6s²',            ox:['+3'],                phase:'sólido',  year:1885, by:'C.A. von Welsbach',  desc:'Sus imanes Nd₂Fe₁₄B son los más potentes del mundo: esenciales en motores eléctricos, turbinas eólicas, auriculares y discos duros. La transición energética depende del neodimio.'},
+  {z:61, sym:'Pm', name:'Prometio',     mass:'[145]',   cat:'lanthanide',      row:9, col:7,  cfg:'[Xe] 4f⁵ 6s²',            ox:['+3'],                phase:'sólido',  year:1945, by:'Marinsky / Glendenin', desc:'Único lantánido sin isótopos estables; apenas existe en la corteza terrestre. El Pm-147 fue fuente de energía en marcapasos cardíacos antes de los actuales de litio.'},
+  {z:62, sym:'Sm', name:'Samario',      mass:'150.36',  cat:'lanthanide',      row:9, col:8,  cfg:'[Xe] 4f⁶ 6s²',            ox:['+3','+2'],           phase:'sólido',  year:1879, by:'P.É.L. de Boisbaudran',desc:'Los imanes SmCo son los más estables a altas temperaturas, usados en servomotores de precisión, turbinas y equipos militares donde la temperatura supera los 250°C.'},
+  {z:63, sym:'Eu', name:'Europio',      mass:'151.964', cat:'lanthanide',      row:9, col:9,  cfg:'[Xe] 4f⁷ 6s²',            ox:['+3','+2'],           phase:'sólido',  year:1901, by:'E. Demarçay',        desc:'Produce fluorescencia roja brillante en pantallas, LEDs blancos y billetes de euro (el europio activa la fluorescencia antifalsificación en los euros bajo luz UV).'},
+  {z:64, sym:'Gd', name:'Gadolinio',    mass:'157.25',  cat:'lanthanide',      row:9, col:10, cfg:'[Xe] 4f⁷ 5d¹ 6s²',        ox:['+3'],                phase:'sólido',  year:1880, by:'J.C.G. de Marignac',  desc:'El quelato Gd-DTPA es el agente de contraste más usado en resonancias magnéticas (MRI), mejorando la visualización de tumores y lesiones en millones de diagnósticos anuales.'},
+  {z:65, sym:'Tb', name:'Terbio',       mass:'158.925', cat:'lanthanide',      row:9, col:11, cfg:'[Xe] 4f⁹ 6s²',            ox:['+3'],                phase:'sólido',  year:1843, by:'C.G. Mosander',      desc:'Produce luz verde de alta eficiencia en trifosfores de lámparas fluorescentes y pantallas de fósforos. Sus compuestos son magnetostrictivos: cambian de forma bajo campo magnético.'},
+  {z:66, sym:'Dy', name:'Disprosio',    mass:'162.500', cat:'lanthanide',      row:9, col:12, cfg:'[Xe] 4f¹⁰ 6s²',           ox:['+3'],                phase:'sólido',  year:1886, by:'P.É.L. de Boisbaudran',desc:'Refuerza los imanes de neodimio para mantener su potencia a altas temperaturas en motores de vehículos eléctricos y generadores eólicos. Su nombre griego significa "difícil de obtener".'},
+  {z:67, sym:'Ho', name:'Holmio',       mass:'164.930', cat:'lanthanide',      row:9, col:13, cfg:'[Xe] 4f¹¹ 6s²',           ox:['+3'],                phase:'sólido',  year:1878, by:'Cleve / Soret',      desc:'Posee el mayor momento magnético de cualquier elemento estable. Usado en núcleos de imanes superconductores y en láseres médicos Ho:YAG para cirugía de próstata y cálculos renales.'},
+  {z:68, sym:'Er', name:'Erbio',        mass:'167.259', cat:'lanthanide',      row:9, col:14, cfg:'[Xe] 4f¹² 6s²',           ox:['+3'],                phase:'sólido',  year:1843, by:'C.G. Mosander',      desc:'Amplificador de señal insustituible en fibras ópticas: los amplificadores EDFA (doped con erbio) permiten que Internet cruce océanos sin repetidores electrónicos.'},
+  {z:69, sym:'Tm', name:'Tulio',        mass:'168.934', cat:'lanthanide',      row:9, col:15, cfg:'[Xe] 4f¹³ 6s²',           ox:['+3'],                phase:'sólido',  year:1879, by:'P.T. Cleve',         desc:'Lantánido más raro de los estables. El Tm-170 emite rayos X portátiles usados en industria y medicina en zonas sin electricidad. Nombrado por Thule, la tierra mítica del norte.'},
+  {z:70, sym:'Yb', name:'Iterbio',      mass:'173.045', cat:'lanthanide',      row:9, col:16, cfg:'[Xe] 4f¹⁴ 6s²',           ox:['+3','+2'],           phase:'sólido',  year:1878, by:'J.C.G. de Marignac',  desc:'Los relojes atómicos de iterbio son los más precisos del mundo; no perderían ni un segundo en 10.000 millones de años, superando la edad del universo en precisión.'},
+  {z:71, sym:'Lu', name:'Lutecio',      mass:'174.967', cat:'lanthanide',      row:9, col:17, cfg:'[Xe] 4f¹⁴ 5d¹ 6s²',       ox:['+3'],                phase:'sólido',  year:1907, by:'G. Urbain',          desc:'Último y más denso de los lantánidos. Catalizador en refinado de petróleo y en terapia radionuclear Lu-177 DOTATATE, tratamiento aprobado para tumores neuroendocrinos.'},
+  // Period 6 d-block
+  {z:72, sym:'Hf', name:'Hafnio',       mass:'178.49',  cat:'transition-metal',row:6, col:4,  cfg:'[Xe] 4f¹⁴ 5d² 6s²',       ox:['+4'],                phase:'sólido',  year:1923, by:'Coster / von Hevesy', desc:'Nombre del latín Hafnia (Copenhague). Esencial en reactores nucleares por su altísima sección eficaz de captura de neutrones. Los chips modernos usan hafnio en dieléctricos de gate.'},
+  {z:73, sym:'Ta', name:'Tántalo',      mass:'180.948', cat:'transition-metal',row:6, col:5,  cfg:'[Xe] 4f¹⁴ 5d³ 6s²',       ox:['+5'],                phase:'sólido',  year:1802, by:'A.G. Ekeberg',       desc:'Biocompatible y resistente a casi todos los ácidos. Los condensadores de tántalo son omnipresentes en smartphones, laptops y equipos médicos por su altísima capacitancia por volumen.'},
+  {z:74, sym:'W',  name:'Wolframio',    mass:'183.84',  cat:'transition-metal',row:6, col:6,  cfg:'[Xe] 4f¹⁴ 5d⁴ 6s²',       ox:['+6'],                phase:'sólido',  year:1783, by:'J.J. y F. de Elhuyar', desc:'Mayor punto de fusión de todos los metales (3422°C). Los filamentos de las lámparas incandescentes son de wolframio. Los hermanos de Elhuyar lo aislaron por primera vez en España.'},
+  {z:75, sym:'Re', name:'Renio',        mass:'186.207', cat:'transition-metal',row:6, col:7,  cfg:'[Xe] 4f¹⁴ 5d⁵ 6s²',       ox:['+7'],                phase:'sólido',  year:1925, by:'Noddack / Berg / Tacke',desc:'Último elemento estable descubierto (1925). Catalizador de platino-renio en reformado catalítico para producir gasolina de alto octanaje. Las álabes de turbinas de jets lo usan por su resistencia al calor.'},
+  {z:76, sym:'Os', name:'Osmio',        mass:'190.23',  cat:'transition-metal',row:6, col:8,  cfg:'[Xe] 4f¹⁴ 5d⁶ 6s²',       ox:['+8','+4'],           phase:'sólido',  year:1803, by:'S. Tennant',         desc:'Metal más denso conocido (22.59 g/cm³). El tetróxido de osmio (OsO₄), extremadamente tóxico, tiñe lípidos en microscopía electrónica revelando membranas biológicas.'},
+  {z:77, sym:'Ir', name:'Iridio',       mass:'192.217', cat:'transition-metal',row:6, col:9,  cfg:'[Xe] 4f¹⁴ 5d⁷ 6s²',       ox:['+4','+3'],           phase:'sólido',  year:1803, by:'S. Tennant',         desc:'Metal más resistente a la corrosión. La anomalía de iridio en la capa KT (hace 66 Ma) evidencia el impacto del asteroide que extinguió a los dinosaurios.'},
+  {z:78, sym:'Pt', name:'Platino',      mass:'195.084', cat:'transition-metal',row:6, col:10, cfg:'[Xe] 4f¹⁴ 5d⁹ 6s¹',       ox:['+4','+2'],           phase:'sólido',  year:1748, by:'A. de Ulloa',        desc:'Metal precioso resistente a la corrosión. El cisplatino, compuesto de platino, es uno de los quimioterápicos más usados contra el cáncer. El prototipo del kilogramo fue de iridio-platino.'},
+  {z:79, sym:'Au', name:'Oro',          mass:'196.967', cat:'transition-metal',row:6, col:11, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s¹',      ox:['+3','+1'],           phase:'sólido',  year:null, by:'Prehistórico',       desc:'Símbolo de riqueza desde la prehistoria. Su color dorado se debe a efectos relativistas sobre sus electrones. La nanotecnología usa nanopartículas de oro en diagnóstico médico.'},
+  {z:80, sym:'Hg', name:'Mercurio',     mass:'200.592', cat:'transition-metal',row:6, col:12, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s²',      ox:['+2','+1'],           phase:'líquido', year:null, by:'Prehistórico',       desc:'Único metal líquido a temperatura ambiente. Los efectos relativistas hacen que sus orbitales 6s sean tan contraídos que el metal no se enlaza bien a sí mismo, quedando líquido.'},
+  {z:81, sym:'Tl', name:'Talio',        mass:'204.38',  cat:'post-transition', row:6, col:13, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹',  ox:['+3','+1'],           phase:'sólido',  year:1861, by:'W. Crookes',         desc:'Metal muy tóxico; los envenenamientos con talio son difíciles de detectar. Los detectores de radiación de yoduro de talio activado con sodio son altamente eficientes.'},
+  {z:82, sym:'Pb', name:'Plomo',        mass:'207.2',   cat:'post-transition', row:6, col:14, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²',  ox:['+4','+2'],           phase:'sólido',  year:null, by:'Prehistórico',       desc:'Las tuberías romanas de plomo (plumbum → plomería) contribuyeron al envenenamiento crónico del Imperio. La gasolina con plomo tetraetilo fue contaminante global hasta los 1990s.'},
+  {z:83, sym:'Bi', name:'Bismuto',      mass:'208.980', cat:'post-transition', row:6, col:15, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³',  ox:['+5','+3'],           phase:'sólido',  year:1753, by:'C.F. Geoffroy',      desc:'Metal diamagnético natural más potente. Cristaliza en formas de escalera iridiscentes. El subsalicilato de bismuto es el activo del Pepto-Bismol. Técnicamente radiactivo con vida media de 2×10¹⁹ años.'},
+  {z:84, sym:'Po', name:'Polonio',      mass:'[209]',   cat:'post-transition', row:6, col:16, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴',  ox:['+4','+2'],           phase:'sólido',  year:1898, by:'M. y P. Curie',      desc:'Descubierto por Marie Curie y nombrado en honor a su Polonia natal. Extremadamente radiactivo; fue el agente del asesinato de Alexander Litvinenko en Londres (2006).'},
+  {z:85, sym:'At', name:'Astato',       mass:'[210]',   cat:'halogen',         row:6, col:17, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵',  ox:['+7','+1','-1'],      phase:'sólido',  year:1940, by:'Corson / MacKenzie / Segrè',desc:'Halógeno más raro en la naturaleza: en cualquier momento solo hay ~30 g en toda la Tierra. El At-211 se investiga en radioterapia alfa selectiva de tumores cancerosos.'},
+  {z:86, sym:'Rn', name:'Radón',        mass:'[222]',   cat:'noble-gas',       row:6, col:18, cfg:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶',  ox:['+2'],                phase:'gas',     year:1900, by:'E. Dorn',            desc:'Gas noble radiactivo producido por desintegración natural del radio en suelos graníticos. Es la segunda causa de cáncer de pulmón tras el tabaco; los hogares deben medirse.'},
+  // Period 7
+  {z:87, sym:'Fr', name:'Francio',      mass:'[223]',   cat:'alkali-metal',    row:7, col:1,  cfg:'[Rn] 7s¹',                ox:['+1'],                phase:'sólido',  year:1939, by:'M. Perey',           desc:'Elemento natural más inestable. Solo existen ~20-30 átomos en toda la Tierra en un momento dado. Descubierto por Marguerite Perey, discípula de Marie Curie.'},
+  {z:88, sym:'Ra', name:'Radio',        mass:'[226]',   cat:'alkaline-earth',  row:7, col:2,  cfg:'[Rn] 7s²',                ox:['+2'],                phase:'sólido',  year:1898, by:'M. y P. Curie',      desc:'Metal radiactivo que brilla en la oscuridad. Marie Curie murió de anemia aplásica por exposición prolongada. Las pinturas de radio luminiscentes en relojes envenenaron a las "Chicas del Radio".'},
+  // Actinides — row 10
+  {z:89, sym:'Ac', name:'Actinio',      mass:'[227]',   cat:'actinide',        row:10,col:3,  cfg:'[Rn] 6d¹ 7s²',            ox:['+3'],                phase:'sólido',  year:1899, by:'A. Debierne',        desc:'Da nombre a la serie de los actínidos. 1000 veces más radiactivo que el radio. El Ac-225 está en fase clínica como agente terapéutico en radioterapia alfa de cáncer de próstata.'},
+  {z:90, sym:'Th', name:'Torio',        mass:'232.038', cat:'actinide',        row:10,col:4,  cfg:'[Rn] 6d² 7s²',            ox:['+4'],                phase:'sólido',  year:1829, by:'J.J. Berzelius',     desc:'Actínido fértil más abundante que el uranio. El ciclo del combustible de torio produciría menos residuos radiactivos de larga vida. India, con grandes reservas, lidera su investigación.'},
+  {z:91, sym:'Pa', name:'Protactinio',  mass:'231.036', cat:'actinide',        row:10,col:5,  cfg:'[Rn] 5f² 6d¹ 7s²',        ox:['+5','+4'],           phase:'sólido',  year:1913, by:'Fajans / Göhring',   desc:'Nombre del griego πρῶτος (primero) + actinio; es el precursor del actinio por desintegración. Raro y altamente tóxico; precursor del U-233 en el ciclo del combustible de torio.'},
+  {z:92, sym:'U',  name:'Uranio',       mass:'238.029', cat:'actinide',        row:10,col:6,  cfg:'[Rn] 5f³ 6d¹ 7s²',        ox:['+6','+4'],           phase:'sólido',  year:1789, by:'M.H. Klaproth',      desc:'Combustible nuclear principal del mundo. El U-235 fisible libera ~2 millones de veces más energía por gramo que el carbón. Un reactor de 1GW evita 6 millones de toneladas de CO₂ anuales.'},
+  {z:93, sym:'Np', name:'Neptunio',     mass:'[237]',   cat:'actinide',        row:10,col:7,  cfg:'[Rn] 5f⁴ 6d¹ 7s²',        ox:['+5','+4'],           phase:'sólido',  year:1940, by:'McMillan / Abelson',  desc:'Primer elemento transuránido; sintetizado bombardeando U-238 con neutrones. Se forma como subproducto inevitable en reactores de uranio y es un residuo preocupante de larga vida.'},
+  {z:94, sym:'Pu', name:'Plutonio',     mass:'[244]',   cat:'actinide',        row:10,col:8,  cfg:'[Rn] 5f⁶ 7s²',            ox:['+6','+4','+3'],      phase:'sólido',  year:1940, by:'Seaborg et al.',      desc:'Fisible; usado en armas nucleares y reactores de breeders. El Pu-238 genera calor estable por desintegración: alimentó los instrumentos del Voyager 1, la nave más lejana de la humanidad.'},
+  {z:95, sym:'Am', name:'Americio',     mass:'[243]',   cat:'actinide',        row:10,col:9,  cfg:'[Rn] 5f⁷ 7s²',            ox:['+3'],                phase:'sólido',  year:1944, by:'Seaborg et al.',      desc:'El Am-241 está en detectores de humo ionizantes de millones de hogares: ioniza el aire entre dos electrodos; el humo interrumpe la corriente y dispara la alarma.'},
+  {z:96, sym:'Cm', name:'Curio',        mass:'[247]',   cat:'actinide',        row:10,col:10, cfg:'[Rn] 5f⁷ 6d¹ 7s²',        ox:['+3'],                phase:'sólido',  year:1944, by:'Seaborg et al.',      desc:'Nombrado en honor a Marie y Pierre Curie. El Cm-244 generó la energía del espectrómetro alpha de partículas de las sondas Mars Pathfinder, Spirit y Opportunity.'},
+  {z:97, sym:'Bk', name:'Berkelio',     mass:'[247]',   cat:'actinide',        row:10,col:11, cfg:'[Rn] 5f⁹ 7s²',            ox:['+4','+3'],           phase:'sólido',  year:1949, by:'Seaborg et al.',      desc:'Sintetizado en Berkeley (California). Sólo miligramos han sido producidos en toda la historia. En 2009, 22 mg de Bk-249 enviados a Rusia permitieron sintetizar por primera vez el elemento 117 (Ts).'},
+  {z:98, sym:'Cf', name:'Californio',   mass:'[251]',   cat:'actinide',        row:10,col:12, cfg:'[Rn] 5f¹⁰ 7s²',           ox:['+3'],                phase:'sólido',  year:1950, by:'Seaborg et al.',      desc:'El Cf-252 es la fuente de neutrones más potente por unidad de masa; un microgramo emite 170 millones de neutrones por minuto. Usado para iniciar reactores nucleares y detectar oro.'},
+  {z:99, sym:'Es', name:'Einsteinio',   mass:'[252]',   cat:'actinide',        row:10,col:13, cfg:'[Rn] 5f¹¹ 7s²',           ox:['+3'],                phase:'sólido',  year:1952, by:'Ghiorso et al.',      desc:'Descubierto en secreto en los restos de la primera bomba de hidrógeno, "Ivy Mike" (1952). Solo en 2021 se midieron sus propiedades con el menor número de átomos jamás estudiado.'},
+  {z:100,sym:'Fm', name:'Fermio',       mass:'[257]',   cat:'actinide',        row:10,col:14, cfg:'[Rn] 5f¹² 7s²',           ox:['+3'],                phase:'sólido',  year:1952, by:'Ghiorso et al.',      desc:'Nombrado en honor a Enrico Fermi. Se produce en cantidades de nanogramos en reactores de alta fluencia neutrónica. Marca el límite práctico de síntesis por captura sucesiva de neutrones.'},
+  {z:101,sym:'Md', name:'Mendelevio',   mass:'[258]',   cat:'actinide',        row:10,col:15, cfg:'[Rn] 5f¹³ 7s²',           ox:['+3'],                phase:'sólido',  year:1955, by:'Ghiorso et al.',      desc:'Nombrado en honor a Dmitri Mendeléiev, creador de la tabla periódica. Se sintetizó átomo por átomo bombardeando solo 10⁹ átomos de Es-253. Fue un hito de la química de un solo átomo.'},
+  {z:102,sym:'No', name:'Nobelio',      mass:'[259]',   cat:'actinide',        row:10,col:16, cfg:'[Rn] 5f¹⁴ 7s²',           ox:['+3','+2'],           phase:'sólido',  year:1958, by:'Ghiorso et al.',      desc:'Nombrado en honor a Alfred Nobel. Su síntesis fue disputada durante años entre equipos de EE.UU., Suecia y la URSS. El estado de oxidación +2 es inusualmente estable para un actínido.'},
+  {z:103,sym:'Lr', name:'Laurencio',    mass:'[262]',   cat:'actinide',        row:10,col:17, cfg:'[Rn] 5f¹⁴ 7s² 7p¹',       ox:['+3'],                phase:'sólido',  year:1961, by:'Ghiorso et al.',      desc:'Último actínido; nombrado en honor a Ernest O. Lawrence, inventor del ciclotrón y fundador del laboratorio donde se sintetizó. Cierra la serie de los actínidos con el número 103.'},
+  // Period 7 d-block (super-heavy)
+  {z:104,sym:'Rf', name:'Rutherfordio', mass:'[267]',   cat:'transition-metal',row:7, col:4,  cfg:'[Rn] 5f¹⁴ 6d² 7s²',       ox:['+4'],                phase:'sólido',  year:1969, by:'Flerov / Ghiorso',   desc:'Primer elemento superpesado; nombrado en honor a Ernest Rutherford. Su síntesis fue disputada entre Dubna (URSS) y Berkeley (EE.UU.) durante la "guerra de transfermio".'},
+  {z:105,sym:'Db', name:'Dubnio',       mass:'[268]',   cat:'transition-metal',row:7, col:5,  cfg:'[Rn] 5f¹⁴ 6d³ 7s²',       ox:['+5'],                phase:'sólido',  year:1970, by:'Flerov / Ghiorso',   desc:'Nombrado en honor a Dubna (Rusia), sede del JINR. Solo se han sintetizado unos pocos miles de átomos en total. Su química sigue el patrón del nióbio y tántalo en el grupo 5.'},
+  {z:106,sym:'Sg', name:'Seaborgio',    mass:'[269]',   cat:'transition-metal',row:7, col:6,  cfg:'[Rn] 5f¹⁴ 6d⁴ 7s²',       ox:['+6'],                phase:'sólido',  year:1974, by:'Flerov / Ghiorso',   desc:'Primero en llevar el nombre de un científico vivo: Glenn T. Seaborg, el químico que descubrió más elementos (10 en total). La IUPAC lo aprobó en 1997, recibido por Seaborg en persona.'},
+  {z:107,sym:'Bh', name:'Bohrio',       mass:'[270]',   cat:'transition-metal',row:7, col:7,  cfg:'[Rn] 5f¹⁴ 6d⁵ 7s²',       ox:['+7'],                phase:'sólido',  year:1981, by:'GSI Darmstadt',      desc:'Nombrado en honor a Niels Bohr. Sintetizado en el GSI de Darmstadt. Su química obedece las reglas del grupo 7, como el renio, desafiando la hipótesis de que los superpesados son "químicamente extraños".'},
+  {z:108,sym:'Hs', name:'Hassio',       mass:'[277]',   cat:'transition-metal',row:7, col:8,  cfg:'[Rn] 5f¹⁴ 6d⁶ 7s²',       ox:['+8'],                phase:'sólido',  year:1984, by:'GSI Darmstadt',      desc:'Nombrado por Hassia (Hesse), estado alemán sede del GSI. El Hs(VIII) oxido, HsO₄ (pertenhassato) fue detectado en fase gaseosa, confirmando que sigue la química del osmio y rutenio.'},
+  {z:109,sym:'Mt', name:'Meitnerio',    mass:'[278]',   cat:'transition-metal',row:7, col:9,  cfg:'[Rn] 5f¹⁴ 6d⁷ 7s²',       ox:['+6'],                phase:'sólido',  year:1982, by:'GSI Darmstadt',      desc:'Nombrado en honor a Lise Meitner, quien explicó la fisión nuclear junto a Otto Frisch (1939). Meitner fue nominada múltiples veces al Nobel pero nunca lo recibió.'},
+  {z:110,sym:'Ds', name:'Darmstadtio',  mass:'[281]',   cat:'transition-metal',row:7, col:10, cfg:'[Rn] 5f¹⁴ 6d⁸ 7s²',       ox:['+6'],                phase:'sólido',  year:1994, by:'GSI Darmstadt',      desc:'Nombrado por la ciudad de Darmstadt, sede del GSI (Gesellschaft für Schwerionenforschung). Se produce bombardeando Ni-62 sobre Pb-208 y existe por fracciones de segundo.'},
+  {z:111,sym:'Rg', name:'Roentgenio',   mass:'[282]',   cat:'transition-metal',row:7, col:11, cfg:'[Rn] 5f¹⁴ 6d⁹ 7s²',       ox:['+3'],                phase:'sólido',  year:1994, by:'GSI Darmstadt',      desc:'Nombrado en honor a Wilhelm Röntgen, descubridor de los rayos X en 1895. Premio Nobel de Física 1901. Se sintetiza con menos de 10 átomos producidos en total.'},
+  {z:112,sym:'Cn', name:'Copernicio',   mass:'[285]',   cat:'transition-metal',row:7, col:12, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s²',      ox:['+4','+2'],           phase:'gas',     year:1996, by:'GSI Darmstadt',      desc:'Nombrado en honor a Nicolás Copérnico. Los cálculos relativistas predicen que podría ser gaseoso a temperatura ambiente, comportándose más como un gas noble que como mercurio.'},
+  {z:113,sym:'Nh', name:'Nihonio',      mass:'[286]',   cat:'post-transition', row:7, col:13, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹',  ox:['+1'],                phase:'sólido',  year:2004, by:'RIKEN (Japón)',      desc:'Primer elemento descubierto en Asia; nombrado en honor a Nihon (日本, nombre japonés del Japón). El equipo RIKEN tardó 9 años en producir solo 3 átomos confirmados.'},
+  {z:114,sym:'Fl', name:'Flerovio',     mass:'[289]',   cat:'post-transition', row:7, col:14, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²',  ox:['+2'],                phase:'sólido',  year:1998, by:'JINR / LLNL',        desc:'Nombrado en honor al Laboratorio Flerov de Reacciones Nucleares de Dubna. Candidato a "isla de estabilidad": los cálculos sugieren que núcleos alrededor del Z=114 serían inusualmente estables.'},
+  {z:115,sym:'Mc', name:'Moscovio',     mass:'[290]',   cat:'post-transition', row:7, col:15, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³',  ox:['+1'],                phase:'sólido',  year:2003, by:'JINR / LLNL',        desc:'Nombrado en honor a la región de Moscú, sede del JINR. Fue sintetizado colaborativamente por Rusia y EE.UU. incluso en plena tensión geopolítica post-Guerra Fría.'},
+  {z:116,sym:'Lv', name:'Livermorio',   mass:'[293]',   cat:'post-transition', row:7, col:16, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴',  ox:['+2'],                phase:'sólido',  year:2000, by:'JINR / LLNL',        desc:'Nombrado en honor al Laboratorio Nacional Lawrence Livermore de California. Decae por emisión alfa con vida media de ~53 ms. Su química predicha sería análoga al polonio.'},
+  {z:117,sym:'Ts', name:'Teneso',       mass:'[294]',   cat:'halogen',         row:7, col:17, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵',  ox:['+1'],                phase:'sólido',  year:2010, by:'JINR / ORNL',        desc:'Nombrado en honor al estado de Tennessee (EE.UU.), sede del ORNL y Oak Ridge. Requirió 22 mg de Bk-249, producidos en meses especialmente para esta síntesis.'},
+  {z:118,sym:'Og', name:'Oganesón',     mass:'[294]',   cat:'noble-gas',       row:7, col:18, cfg:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶',  ox:['+2'],                phase:'sólido',  year:2002, by:'JINR / LLNL',        desc:'Elemento más pesado conocido. Nombrado en vida de Yuri Oganessian, el mayor sintetizador de superpesados de la historia. Los cálculos predicen que a pesar de estar en el grupo 18, no sería inerte.'},
+];
+
+// ── Render ──
+function delay(row, col) {
+  // visual row (lanthanides/actinides at row 9-10)
+  return `${(row * 60 + col * 7)}ms`;
+}
+
+function buildGrid() {
+  const grid = document.getElementById('pt-grid');
+
+  // Group labels
+  const grpRow = document.getElementById('grp-row');
+  // spacer for period column
+  const sp = document.createElement('div');
+  grpRow.appendChild(sp);
+  const GROUPS = [1,2,'','','','','','','','','','',3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+  // Actually groups 1-18 map to cols 1-18
+  for (let g = 1; g <= 18; g++) {
+    const d = document.createElement('div');
+    d.className = 'grp-lbl';
+    d.textContent = g;
+    grpRow.appendChild(d);
+  }
+
+  // Period labels (rows 1-7, skip row 8, rows 9-10 are f-block)
+  const perCol = document.getElementById('per-col');
+  for (let p = 1; p <= 7; p++) {
+    const d = document.createElement('div');
+    d.className = 'per-lbl';
+    d.textContent = p;
+    perCol.appendChild(d);
+  }
+  // row 8 gap
+  const gap = document.createElement('div');
+  gap.className = 'per-lbl gap';
+  perCol.appendChild(gap);
+  // rows 9-10 labels
+  ['La-Lu','Ac-Lr'].forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'per-lbl';
+    d.style.fontSize = '.38rem';
+    d.style.writingMode = 'vertical-lr';
+    d.style.textOrientation = 'mixed';
+    d.style.transform = 'rotate(180deg)';
+    d.style.color = 'var(--tm)';
+    d.textContent = t;
+    perCol.appendChild(d);
+  });
+
+  // Placeholder cells
+  const phData = [
+    { row: 6, col: 3, cat: 'lanthanide', range: '57–71', label: 'La–Lu' },
+    { row: 7, col: 3, cat: 'actinide',   range: '89–103', label: 'Ac–Lr' },
+  ];
+  phData.forEach(ph => {
+    const c = CAT[ph.cat];
+    const el = document.createElement('div');
+    el.className = 'el-ph';
+    el.style.cssText = `--c:${ph.col};--r:${ph.row};--ec:${c.color};--ed:${delay(ph.row, ph.col)}`;
+    el.innerHTML = `<span class="ph-range">${ph.range}</span><span class="ph-arrow">↓</span><span class="ph-range" style="font-size:.38rem;opacity:.7">${ph.label}</span>`;
+    grid.appendChild(el);
+  });
+
+  // Elements
+  E.forEach(e => {
+    const c = CAT[e.cat];
+    const isFBlock = e.row >= 9;
+    const el = document.createElement('div');
+    el.className = 'el';
+    if (isFBlock) el.setAttribute('data-fa', '1');
+    el.style.cssText = `--c:${e.col};--r:${e.row};--ec:${c.color};--eg:${c.glow};--eb:${c.bg};--ed:${delay(e.row, e.col)}`;
+    el.title = `${e.name} (Z=${e.z})`;
+    el.innerHTML = `<span class="el-z">${e.z}</span><span class="el-sym">${e.sym}</span><span class="el-mass">${e.mass}</span>`;
+    el.addEventListener('click', () => openMod(e));
+    grid.appendChild(el);
+  });
+}
+
+// ── Legend ──
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  Object.entries(CAT).forEach(([key, val]) => {
+    const item = document.createElement('div');
+    item.className = 'leg-item';
+    item.innerHTML = `<span class="leg-dot" style="background:${val.color}"></span>${val.name}`;
+    leg.appendChild(item);
+  });
+}
+
+// ── Modal ──
+let modalOpen = false;
+
+function openMod(e) {
+  const c = CAT[e.cat];
+  const mbg = document.getElementById('mbg');
+
+  // Set CSS vars on modal for color theming
+  document.getElementById('mbox').style.setProperty('--m-color', c.color);
+  document.getElementById('m-banner').style.setProperty('--m-glow', c.glow.replace('rgba','rgba').replace(', .', ', 0.'));
+  document.getElementById('m-ring').style.setProperty('--m-color', c.color);
+  document.getElementById('m-ring2').style.setProperty('--m-color', c.color);
+  document.querySelector('.m-banner').style.background =
+    `radial-gradient(ellipse at 70% 50%, ${c.glow}, transparent 65%)`;
+
+  document.getElementById('m-z').textContent   = `Z = ${e.z}`;
+  document.getElementById('m-sym').textContent = e.sym;
+  document.getElementById('m-name').textContent = e.name;
+  document.getElementById('m-cat').textContent  = c.name;
+
+  // Phase
+  const phaseKey = e.z >= 93 ? 'sintético' : e.phase;
+  const phColor  = PHASE_COLOR[phaseKey] || '#7d8590';
+  const phIcon   = PHASE_ICON[phaseKey]  || '?';
+
+  // Oxidation states
+  const oxHtml = e.ox.length
+    ? e.ox.map(o => `<span>${o}</span>`).join('')
+    : '<span style="opacity:.5">—</span>';
+
+  // Discovery
+  const discoveryText = e.year ? `${e.year}` : 'Prehistórico';
+
+  document.getElementById('m-grid').innerHTML = `
+    <div class="m-field">
+      <span class="m-label">Masa atómica</span>
+      <span class="m-val mono">${e.mass} u</span>
+    </div>
+    <div class="m-field">
+      <span class="m-label">Estado (STP)</span>
+      <span class="phase-badge"><span class="phase-dot" style="background:${phColor}"></span>${e.phase.charAt(0).toUpperCase()+e.phase.slice(1)}</span>
+    </div>
+    <div class="m-field" style="grid-column:1/-1">
+      <span class="m-label">Configuración electrónica</span>
+      <span class="m-val mono" style="font-size:.68rem;word-break:break-all">${e.cfg}</span>
+    </div>
+    <div class="m-field">
+      <span class="m-label">Estados de oxidación</span>
+      <div class="m-ox">${oxHtml}</div>
+    </div>
+    <div class="m-field">
+      <span class="m-label">Descubrimiento</span>
+      <span class="m-val" style="font-size:.75rem">${discoveryText}<br><span style="font-size:.68rem;color:var(--tm)">${e.by}</span></span>
+    </div>
+  `;
+
+  document.getElementById('m-desc').textContent = e.desc;
+
+  mbg.classList.add('open');
+  modalOpen = true;
+}
+
+function closeMod(evt) {
+  if (evt && evt.target !== document.getElementById('mbg')) return;
+  document.getElementById('mbg').classList.remove('open');
+  modalOpen = false;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalOpen) {
+    document.getElementById('mbg').classList.remove('open');
+    modalOpen = false;
+  }
+});
+
+// ── Animated molecular background ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes, RAF;
+  const COLORS = ['#2a9d8f','#4ea8de','#f984c7','#b0e050','#ffd60a'];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function rand() {
+    return { x: Math.random()*W, y: Math.random()*H,
+             vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+             r: 1.5 + Math.random()*2,
+             color: COLORS[Math.floor(Math.random()*COLORS.length)] };
+  }
+  function init() {
+    resize();
+    nodes = Array.from({ length: Math.min(55, Math.floor(W*H/20000)) }, rand);
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i+1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        if (d < 130) {
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle = `rgba(42,157,143,${.15*(1-d/130)})`;
+          ctx.lineWidth = .7; ctx.stroke();
+        }
+      }
+    }
+    for (const n of nodes) {
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle = n.color+'88'; ctx.fill();
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < -20) n.x = W+20; if (n.x > W+20) n.x = -20;
+      if (n.y < -20) n.y = H+20; if (n.y > H+20) n.y = -20;
+    }
+    RAF = document.hidden ? null : requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', () => { cancelAnimationFrame(RAF); resize(); RAF = requestAnimationFrame(draw); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(RAF); RAF = null; }
+    else if (!RAF) RAF = requestAnimationFrame(draw);
+  });
+  init(); draw();
+})();
+
+// ── Init ──
+buildGrid();
+buildLegend();
+</script>
+</body>
+</html>
