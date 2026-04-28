@@ -96,7 +96,7 @@
       align-items: center; justify-content: center;
       padding: 3px 2px 2px;
       overflow: hidden;
-      transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s, border-color .15s, z-index 0s .15s;
+      transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s, border-color .15s, opacity .18s, z-index 0s .15s;
       animation: elIn .45s var(--ed) both;
       user-select: none;
     }
@@ -567,6 +567,7 @@ function buildGrid() {
     el.style.cssText = `--c:${e.col};--r:${e.row};--ec:${c.color};--eg:${c.glow};--eb:${c.bg};--ed:${delay(e.row, e.col)}`;
     el.title = `${e.name} (Z=${e.z})`;
     el.innerHTML = `<span class="el-z">${e.z}</span><span class="el-sym">${e.sym}</span><span class="el-mass">${e.mass}</span>`;
+    el.addEventListener('animationend', () => { el.style.animation = 'none'; }, { once: true });
     el.addEventListener('click', () => openMod(e));
     grid.appendChild(el);
   });
