@@ -359,6 +359,14 @@
     }
     .tool-card:hover .tool-arrow { opacity: 1; transform: translateX(0); }
 
+    @media (max-width: 900px) {
+      .tool-card {
+        pointer-events: none;
+        opacity: .5;
+        cursor: default;
+      }
+      .tool-tag::after { content: ' · Solo escritorio'; }
+    }
     @media (max-width: 560px) {
       .tool-card { gap: 14px; padding: 16px 18px; }
       .tool-desc  { display: none; }

@@ -737,8 +737,12 @@ document.addEventListener('keydown', e => {
 })();
 
 // ── Init ──
-buildGrid();
-buildLegend();
+if (window.innerWidth < 900) {
+  window.location.replace('index.html');
+} else {
+  buildGrid();
+  buildLegend();
+}
 </script>
 </body>
 </html>
