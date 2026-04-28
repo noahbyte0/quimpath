@@ -74,6 +74,7 @@
       </div>
       <div class="tb-btns">
         <button id="mob-reset-btn" onclick="openReset()">🗑️ Reiniciar</button>
+        <a class="tb-btn" href="tabla_periodica.html" style="text-decoration:none">⚛ <span class="label">Tabla</span></a>
         <button class="tb-btn tog-theme" id="theme-btn" onclick="toggleTheme()">🌙 <span class="label">Oscuro</span></button>
       </div>
     </div>
@@ -247,12 +248,19 @@
     <h2>🆕 Novedades de QuimPath</h2>
     <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2 — Actual</button>
+      <button class="toggle-btn on" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v2" onclick="switchUpdTab('v2')" style="flex:1;text-align:center">v1.2</button>
       <button class="toggle-btn off" id="upd-tab-v1" onclick="switchUpdTab('v1')" style="flex:1;text-align:center">v1.1</button>
     </div>
 
-    <!-- v2 — actual -->
-    <div id="upd-v2" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+    <!-- v3 — actual: Tabla Periódica -->
+    <div id="upd-v3" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">⚛️ Nueva Herramienta</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem"><strong>Tabla Periódica interactiva</strong> — los 118 elementos con datos, configuración electrónica y animaciones. Accedé desde el botón ⚛ en la barra superior o desde el índice de QuimPath.</span></div>
+    </div>
+
+    <!-- v2 — historial -->
+    <div id="upd-v2" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">🔧 Corrección de previas</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">Matemática 06 tenía incorrectamente como previas Matemática 04 y 03. Las previas correctas son Matemática 01 y Matemática 03.</span></div>
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Correcciones varias</div>
@@ -491,9 +499,9 @@ function updateAuthUI(user) {
 const A          = S.A, E = S.E, C = S.C;
 const SK         = 'qp_al_v1';
 const CAREER_ID  = 'ing_alimentos';
-const UPD_VERSION = 2;
+const UPD_VERSION = 3;
 const UPD_SK     = 'qp_al_upd_ver';
-const UPD_TABS   = ['v1','v2'];
+const UPD_TABS   = ['v1','v2','v3'];
 
 
 // ══════════ DATOS: MATERIAS OBLIGATORIAS ══════════

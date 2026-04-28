@@ -75,6 +75,7 @@
       </div>
       <div class="tb-btns">
         <button id="mob-reset-btn" onclick="openReset()">🗑️ Reiniciar</button>
+        <a class="tb-btn" href="tabla_periodica.html" style="text-decoration:none">⚛ <span class="label">Tabla</span></a>
         <button class="tb-btn tog-theme" id="theme-btn" onclick="toggleTheme()">🌙 <span class="label">Oscuro</span></button>
       </div>
     </div>
@@ -254,15 +255,22 @@
     <h2>🆕 Novedades de QuimPath</h2>
     <p class="sub" style="margin-bottom:10px">Últimas actualizaciones del programa:</p>
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="toggle-btn on" id="upd-tab-v7" onclick="switchUpdTab('v7')" style="flex:1;text-align:center">v1.7 — Actual</button>
+      <button class="toggle-btn on" id="upd-tab-v8" onclick="switchUpdTab('v8')" style="flex:1;text-align:center">v1.8 — Actual</button>
+      <button class="toggle-btn off" id="upd-tab-v7" onclick="switchUpdTab('v7')" style="flex:1;text-align:center">v1.7</button>
       <button class="toggle-btn off" id="upd-tab-v6" onclick="switchUpdTab('v6')" style="flex:1;text-align:center">v1.6</button>
       <button class="toggle-btn off" id="upd-tab-v5" onclick="switchUpdTab('v5')" style="flex:1;text-align:center">v1.5</button>
       <button class="toggle-btn off" id="upd-tab-v4" onclick="switchUpdTab('v4')" style="flex:1;text-align:center">v1.4</button>
       <button class="toggle-btn off" id="upd-tab-v3" onclick="switchUpdTab('v3')" style="flex:1;text-align:center">v1.3</button>
     </div>
 
-    <!-- v7 — nueva versión -->
-    <div id="upd-v7" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+    <!-- v8 — actual: Tabla Periódica -->
+    <div id="upd-v8" style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">⚛️ Nueva Herramienta</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem"><strong>Tabla Periódica interactiva</strong> — los 118 elementos con datos, configuración electrónica y animaciones. Accedé desde el botón ⚛ en la barra superior o desde el índice de QuimPath.</span></div>
+    </div>
+
+    <!-- v7 — historial -->
+    <div id="upd-v7" style="display:none;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent">
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:6px 0 2px">📐 Plan 2000 — Química Inorgánica</div>
       <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--sf2)"><span style="font-size:.72rem">En el Plan 2000, Química Inorgánica ahora aparece separada en Teórico (T, 6 créditos) y Laboratorio (L, 5 créditos), reflejando que son cursos independientes.</span></div>
       <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tm);font-family:'Space Mono',monospace;padding:10px 0 2px">🐛 Correcciones varias</div>
@@ -565,9 +573,9 @@ function updateAuthUI(user) {
 const A          = S.A, E = S.E, C = S.C;
 const SK         = 'qp_v3';
 const CAREER_ID  = 'ing_quimica';
-const UPD_VERSION = 7;
+const UPD_VERSION = 8;
 const UPD_SK     = 'qp_upd_ver';
-const UPD_TABS   = ['v3','v4','v5','v6','v7'];
+const UPD_TABS   = ['v3','v4','v5','v6','v7','v8'];
 
 // ══════════ DATOS: MATERIAS OBLIGATORIAS ══════════
 const OB = [
