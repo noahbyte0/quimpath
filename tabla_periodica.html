@@ -141,9 +141,10 @@
     .leg-item:hover { color: var(--tx); }
 
     /* Category filter dim */
-    #pt-grid.filtering .el    { opacity: .1; transition: opacity .18s; }
-    #pt-grid.filtering .el-ph { opacity: .08; transition: opacity .18s; }
-    #pt-grid.filtering .el.hl { opacity: 1; }
+    #pt-grid.filtering .el       { opacity: .1;  transition: opacity .18s; }
+    #pt-grid.filtering .el-ph    { opacity: .08; transition: opacity .18s; }
+    #pt-grid.filtering .el.hl    { opacity: 1; }
+    #pt-grid.filtering .el-ph.hl { opacity: 1; }
     .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
 
     /* ── MODAL ── */
@@ -551,8 +552,10 @@ function buildGrid() {
     const c = CAT[ph.cat];
     const el = document.createElement('div');
     el.className = 'el-ph';
+    el.dataset.cat = ph.cat;
     el.style.cssText = `--c:${ph.col};--r:${ph.row};--ec:${c.color};--ed:${delay(ph.row, ph.col)}`;
     el.innerHTML = `<span class="ph-range">${ph.range}</span><span class="ph-arrow">↓</span><span class="ph-range" style="font-size:.38rem;opacity:.7">${ph.label}</span>`;
+    el.addEventListener('animationend', () => { el.style.animation = 'none'; }, { once: true });
     grid.appendChild(el);
   });
 
@@ -586,13 +589,13 @@ function buildLegend() {
 
     item.addEventListener('mouseenter', () => {
       pgrid.classList.add('filtering');
-      cells().forEach(el => {
+      pgrid.querySelectorAll('.el, .el-ph').forEach(el => {
         el.classList.toggle('hl', el.dataset.cat === key);
       });
     });
     item.addEventListener('mouseleave', () => {
       pgrid.classList.remove('filtering');
-      cells().forEach(el => el.classList.remove('hl'));
+      pgrid.querySelectorAll('.el, .el-ph').forEach(el => el.classList.remove('hl'));
     });
 
     leg.appendChild(item);
