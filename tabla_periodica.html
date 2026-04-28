@@ -303,9 +303,61 @@
       .el-sym,
       .el[data-fa="1"] .el-sym { font-size: .56rem; }
     }
+
+    /* ── ROTATE OVERLAY ── */
+    #rotate-ov {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg);
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 24px;
+      padding: 32px;
+      text-align: center;
+    }
+    #rotate-ov.show { display: flex; }
+
+    .rot-phone {
+      font-size: 4.5rem;
+      animation: rotPhone 1.8s ease-in-out infinite;
+      display: inline-block;
+      transform-origin: center;
+    }
+    @keyframes rotPhone {
+      0%   { transform: rotate(0deg);   }
+      35%  { transform: rotate(-90deg); }
+      65%  { transform: rotate(-90deg); }
+      100% { transform: rotate(0deg);   }
+    }
+    .rot-title {
+      font-size: 1.4rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--ac) 0%, var(--a2) 60%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .rot-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: .65rem; color: var(--tm); line-height: 1.7; max-width: 260px;
+    }
+    .rot-back {
+      margin-top: 8px;
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      color: var(--tm); text-decoration: none;
+      border: 1px solid var(--bd); border-radius: 100px;
+      padding: 6px 16px;
+      transition: color .15s, border-color .15s;
+    }
+    .rot-back:hover { color: var(--ac); border-color: var(--ac); }
   </style>
 </head>
 <body>
+
+<!-- Rotate overlay (mobile portrait) -->
+<div id="rotate-ov">
+  <span class="rot-phone">📱</span>
+  <div class="rot-title">Rotá la pantalla</div>
+  <div class="rot-sub">La tabla periódica está optimizada para modo horizontal. Girá el teléfono para continuar.</div>
+  <a class="rot-back" href="index.html">← Volver al inicio</a>
+</div>
 
 <canvas id="bg-canvas"></canvas>
 
@@ -736,13 +788,26 @@ document.addEventListener('keydown', e => {
   init(); draw();
 })();
 
-// ── Init ──
-if (window.innerWidth < 900) {
-  window.location.replace('index.html');
-} else {
-  buildGrid();
-  buildLegend();
+// ── Rotate guard ──
+let tableBuilt = false;
+
+function checkOrientation() {
+  const portrait = window.innerWidth < window.innerHeight;
+  const ov = document.getElementById('rotate-ov');
+  if (portrait) {
+    ov.classList.add('show');
+  } else {
+    ov.classList.remove('show');
+    if (!tableBuilt) {
+      buildGrid();
+      buildLegend();
+      tableBuilt = true;
+    }
+  }
 }
+
+checkOrientation();
+window.addEventListener('resize', checkOrientation);
 </script>
 </body>
 </html>
