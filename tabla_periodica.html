@@ -340,16 +340,13 @@
     #rotate-ov.show { display: flex; }
 
     .rot-phone {
-      width: 90px; height: 90px;
+      width: 120px; height: auto;
       animation: rotPhone 1.8s ease-in-out infinite;
       display: inline-block;
-      transform-origin: center;
     }
     @keyframes rotPhone {
-      0%   { transform: rotate(0deg);   }
-      35%  { transform: rotate(-90deg); }
-      65%  { transform: rotate(-90deg); }
-      100% { transform: rotate(0deg);   }
+      0%,100% { transform: scale(1);    }
+      50%      { transform: scale(1.08); }
     }
     .rot-title {
       font-size: 1.4rem; font-weight: 800;
