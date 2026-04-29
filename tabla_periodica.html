@@ -45,6 +45,27 @@
     }
     .hdr p { font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--tm); }
 
+    .search-wrap {
+      display: flex; align-items: center; gap: 6px;
+      margin: 12px auto 0; width: max-content;
+      background: var(--s2); border: 1px solid var(--bd); border-radius: 8px;
+      padding: 5px 10px; transition: border-color .2s, box-shadow .2s;
+    }
+    .search-wrap:focus-within { border-color: var(--ac); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ac) 20%, transparent); }
+    .s-icon { font-size: .8rem; color: var(--tm); user-select: none; }
+    #el-search {
+      background: none; border: none; outline: none;
+      color: var(--tx); font-family: 'Space Mono', monospace; font-size: .65rem;
+      width: 170px;
+    }
+    #el-search::placeholder { color: var(--tm); opacity: .55; }
+    #search-clear {
+      background: none; border: none; color: var(--tm); cursor: pointer;
+      font-size: .7rem; padding: 0; line-height: 1; opacity: 0; pointer-events: none;
+      transition: opacity .15s;
+    }
+    #search-clear.visible { opacity: 1; pointer-events: auto; }
+
     /* ── SCROLL WRAPPER ── */
     .tbl-outer { width: 100%; overflow-x: auto; padding-bottom: 8px; }
     .tbl-inner { width: max-content; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
@@ -369,6 +390,11 @@
     <div style="font-size:2rem;margin-bottom:6px">⚛️</div>
     <h1>Tabla Periódica</h1>
     <p>Hacé click en cualquier elemento para ver su información completa</p>
+    <div class="search-wrap">
+      <span class="s-icon">⌕</span>
+      <input type="text" id="el-search" placeholder="Buscar por nombre o símbolo…" autocomplete="off" spellcheck="false">
+      <button id="search-clear" title="Limpiar">✕</button>
+    </div>
   </header>
 
   <div class="tbl-outer">
@@ -630,6 +656,8 @@ function buildGrid() {
     const el = document.createElement('div');
     el.className = 'el';
     el.dataset.cat = e.cat;
+    el.dataset.sym  = e.sym.toLowerCase();
+    el.dataset.name = e.name.toLowerCase();
     if (isFBlock) el.setAttribute('data-fa', '1');
     el.style.cssText = `--c:${e.col};--r:${e.row};--ec:${c.color};--eg:${c.glow};--eb:${c.bg};--ed:${delay(e.row, e.col)}`;
     el.title = `${e.name} (Z=${e.z})`;
@@ -744,7 +772,33 @@ document.addEventListener('keydown', e => {
     document.getElementById('mbg').classList.remove('open');
     modalOpen = false;
   }
+  if (e.key === 'Escape' && !modalOpen) clearSearch();
 });
+
+// ── Search ──
+const elSearch   = document.getElementById('el-search');
+const searchClear = document.getElementById('search-clear');
+const ptGrid      = document.getElementById('pt-grid');
+
+function clearSearch() {
+  elSearch.value = '';
+  searchClear.classList.remove('visible');
+  ptGrid.classList.remove('filtering');
+  ptGrid.querySelectorAll('.el').forEach(el => el.classList.remove('hl'));
+}
+
+elSearch.addEventListener('input', () => {
+  const q = elSearch.value.trim().toLowerCase();
+  searchClear.classList.toggle('visible', q.length > 0);
+  if (!q) { clearSearch(); return; }
+  ptGrid.classList.add('filtering');
+  ptGrid.querySelectorAll('.el').forEach(el => {
+    const match = el.dataset.sym.startsWith(q) || el.dataset.name.includes(q);
+    el.classList.toggle('hl', match);
+  });
+});
+
+searchClear.addEventListener('click', () => { clearSearch(); elSearch.focus(); });
 
 // ── Animated molecular background ──
 (function() {
