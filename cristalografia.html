@@ -57,11 +57,19 @@
     }
 
     #struct-btns {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto;
+      display: flex; flex-direction: column; gap: 5px; margin-left: auto;
+    }
+    .s-group {
+      display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    }
+    .s-group-lbl {
+      font-family: 'Space Mono', monospace; font-size: .48rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--tm); white-space: nowrap; min-width: 68px;
     }
     .s-btn {
       font-family: 'Space Mono', monospace; font-size: .6rem;
-      padding: 5px 12px; border-radius: 100px; cursor: pointer;
+      padding: 4px 11px; border-radius: 100px; cursor: pointer;
       border: 1px solid var(--bd); background: var(--sf2); color: var(--tm);
       transition: color .15s, border-color .15s, background .15s;
       white-space: nowrap;
@@ -129,15 +137,24 @@
   <a class="back-btn" href="index.html">← QuimPath</a>
   <h1>Cristalografía 3D</h1>
   <div id="struct-btns">
-    <button class="s-btn" data-s="sc">CS</button>
-    <button class="s-btn active" data-s="bcc">BCC</button>
-    <button class="s-btn" data-s="fcc">FCC</button>
-    <button class="s-btn" data-s="hcp">HCP</button>
-    <button class="s-btn" data-s="diamond">Diamante</button>
-    <button class="s-btn" data-s="nacl">NaCl</button>
-    <button class="s-btn" data-s="cscl">CsCl</button>
-    <button class="s-btn" data-s="zns">ZnS</button>
-    <button class="s-btn" data-s="graphite">Grafito</button>
+    <div class="s-group">
+      <span class="s-group-lbl">Metálicas</span>
+      <button class="s-btn" data-s="sc">CS</button>
+      <button class="s-btn active" data-s="bcc">BCC</button>
+      <button class="s-btn" data-s="fcc">FCC</button>
+      <button class="s-btn" data-s="hcp">HCP</button>
+    </div>
+    <div class="s-group">
+      <span class="s-group-lbl">Iónicas</span>
+      <button class="s-btn" data-s="nacl">NaCl</button>
+      <button class="s-btn" data-s="cscl">CsCl</button>
+      <button class="s-btn" data-s="zns">ZnS</button>
+    </div>
+    <div class="s-group">
+      <span class="s-group-lbl">Covalentes</span>
+      <button class="s-btn" data-s="diamond">Diamante</button>
+      <button class="s-btn" data-s="graphite">Grafito</button>
+    </div>
   </div>
 </nav>
 
