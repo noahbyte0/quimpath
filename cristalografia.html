@@ -264,6 +264,7 @@ const STRUCTS = {
     },
     // HCP needs special centering
     center: () => new THREE.Vector3(0, S(8/3)/2, 0),
+    cam: [6.5, 4, 6.5],
   },
 
   diamond: {
@@ -361,6 +362,12 @@ function buildScene(key) {
   pivot.position.copy(center.negate());
 
   scene.add(pivot);
+
+  // Set camera for this structure and save as reset point
+  const [cx, cy, cz] = def.cam || [3.8, 2.4, 3.8];
+  camera.position.set(cx, cy, cz);
+  controls.target.set(0, 0, 0);
+  controls.saveState();
 
   // Update info panel
   updateInfo(key, def);
