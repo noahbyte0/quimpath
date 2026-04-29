@@ -384,79 +384,73 @@ const STRUCTS = {
     system: 'Hexagonal (P63/mmc)', atoms: 4, packing: 26.0, coord: '3 (capa) + VdW',
     color: '#94a3b8', bondType: 'Covalente (capas) / Van der Waals',
     examples: 'C (grafito), grafeno (monocapa)',
-    cam: [5.5, 3.5, 5.5],
+    cam: [8, 5, 8],
     colors: { c1: '#cbd5e1', c2: '#64748b' },
     sizes:  { c1: 0.09,      c2: 0.09      },
     getAtoms: () => {
-      // Celda hexagonal normalizada (a=1): a1=(1,0), a2=(-0.5,√3/2) en plano XZ
-      // Interlayer d = c/a_ideal ≈ 1.36  (3.35/2.46)
+      // Red hexagonal normalizada (a=1): vectores a1=(1,0), a2=(-½,√3/2) en plano XZ
+      // Dos átomos por celda: A en (0,0), B en (0, 1/√3) [en XZ]
+      // Apilamiento ABAB: capa B desplazada por τ=(½, √3/6) en XZ
+      // d_interlayer = 1.36 (3.35 Å / 2.46 Å)
       const sq3 = Math.sqrt(3), d = 1.36;
-      // 4 átomos por celda primitiva × supercelda 2×1 = 8 átomos por capa
       const pts = [];
-      for (let i=0; i<2; i++) for (let j=0; j<1; j++) {
-        const ox = i - j*0.5, oz = j*sq3/2;
-        // Capa A (y=0): tipo c1
-        pts.push({ pos: new THREE.Vector3(ox,       0, oz),          type:'c1' });
-        pts.push({ pos: new THREE.Vector3(ox,       0, oz+1/sq3),    type:'c1' });
-        // Capa A espejada (para completar 2 columnas del prisma)
-        pts.push({ pos: new THREE.Vector3(ox-0.5,   0, oz+sq3/2),    type:'c1' });
-        pts.push({ pos: new THREE.Vector3(ox-0.5,   0, oz+sq3/2+1/sq3), type:'c1' });
-        // Capa B (y=d, ABAB: shift τ=(0.5, √3/6) en XZ): tipo c2
-        pts.push({ pos: new THREE.Vector3(ox+0.5,   d, oz+sq3/6),          type:'c2' });
-        pts.push({ pos: new THREE.Vector3(ox+0.5,   d, oz+sq3/6+1/sq3),    type:'c2' });
-        pts.push({ pos: new THREE.Vector3(ox,        d, oz+sq3/2+sq3/6),    type:'c2' });
-        pts.push({ pos: new THREE.Vector3(ox,        d, oz+sq3/2+sq3/6+1/sq3), type:'c2' });
+      // Supercelda 3×3 centrada en el origen (i,j ∈ {-1,0,1})
+      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+        const ox = i - j * 0.5;
+        const oz = j * sq3 / 2;
+        // Capa A (y=0)
+        pts.push({ pos: new THREE.Vector3(ox,       0, oz            ), type: 'c1' });
+        pts.push({ pos: new THREE.Vector3(ox,       0, oz + 1/sq3    ), type: 'c1' });
+        // Capa B (y=d, shift τ)
+        pts.push({ pos: new THREE.Vector3(ox + 0.5, d, oz + sq3/6   ), type: 'c2' });
+        pts.push({ pos: new THREE.Vector3(ox + 0.5, d, oz + sq3/6 + 1/sq3), type: 'c2' });
       }
       return pts;
     },
     getEdges: () => {
-      // Prisma hexagonal de la celda unitaria primitiva (a=1, c=1.36)
+      // Aristas del prisma de la celda primitiva (rombo con a1, a2 × altura d)
       const sq3 = Math.sqrt(3), d = 1.36;
-      const a1 = new THREE.Vector3(1,0,0), a2 = new THREE.Vector3(-0.5,0,sq3/2);
-      // Contorno del prisma 2×1: 4 esquinas × 2 alturas
-      const c = [
-        new THREE.Vector3(0,0,0),
-        a1.clone(),
-        a1.clone().add(a2.clone().multiplyScalar(1)),
-        a2.clone(),
+      const corners = [
+        new THREE.Vector3( 0,   0, 0      ),
+        new THREE.Vector3( 1,   0, 0      ),
+        new THREE.Vector3( 0.5, 0, sq3/2  ),
+        new THREE.Vector3(-0.5, 0, sq3/2  ),
       ];
+      const cornersT = corners.map(v => v.clone().setY(d));
       const pts = [];
-      const ct = c.map(v => v.clone().setY(d));
-      for (let i=0;i<4;i++) {
-        pts.push(c[i].clone(), c[(i+1)%4].clone());
-        pts.push(ct[i].clone(), ct[(i+1)%4].clone());
-        pts.push(c[i].clone(), ct[i].clone());
+      for (let i = 0; i < 4; i++) {
+        pts.push(corners[i].clone(),  corners[(i+1)%4].clone());
+        pts.push(cornersT[i].clone(), cornersT[(i+1)%4].clone());
+        pts.push(corners[i].clone(),  cornersT[i].clone());
       }
       return pts;
     },
     getExtraLines: () => {
-      // Enlaces covalentes C-C dentro de cada capa
+      // Deltas desde átomo tipo-A hasta sus 3 vecinos tipo-B en la misma capa
+      // (verificados: |delta| = 1/√3 = longitud de enlace C-C normalizada)
       const sq3 = Math.sqrt(3), d = 1.36;
-      const bondLen = 1/sq3;
-      const pts = [];
-      // Átomos A de la capa (mismos índices que getAtoms, solo los c1)
-      const layerA = [];
-      for (let i=0; i<2; i++) for (let j=0; j<1; j++) {
-        const ox = i - j*0.5, oz = j*sq3/2;
-        layerA.push(new THREE.Vector3(ox, 0, oz));
-        layerA.push(new THREE.Vector3(ox-0.5, 0, oz+sq3/2));
-      }
-      // Cada átomo A enlaza con su B vecino (+Z), (-X-Z), (+X-Z)
+      const b = 1 / sq3;
       const deltas = [
-        new THREE.Vector3(0, 0, bondLen),
-        new THREE.Vector3(-0.5, 0, -bondLen/2),
-        new THREE.Vector3(0.5, 0, -bondLen/2),
+        new THREE.Vector3( 0,   0,  b    ),
+        new THREE.Vector3(-0.5, 0, -b/2  ),
+        new THREE.Vector3( 0.5, 0, -b/2  ),
       ];
-      for (const y of [0, d]) {
-        layerA.forEach(a => {
-          deltas.forEach(dv => {
-            pts.push(a.clone().setY(y), a.clone().setY(y).add(dv));
-          });
+      const pts = [];
+      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+        const ox = i - j * 0.5, oz = j * sq3 / 2;
+        // Átomo tipo-A de capa A
+        const pA = new THREE.Vector3(ox,       0, oz       );
+        // Átomo tipo-A de capa B
+        const pB = new THREE.Vector3(ox + 0.5, d, oz + sq3/6);
+        deltas.forEach(dv => {
+          pts.push(pA.clone(), pA.clone().add(dv));
+          pts.push(pB.clone(), pB.clone().add(dv));
         });
       }
       return { pts, color: 0x94a3b8 };
     },
-    center: () => new THREE.Vector3(0.25, 1.36/2, Math.sqrt(3)/4),
+    // Centro geométrico promedio de los 36 átomos de la supercelda 3×3
+    center: () => new THREE.Vector3(0.25, 1.36 / 2, Math.sqrt(3) / 4),
   },
 };
 
