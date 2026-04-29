@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cristalografía 3D — QuimPath</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg:  #0d1117;
+      --sf:  #161b22;
+      --sf2: #1c2128;
+      --bd:  #30363d;
+      --tx:  #e6edf3;
+      --tm:  #7d8590;
+      --ac:  #2a9d8f;
+      --a2:  #4ea8de;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--tx); font-family: 'Syne', sans-serif; }
+
+    #c { display: block; width: 100%; height: 100%; }
+
+    /* ── TOP BAR ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px;
+      background: linear-gradient(to bottom, rgba(13,17,23,.95) 60%, transparent);
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      color: var(--tm); text-decoration: none;
+      border: 1px solid var(--bd); border-radius: 100px;
+      padding: 4px 12px; white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .back-btn:hover { color: var(--ac); border-color: var(--ac); }
+
+    #topbar h1 {
+      font-size: 1rem; font-weight: 800; letter-spacing: -.5px;
+      background: linear-gradient(135deg, var(--ac) 0%, var(--a2) 60%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      white-space: nowrap;
+    }
+
+    #struct-btns {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto;
+    }
+    .s-btn {
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      padding: 5px 12px; border-radius: 100px; cursor: pointer;
+      border: 1px solid var(--bd); background: var(--sf2); color: var(--tm);
+      transition: color .15s, border-color .15s, background .15s;
+      white-space: nowrap;
+    }
+    .s-btn:hover  { color: var(--tx); border-color: var(--tm); }
+    .s-btn.active { color: var(--ac); border-color: var(--ac); background: rgba(42,157,143,.1); }
+
+    /* ── INFO PANEL ── */
+    #info-panel {
+      position: fixed; bottom: 28px; left: 24px; z-index: 10;
+      background: rgba(22,27,34,.88);
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      padding: 16px 20px;
+      backdrop-filter: blur(12px);
+      min-width: 220px;
+      max-width: 280px;
+    }
+    .info-badge {
+      display: inline-block;
+      font-family: 'Space Mono', monospace; font-size: .52rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      border: 1px solid var(--info-color, var(--ac));
+      color: var(--info-color, var(--ac));
+      background: color-mix(in srgb, var(--info-color, var(--ac)) 10%, transparent);
+      border-radius: 100px; padding: 2px 8px; margin-bottom: 8px;
+    }
+    .info-name {
+      font-size: 1.05rem; font-weight: 800; line-height: 1.2;
+      color: var(--tx); margin-bottom: 14px;
+    }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 12px; padding: 6px 0;
+      border-bottom: 1px solid rgba(48,54,61,.6);
+      font-size: .75rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-lbl { font-family: 'Space Mono', monospace; font-size: .5rem; text-transform: uppercase; letter-spacing: 1px; color: var(--tm); white-space: nowrap; }
+    .info-val { font-weight: 700; color: var(--tx); text-align: right; }
+    .info-val.accent { color: var(--info-color, var(--ac)); }
+    .info-examples { font-size: .62rem; color: var(--tm); font-family: 'Space Mono', monospace; }
+
+    /* ── HINTS ── */
+    #hints {
+      position: fixed; bottom: 28px; right: 24px; z-index: 10;
+      font-family: 'Space Mono', monospace; font-size: .52rem;
+      color: var(--tm); text-align: right; line-height: 2;
+      pointer-events: none;
+    }
+
+    /* ── LEGEND DOT ── */
+    .legend-dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; margin-right: 5px; vertical-align: middle;
+      background: var(--info-color, var(--ac));
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<nav id="topbar">
+  <a class="back-btn" href="index.html">← QuimPath</a>
+  <h1>Cristalografía 3D</h1>
+  <div id="struct-btns">
+    <button class="s-btn" data-s="sc">CS</button>
+    <button class="s-btn active" data-s="bcc">BCC</button>
+    <button class="s-btn" data-s="fcc">FCC</button>
+    <button class="s-btn" data-s="hcp">HCP</button>
+    <button class="s-btn" data-s="diamond">Diamante</button>
+  </div>
+</nav>
+
+<div id="info-panel">
+  <div class="info-badge" id="info-badge">BCC</div>
+  <div class="info-name" id="info-name">Cúbica centrada en el cuerpo</div>
+  <div class="info-row">
+    <span class="info-lbl">Átomos / celda</span>
+    <span class="info-val accent" id="info-atoms">2</span>
+  </div>
+  <div class="info-row">
+    <span class="info-lbl">Empaquetamiento</span>
+    <span class="info-val accent" id="info-packing">68.0 %</span>
+  </div>
+  <div class="info-row">
+    <span class="info-lbl">Nº coordinación</span>
+    <span class="info-val" id="info-coord">8</span>
+  </div>
+  <div class="info-row">
+    <span class="info-lbl">Sistema</span>
+    <span class="info-val" id="info-system">Cúbico</span>
+  </div>
+  <div class="info-row" style="border:none; padding-top:8px; display:block">
+    <span class="info-lbl">Ejemplos</span><br>
+    <span class="info-examples" id="info-examples">Fe, W, Cr, Na, K</span>
+  </div>
+</div>
+
+<div id="hints">
+  Arrastrar → Rotar<br>
+  Rueda → Zoom<br>
+  Click derecho → Desplazar
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Structure definitions ──────────────────────────────────────────────────
+const S = Math.sqrt;
+
+const STRUCTS = {
+  sc: {
+    badge: 'CS', name: 'Cúbica Simple',
+    system: 'Cúbico', atoms: 1, packing: 52.36, coord: 6,
+    color: '#e6edf3',
+    examples: 'Po (única ocurrencia natural)',
+    getAtoms: () => {
+      const pts = [];
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  bcc: {
+    badge: 'BCC', name: 'Cúbica centrada en el cuerpo',
+    system: 'Cúbico', atoms: 2, packing: 68.02, coord: 8,
+    color: '#4ea8de',
+    examples: 'Fe, W, Cr, Mo, Na, K',
+    getAtoms: () => {
+      const pts = [];
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
+      pts.push(new THREE.Vector3(0, 0, 0));
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  fcc: {
+    badge: 'FCC', name: 'Cúbica centrada en las caras',
+    system: 'Cúbico', atoms: 4, packing: 74.05, coord: 12,
+    color: '#2a9d8f',
+    examples: 'Cu, Au, Al, Ni, Pt, Ag',
+    getAtoms: () => {
+      const pts = [];
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
+      // face centers: ±½ on each axis pair
+      [[0,-.5,0],[0,.5,0],[-.5,0,0],[.5,0,0],[0,0,-.5],[0,0,.5]]
+        .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x,y,z)));
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  hcp: {
+    badge: 'HCP', name: 'Hexagonal Compacta',
+    system: 'Hexagonal', atoms: 6, packing: 74.05, coord: 12,
+    color: '#f984c7',
+    examples: 'Mg, Ti, Zn, Co, Cd, Zr',
+    getAtoms: () => {
+      // ideal c/a = sqrt(8/3); a normalised to 1
+      const a = 1, c = S(8/3);
+      const pts = [];
+      // corners bottom & top
+      for (let i=0; i<6; i++) {
+        const θ = i * Math.PI/3;
+        pts.push(new THREE.Vector3(a*Math.cos(θ), 0,   a*Math.sin(θ)));
+        pts.push(new THREE.Vector3(a*Math.cos(θ), c,   a*Math.sin(θ)));
+      }
+      // face centres
+      pts.push(new THREE.Vector3(0, 0, 0));
+      pts.push(new THREE.Vector3(0, c, 0));
+      // 3 interior B-layer atoms at y=c/2
+      pts.push(new THREE.Vector3( a/2,         c/2,  a*S(3)/6));
+      pts.push(new THREE.Vector3(-a/2,         c/2,  a*S(3)/6));
+      pts.push(new THREE.Vector3( 0,           c/2, -a*S(3)/3));
+      return pts;
+    },
+    getEdges: () => {
+      const a = 1, c = S(8/3);
+      const bot = [], top = [];
+      for (let i=0; i<6; i++) {
+        const θ = i * Math.PI/3;
+        bot.push(new THREE.Vector3(a*Math.cos(θ), 0, a*Math.sin(θ)));
+        top.push(new THREE.Vector3(a*Math.cos(θ), c, a*Math.sin(θ)));
+      }
+      const pts = [];
+      for (let i=0; i<6; i++) {
+        pts.push(bot[i], bot[(i+1)%6]);
+        pts.push(top[i], top[(i+1)%6]);
+        pts.push(bot[i], top[i]);
+      }
+      return pts;
+    },
+    // HCP needs special centering
+    center: () => new THREE.Vector3(0, S(8/3)/2, 0),
+  },
+
+  diamond: {
+    badge: 'Diamante', name: 'Diamante Cúbica',
+    system: 'Cúbico', atoms: 8, packing: 34.01, coord: 4,
+    color: '#bf5af2',
+    examples: 'C (diamante), Si, Ge',
+    getAtoms: () => {
+      const pts = [];
+      // FCC sublattice
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
+      [[0,-.5,0],[0,.5,0],[-.5,0,0],[.5,0,0],[0,0,-.5],[0,0,.5]]
+        .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x,y,z)));
+      // tetrahedral sites (at ¼,¼,¼ type positions)
+      [[-1,-1,-1],[1,1,-1],[1,-1,1],[-1,1,1]]
+        .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x*.25, y*.25, z*.25)));
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function cuboidPts(wx, wy, wz) {
+  const [hx,hy,hz] = [wx/2, wy/2, wz/2];
+  const v = [
+    new THREE.Vector3(-hx,-hy,-hz), new THREE.Vector3( hx,-hy,-hz),
+    new THREE.Vector3( hx, hy,-hz), new THREE.Vector3(-hx, hy,-hz),
+    new THREE.Vector3(-hx,-hy, hz), new THREE.Vector3( hx,-hy, hz),
+    new THREE.Vector3( hx, hy, hz), new THREE.Vector3(-hx, hy, hz),
+  ];
+  const idx = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  const pts = [];
+  idx.forEach(([a,b]) => pts.push(v[a].clone(), v[b].clone()));
+  return pts;
+}
+
+// ── Three.js setup ────────────────────────────────────────────────────────
+const canvas   = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x0d1117);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 200);
+camera.position.set(3.8, 2.4, 3.8);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance   = 1.2;
+controls.maxDistance   = 14;
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dl1 = new THREE.DirectionalLight(0xffffff, 1.0);
+dl1.position.set(4, 6, 5);
+scene.add(dl1);
+const dl2 = new THREE.DirectionalLight(0x4ea8de, 0.3);
+dl2.position.set(-4, -2, -3);
+scene.add(dl2);
+
+// ── Scene objects (rebuilt on structure change) ───────────────────────────
+let pivot = null;
+const SCALE = 2.2; // world-space size of one lattice unit
+
+function buildScene(key) {
+  // Clear previous structure
+  if (pivot) { scene.remove(pivot); pivot.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); }); }
+
+  const def = STRUCTS[key];
+  pivot = new THREE.Group();
+
+  const col = new THREE.Color(def.color);
+
+  // Atoms
+  const sGeo = new THREE.SphereGeometry(0.13, 32, 32);
+  const sMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.2, metalness: 0.6,
+    emissive: col, emissiveIntensity: 0.08 });
+  def.getAtoms().forEach(p => {
+    const m = new THREE.Mesh(sGeo, sMat);
+    m.position.copy(p).multiplyScalar(SCALE);
+    pivot.add(m);
+  });
+
+  // Cell edges
+  const edgePts = def.getEdges().map(p => p.clone().multiplyScalar(SCALE));
+  const edgeGeo = new THREE.BufferGeometry().setFromPoints(edgePts);
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x4a5568, transparent: true, opacity: 0.85 });
+  pivot.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+  // Center pivot around structure
+  const center = def.center ? def.center().multiplyScalar(SCALE) : new THREE.Vector3();
+  pivot.position.copy(center.negate());
+
+  scene.add(pivot);
+
+  // Update info panel
+  updateInfo(key, def);
+}
+
+function updateInfo(key, def) {
+  const panel = document.getElementById('info-panel');
+  panel.style.setProperty('--info-color', def.color);
+  document.getElementById('info-badge').textContent    = def.badge;
+  document.getElementById('info-name').textContent     = def.name;
+  document.getElementById('info-atoms').textContent    = def.atoms;
+  document.getElementById('info-packing').textContent  = def.packing.toFixed(2) + ' %';
+  document.getElementById('info-coord').textContent    = def.coord;
+  document.getElementById('info-system').textContent   = def.system;
+  document.getElementById('info-examples').textContent = def.examples;
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────
+let current = 'bcc';
+document.querySelectorAll('.s-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    current = btn.dataset.s;
+    buildScene(current);
+    controls.reset();
+  });
+});
+
+// ── Resize ────────────────────────────────────────────────────────────────
+function onResize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+// ── Animation loop ────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+buildScene('bcc');
+animate();
+</script>
+</body>
+</html>

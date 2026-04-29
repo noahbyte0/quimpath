@@ -6,7 +6,6 @@
   <title>Tabla Periódica — QuimPath</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <style>
     :root {
       --bg:  #0d1117;
@@ -273,19 +272,6 @@
 
     .m-desc { font-size: .78rem; color: var(--tm); line-height: 1.6; border-top: 1px solid var(--bd); padding-top: 14px; }
 
-    /* Crystal viewer */
-    #m-crystal-wrap { display: none; margin-top: 16px; border-radius: 10px; overflow: hidden; border: 1px solid var(--bd); }
-    #m-crystal-wrap.visible { display: block; }
-    .m-crystal-hdr {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 7px 12px; background: var(--sf);
-      font-family: 'Space Mono', monospace; font-size: .52rem;
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .m-crystal-hdr span:first-child { color: var(--tm); }
-    .m-crystal-hdr span:last-child  { color: var(--ac); }
-    #m-crystal-canvas { display: block; width: 100%; height: 200px; }
-
     .m-close {
       position: absolute; top: 14px; right: 14px;
       background: var(--sf2); border: 1px solid var(--bd);
@@ -446,13 +432,6 @@
     <div class="m-body">
       <div class="m-grid" id="m-grid"></div>
       <div class="m-desc" id="m-desc"></div>
-      <div id="m-crystal-wrap">
-        <div class="m-crystal-hdr">
-          <span>Estructura cristalina</span>
-          <span id="m-crystal-type"></span>
-        </div>
-        <canvas id="m-crystal-canvas"></canvas>
-      </div>
     </div>
   </div>
 </div>
@@ -777,18 +756,6 @@ function openMod(e) {
 
   document.getElementById('m-desc').textContent = e.desc;
 
-  // Crystal viewer
-  const crystalWrap = document.getElementById('m-crystal-wrap');
-  const cd = CRYSTAL_DATA[e.z];
-  if (cd) {
-    document.getElementById('m-crystal-type').textContent = cd.label;
-    crystalWrap.classList.add('visible');
-    requestAnimationFrame(() => initCrystal(cd, c.color));
-  } else {
-    crystalWrap.classList.remove('visible');
-    disposeCrystal();
-  }
-
   mbg.classList.add('open');
   modalOpen = true;
 }
@@ -797,89 +764,6 @@ function closeMod(evt) {
   if (evt && evt.target !== document.getElementById('mbg')) return;
   document.getElementById('mbg').classList.remove('open');
   modalOpen = false;
-  disposeCrystal();
-}
-
-// ── Crystal structure viewer ──
-const CRYSTAL_DATA = {
-  26: { type: 'BCC', label: 'BCC — Cúbica centrada en el cuerpo',
-        basis: [[0,0,0],[0.5,0.5,0.5]] },
-  29: { type: 'FCC', label: 'FCC — Cúbica centrada en las caras',
-        basis: [[0,0,0],[0.5,0.5,0],[0.5,0,0.5],[0,0.5,0.5]] },
-  14: { type: 'Diamante cúbica', label: 'Diamante cúbica',
-        basis: [[0,0,0],[0.5,0.5,0],[0.5,0,0.5],[0,0.5,0.5],
-                [0.25,0.25,0.25],[0.75,0.75,0.25],[0.75,0.25,0.75],[0.25,0.75,0.75]] },
-};
-
-let cRaf = null, cRenderer = null, cScene = null;
-
-function disposeCrystal() {
-  if (cRaf) { cancelAnimationFrame(cRaf); cRaf = null; }
-  if (cScene) {
-    cScene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-    cScene = null;
-  }
-  if (cRenderer) { cRenderer.dispose(); cRenderer = null; }
-}
-
-function expandAtoms(basis) {
-  const atoms = [], seen = new Set();
-  for (const [f1, f2, f3] of basis) {
-    const iv = (f1 === 0 || f1 === 1) ? [0,1] : [0];
-    const jv = (f2 === 0 || f2 === 1) ? [0,1] : [0];
-    const kv = (f3 === 0 || f3 === 1) ? [0,1] : [0];
-    for (const i of iv) for (const j of jv) for (const k of kv) {
-      const key = `${f1+i},${f2+j},${f3+k}`;
-      if (!seen.has(key)) { seen.add(key); atoms.push([f1+i, f2+j, f3+k]); }
-    }
-  }
-  return atoms;
-}
-
-function initCrystal(data, hexColor) {
-  disposeCrystal();
-  const canvas = document.getElementById('m-crystal-canvas');
-  const W = canvas.clientWidth || 300, H = canvas.clientHeight || 200;
-
-  cRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  cRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  cRenderer.setSize(W, H, false);
-  cRenderer.setClearColor(0x0d1117);
-
-  cScene = new THREE.Scene();
-
-  const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 100);
-  camera.position.set(5.5, 3.5, 5.5);
-  camera.lookAt(0, 0, 0);
-
-  cScene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const dl = new THREE.DirectionalLight(0xffffff, 0.9);
-  dl.position.set(5, 8, 5);
-  cScene.add(dl);
-
-  const s = 2.4;
-  const atomColor = new THREE.Color(hexColor || '#4ea8de');
-  const positions = expandAtoms(data.basis);
-
-  const pivot = new THREE.Object3D();
-  cScene.add(pivot);
-
-  const geo = new THREE.SphereGeometry(0.21, 18, 18);
-  const mat = new THREE.MeshStandardMaterial({ color: atomColor, roughness: 0.25, metalness: 0.55 });
-  positions.forEach(([f1, f2, f3]) => {
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set((f1 - 0.5) * s, (f2 - 0.5) * s, (f3 - 0.5) * s);
-    pivot.add(m);
-  });
-
-  const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(s, s, s));
-  pivot.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x30363d })));
-
-  (function loop() {
-    cRaf = requestAnimationFrame(loop);
-    pivot.rotation.y += 0.007;
-    cRenderer.render(cScene, camera);
-  })();
 }
 
 document.addEventListener('keydown', e => {
