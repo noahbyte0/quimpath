@@ -57,15 +57,23 @@
     }
 
     #struct-btns {
-      display: flex; flex-direction: column; gap: 5px; margin-left: auto;
+      display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap;
     }
     .s-group {
       display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
     }
     .s-group-lbl {
-      font-family: 'Space Mono', monospace; font-size: .48rem;
-      text-transform: uppercase; letter-spacing: 1px;
-      color: var(--tm); white-space: nowrap; min-width: 68px;
+      font-family: 'Space Mono', monospace; font-size: .46rem;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--tm); white-space: nowrap;
+      padding: 3px 7px;
+      border: 1px solid var(--bd);
+      border-radius: 4px;
+      background: var(--sf);
+    }
+    .s-sep {
+      width: 1px; height: 22px;
+      background: var(--bd); flex-shrink: 0;
     }
     .s-btn {
       font-family: 'Space Mono', monospace; font-size: .6rem;
@@ -138,22 +146,19 @@
   <h1>Cristalografía 3D</h1>
   <div id="struct-btns">
     <div class="s-group">
-      <span class="s-group-lbl">Metálicas</span>
+      <span class="s-group-lbl">Empaquetamiento</span>
       <button class="s-btn" data-s="sc">CS</button>
       <button class="s-btn active" data-s="bcc">BCC</button>
       <button class="s-btn" data-s="fcc">FCC</button>
       <button class="s-btn" data-s="hcp">HCP</button>
+      <button class="s-btn" data-s="diamond">Diamante</button>
     </div>
+    <div class="s-sep"></div>
     <div class="s-group">
-      <span class="s-group-lbl">Iónicas</span>
+      <span class="s-group-lbl">Compuestos</span>
       <button class="s-btn" data-s="nacl">NaCl</button>
       <button class="s-btn" data-s="cscl">CsCl</button>
       <button class="s-btn" data-s="zns">ZnS</button>
-    </div>
-    <div class="s-group">
-      <span class="s-group-lbl">Covalentes</span>
-      <button class="s-btn" data-s="diamond">Diamante</button>
-      <button class="s-btn" data-s="graphite">Grafito</button>
     </div>
   </div>
 </nav>
@@ -379,79 +384,6 @@ const STRUCTS = {
     getEdges: () => cuboidPts(1, 1, 1),
   },
 
-  graphite: {
-    badge: 'Grafito', name: 'Grafito',
-    system: 'Hexagonal (P63/mmc)', atoms: 4, packing: 26.0, coord: '3 (capa) + VdW',
-    color: '#94a3b8', bondType: 'Covalente (capas) / Van der Waals',
-    examples: 'C (grafito), grafeno (monocapa)',
-    cam: [8, 5, 8],
-    colors: { c1: '#cbd5e1', c2: '#64748b' },
-    sizes:  { c1: 0.09,      c2: 0.09      },
-    getAtoms: () => {
-      // Red hexagonal normalizada (a=1): vectores a1=(1,0), a2=(-½,√3/2) en plano XZ
-      // Dos átomos por celda: A en (0,0), B en (0, 1/√3) [en XZ]
-      // Apilamiento ABAB: capa B desplazada por τ=(½, √3/6) en XZ
-      // d_interlayer = 1.36 (3.35 Å / 2.46 Å)
-      const sq3 = Math.sqrt(3), d = 1.36;
-      const pts = [];
-      // Supercelda 3×3 centrada en el origen (i,j ∈ {-1,0,1})
-      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
-        const ox = i - j * 0.5;
-        const oz = j * sq3 / 2;
-        // Capa A (y=0)
-        pts.push({ pos: new THREE.Vector3(ox,       0, oz            ), type: 'c1' });
-        pts.push({ pos: new THREE.Vector3(ox,       0, oz + 1/sq3    ), type: 'c1' });
-        // Capa B (y=d, shift τ)
-        pts.push({ pos: new THREE.Vector3(ox + 0.5, d, oz + sq3/6   ), type: 'c2' });
-        pts.push({ pos: new THREE.Vector3(ox + 0.5, d, oz + sq3/6 + 1/sq3), type: 'c2' });
-      }
-      return pts;
-    },
-    getEdges: () => {
-      // Aristas del prisma de la celda primitiva (rombo con a1, a2 × altura d)
-      const sq3 = Math.sqrt(3), d = 1.36;
-      const corners = [
-        new THREE.Vector3( 0,   0, 0      ),
-        new THREE.Vector3( 1,   0, 0      ),
-        new THREE.Vector3( 0.5, 0, sq3/2  ),
-        new THREE.Vector3(-0.5, 0, sq3/2  ),
-      ];
-      const cornersT = corners.map(v => v.clone().setY(d));
-      const pts = [];
-      for (let i = 0; i < 4; i++) {
-        pts.push(corners[i].clone(),  corners[(i+1)%4].clone());
-        pts.push(cornersT[i].clone(), cornersT[(i+1)%4].clone());
-        pts.push(corners[i].clone(),  cornersT[i].clone());
-      }
-      return pts;
-    },
-    getExtraLines: () => {
-      // Deltas desde átomo tipo-A hasta sus 3 vecinos tipo-B en la misma capa
-      // (verificados: |delta| = 1/√3 = longitud de enlace C-C normalizada)
-      const sq3 = Math.sqrt(3), d = 1.36;
-      const b = 1 / sq3;
-      const deltas = [
-        new THREE.Vector3( 0,   0,  b    ),
-        new THREE.Vector3(-0.5, 0, -b/2  ),
-        new THREE.Vector3( 0.5, 0, -b/2  ),
-      ];
-      const pts = [];
-      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
-        const ox = i - j * 0.5, oz = j * sq3 / 2;
-        // Átomo tipo-A de capa A
-        const pA = new THREE.Vector3(ox,       0, oz       );
-        // Átomo tipo-A de capa B
-        const pB = new THREE.Vector3(ox + 0.5, d, oz + sq3/6);
-        deltas.forEach(dv => {
-          pts.push(pA.clone(), pA.clone().add(dv));
-          pts.push(pB.clone(), pB.clone().add(dv));
-        });
-      }
-      return { pts, color: 0x94a3b8 };
-    },
-    // Centro geométrico promedio de los 36 átomos de la supercelda 3×3
-    center: () => new THREE.Vector3(0.25, 1.36 / 2, Math.sqrt(3) / 4),
-  },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
