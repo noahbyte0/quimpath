@@ -134,6 +134,10 @@
     <button class="s-btn" data-s="fcc">FCC</button>
     <button class="s-btn" data-s="hcp">HCP</button>
     <button class="s-btn" data-s="diamond">Diamante</button>
+    <button class="s-btn" data-s="nacl">NaCl</button>
+    <button class="s-btn" data-s="cscl">CsCl</button>
+    <button class="s-btn" data-s="zns">ZnS</button>
+    <button class="s-btn" data-s="graphite">Grafito</button>
   </div>
 </nav>
 
@@ -155,6 +159,14 @@
   <div class="info-row">
     <span class="info-lbl">Sistema</span>
     <span class="info-val" id="info-system">Cúbico</span>
+  </div>
+  <div class="info-row">
+    <span class="info-lbl">Tipo de enlace</span>
+    <span class="info-val" id="info-bond">Metálico</span>
+  </div>
+  <div class="info-row" id="info-radii-row" style="display:none">
+    <span class="info-lbl">Radios iónicos</span>
+    <span class="info-val" style="font-size:.65rem;text-align:right" id="info-radii">—</span>
   </div>
   <div class="info-row" style="border:none; padding-top:8px; display:block">
     <span class="info-lbl">Ejemplos</span><br>
@@ -179,7 +191,7 @@ const STRUCTS = {
   sc: {
     badge: 'CS', name: 'Cúbica Simple',
     system: 'Cúbico', atoms: 1, packing: 52.36, coord: 6,
-    color: '#e6edf3',
+    color: '#e6edf3', bondType: 'Metálico',
     examples: 'Po (única ocurrencia natural)',
     getAtoms: () => {
       const pts = [];
@@ -193,7 +205,7 @@ const STRUCTS = {
   bcc: {
     badge: 'BCC', name: 'Cúbica centrada en el cuerpo',
     system: 'Cúbico', atoms: 2, packing: 68.02, coord: 8,
-    color: '#4ea8de',
+    color: '#4ea8de', bondType: 'Metálico',
     examples: 'Fe, W, Cr, Mo, Na, K',
     getAtoms: () => {
       const pts = [];
@@ -208,7 +220,7 @@ const STRUCTS = {
   fcc: {
     badge: 'FCC', name: 'Cúbica centrada en las caras',
     system: 'Cúbico', atoms: 4, packing: 74.05, coord: 12,
-    color: '#2a9d8f',
+    color: '#2a9d8f', bondType: 'Metálico',
     examples: 'Cu, Au, Al, Ni, Pt, Ag',
     getAtoms: () => {
       const pts = [];
@@ -225,7 +237,7 @@ const STRUCTS = {
   hcp: {
     badge: 'HCP', name: 'Hexagonal Compacta',
     system: 'Hexagonal', atoms: 6, packing: 74.05, coord: 12,
-    color: '#f984c7',
+    color: '#f984c7', bondType: 'Metálico',
     examples: 'Mg, Ti, Zn, Co, Cd, Zr',
     getAtoms: () => {
       // ideal c/a = sqrt(8/3); a normalised to 1
@@ -270,7 +282,7 @@ const STRUCTS = {
   diamond: {
     badge: 'Diamante', name: 'Diamante Cúbica',
     system: 'Cúbico', atoms: 8, packing: 34.01, coord: 4,
-    color: '#bf5af2',
+    color: '#bf5af2', bondType: 'Covalente',
     examples: 'C (diamante), Si, Ge',
     getAtoms: () => {
       const pts = [];
@@ -285,6 +297,149 @@ const STRUCTS = {
       return pts;
     },
     getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  // ── Ionic / compound structures ──────────────────────────────────────────
+
+  nacl: {
+    badge: 'NaCl', name: 'Cloruro de Sodio',
+    system: 'Cúbico (Fm3̄m)', atoms: '4 Na⁺ + 4 Cl⁻', packing: 65.3, coord: '6 / 6',
+    color: '#4ea8de', bondType: 'Iónico',
+    ionicRadii: 'Na⁺ = 102 pm  /  Cl⁻ = 181 pm',
+    examples: 'NaCl, KCl, MgO, FeO',
+    cam: [4.5, 2.8, 4.5],
+    colors: { na: '#4ea8de', cl: '#3fb950' },
+    sizes:  { na: 0.10,      cl: 0.16      },
+    getAtoms: () => {
+      const pts = [];
+      for (let i=-1; i<=1; i++) for (let j=-1; j<=1; j++) for (let k=-1; k<=1; k++) {
+        const type = (((i+j+k) % 2) + 2) % 2 === 0 ? 'na' : 'cl';
+        pts.push({ pos: new THREE.Vector3(i/2, j/2, k/2), type });
+      }
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  cscl: {
+    badge: 'CsCl', name: 'Cloruro de Cesio',
+    system: 'Cúbico (Pm3̄m)', atoms: '1 Cs⁺ + 1 Cl⁻', packing: 66.9, coord: '8 / 8',
+    color: '#a78bfa', bondType: 'Iónico',
+    ionicRadii: 'Cs⁺ = 174 pm  /  Cl⁻ = 181 pm',
+    examples: 'CsCl, CsBr, CsI, TlCl',
+    colors: { cs: '#a78bfa', cl: '#3fb950' },
+    sizes:  { cs: 0.16,      cl: 0.15      },
+    getAtoms: () => {
+      const pts = [];
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push({ pos: new THREE.Vector3(i-.5, j-.5, k-.5), type: 'cl' });
+      pts.push({ pos: new THREE.Vector3(0, 0, 0), type: 'cs' });
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  zns: {
+    badge: 'ZnS', name: 'Zinc Blenda (Esfalerita)',
+    system: 'Cúbico (F4̄3m)', atoms: '4 Zn²⁺ + 4 S²⁻', packing: 70.2, coord: '4 / 4',
+    color: '#26d4f0', bondType: 'Covalente / Iónico',
+    ionicRadii: 'Zn²⁺ = 74 pm  /  S²⁻ = 184 pm',
+    examples: 'ZnS, GaAs, InP, SiC, CdTe',
+    colors: { zn: '#26d4f0', s: '#fbbf24' },
+    sizes:  { zn: 0.10,      s: 0.15      },
+    getAtoms: () => {
+      const pts = [];
+      // S en subred FCC
+      for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
+        pts.push({ pos: new THREE.Vector3(i-.5, j-.5, k-.5), type: 's' });
+      [[0,-.5,0],[0,.5,0],[-.5,0,0],[.5,0,0],[0,0,-.5],[0,0,.5]]
+        .forEach(([x,y,z]) => pts.push({ pos: new THREE.Vector3(x,y,z), type: 's' }));
+      // Zn en 4 huecos tetraédricos
+      [[-1,-1,-1],[1,1,-1],[1,-1,1],[-1,1,1]]
+        .forEach(([x,y,z]) => pts.push({ pos: new THREE.Vector3(x*.25,y*.25,z*.25), type: 'zn' }));
+      return pts;
+    },
+    getEdges: () => cuboidPts(1, 1, 1),
+  },
+
+  graphite: {
+    badge: 'Grafito', name: 'Grafito',
+    system: 'Hexagonal (P63/mmc)', atoms: 4, packing: 26.0, coord: '3 (capa) + VdW',
+    color: '#94a3b8', bondType: 'Covalente (capas) / Van der Waals',
+    examples: 'C (grafito), grafeno (monocapa)',
+    cam: [5.5, 3.5, 5.5],
+    colors: { c1: '#cbd5e1', c2: '#64748b' },
+    sizes:  { c1: 0.09,      c2: 0.09      },
+    getAtoms: () => {
+      // Celda hexagonal normalizada (a=1): a1=(1,0), a2=(-0.5,√3/2) en plano XZ
+      // Interlayer d = c/a_ideal ≈ 1.36  (3.35/2.46)
+      const sq3 = Math.sqrt(3), d = 1.36;
+      // 4 átomos por celda primitiva × supercelda 2×1 = 8 átomos por capa
+      const pts = [];
+      for (let i=0; i<2; i++) for (let j=0; j<1; j++) {
+        const ox = i - j*0.5, oz = j*sq3/2;
+        // Capa A (y=0): tipo c1
+        pts.push({ pos: new THREE.Vector3(ox,       0, oz),          type:'c1' });
+        pts.push({ pos: new THREE.Vector3(ox,       0, oz+1/sq3),    type:'c1' });
+        // Capa A espejada (para completar 2 columnas del prisma)
+        pts.push({ pos: new THREE.Vector3(ox-0.5,   0, oz+sq3/2),    type:'c1' });
+        pts.push({ pos: new THREE.Vector3(ox-0.5,   0, oz+sq3/2+1/sq3), type:'c1' });
+        // Capa B (y=d, ABAB: shift τ=(0.5, √3/6) en XZ): tipo c2
+        pts.push({ pos: new THREE.Vector3(ox+0.5,   d, oz+sq3/6),          type:'c2' });
+        pts.push({ pos: new THREE.Vector3(ox+0.5,   d, oz+sq3/6+1/sq3),    type:'c2' });
+        pts.push({ pos: new THREE.Vector3(ox,        d, oz+sq3/2+sq3/6),    type:'c2' });
+        pts.push({ pos: new THREE.Vector3(ox,        d, oz+sq3/2+sq3/6+1/sq3), type:'c2' });
+      }
+      return pts;
+    },
+    getEdges: () => {
+      // Prisma hexagonal de la celda unitaria primitiva (a=1, c=1.36)
+      const sq3 = Math.sqrt(3), d = 1.36;
+      const a1 = new THREE.Vector3(1,0,0), a2 = new THREE.Vector3(-0.5,0,sq3/2);
+      // Contorno del prisma 2×1: 4 esquinas × 2 alturas
+      const c = [
+        new THREE.Vector3(0,0,0),
+        a1.clone(),
+        a1.clone().add(a2.clone().multiplyScalar(1)),
+        a2.clone(),
+      ];
+      const pts = [];
+      const ct = c.map(v => v.clone().setY(d));
+      for (let i=0;i<4;i++) {
+        pts.push(c[i].clone(), c[(i+1)%4].clone());
+        pts.push(ct[i].clone(), ct[(i+1)%4].clone());
+        pts.push(c[i].clone(), ct[i].clone());
+      }
+      return pts;
+    },
+    getExtraLines: () => {
+      // Enlaces covalentes C-C dentro de cada capa
+      const sq3 = Math.sqrt(3), d = 1.36;
+      const bondLen = 1/sq3;
+      const pts = [];
+      // Átomos A de la capa (mismos índices que getAtoms, solo los c1)
+      const layerA = [];
+      for (let i=0; i<2; i++) for (let j=0; j<1; j++) {
+        const ox = i - j*0.5, oz = j*sq3/2;
+        layerA.push(new THREE.Vector3(ox, 0, oz));
+        layerA.push(new THREE.Vector3(ox-0.5, 0, oz+sq3/2));
+      }
+      // Cada átomo A enlaza con su B vecino (+Z), (-X-Z), (+X-Z)
+      const deltas = [
+        new THREE.Vector3(0, 0, bondLen),
+        new THREE.Vector3(-0.5, 0, -bondLen/2),
+        new THREE.Vector3(0.5, 0, -bondLen/2),
+      ];
+      for (const y of [0, d]) {
+        layerA.forEach(a => {
+          deltas.forEach(dv => {
+            pts.push(a.clone().setY(y), a.clone().setY(y).add(dv));
+          });
+        });
+      }
+      return { pts, color: 0x94a3b8 };
+    },
+    center: () => new THREE.Vector3(0.25, 1.36/2, Math.sqrt(3)/4),
   },
 };
 
@@ -333,21 +488,32 @@ let pivot = null;
 const SCALE = 2.2; // world-space size of one lattice unit
 
 function buildScene(key) {
-  // Clear previous structure
   if (pivot) { scene.remove(pivot); pivot.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); }); }
 
   const def = STRUCTS[key];
   pivot = new THREE.Group();
 
-  const col = new THREE.Color(def.color);
+  // Normalize atoms to [{pos, type}]
+  const rawAtoms = def.getAtoms();
+  const atoms = rawAtoms[0] instanceof THREE.Vector3
+    ? rawAtoms.map(p => ({ pos: p, type: 'default' }))
+    : rawAtoms;
 
-  // Atoms
-  const sGeo = new THREE.SphereGeometry(0.13, 32, 32);
-  const sMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.2, metalness: 0.6,
-    emissive: col, emissiveIntensity: 0.08 });
-  def.getAtoms().forEach(p => {
-    const m = new THREE.Mesh(sGeo, sMat);
-    m.position.copy(p).multiplyScalar(SCALE);
+  // Build per-type geometry + material (cached by type)
+  const geoCache = {}, matCache = {};
+  atoms.forEach(({ pos, type }) => {
+    if (!geoCache[type]) {
+      const r = def.sizes?.[type] ?? 0.13;
+      geoCache[type] = new THREE.SphereGeometry(r, 32, 32);
+    }
+    if (!matCache[type]) {
+      const hexCol = def.colors?.[type] ?? def.color;
+      const c = new THREE.Color(hexCol);
+      matCache[type] = new THREE.MeshStandardMaterial({
+        color: c, roughness: 0.2, metalness: 0.6, emissive: c, emissiveIntensity: 0.08 });
+    }
+    const m = new THREE.Mesh(geoCache[type], matCache[type]);
+    m.position.copy(pos).multiplyScalar(SCALE);
     pivot.add(m);
   });
 
@@ -356,6 +522,13 @@ function buildScene(key) {
   const edgeGeo = new THREE.BufferGeometry().setFromPoints(edgePts);
   const edgeMat = new THREE.LineBasicMaterial({ color: 0x4a5568, transparent: true, opacity: 0.85 });
   pivot.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+  // Extra lines (e.g. graphite covalent bonds)
+  if (def.getExtraLines) {
+    const { pts, color } = def.getExtraLines();
+    const xGeo = new THREE.BufferGeometry().setFromPoints(pts.map(p => p.clone().multiplyScalar(SCALE)));
+    pivot.add(new THREE.LineSegments(xGeo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.65 })));
+  }
 
   // Center pivot around structure
   const center = def.center ? def.center().multiplyScalar(SCALE) : new THREE.Vector3();
@@ -379,10 +552,19 @@ function updateInfo(key, def) {
   document.getElementById('info-badge').textContent    = def.badge;
   document.getElementById('info-name').textContent     = def.name;
   document.getElementById('info-atoms').textContent    = def.atoms;
-  document.getElementById('info-packing').textContent  = def.packing.toFixed(2) + ' %';
+  document.getElementById('info-packing').textContent  =
+    (typeof def.packing === 'number' ? def.packing.toFixed(2) : def.packing) + ' %';
   document.getElementById('info-coord').textContent    = def.coord;
   document.getElementById('info-system').textContent   = def.system;
+  document.getElementById('info-bond').textContent     = def.bondType ?? '—';
   document.getElementById('info-examples').textContent = def.examples;
+  const radiiRow = document.getElementById('info-radii-row');
+  if (def.ionicRadii) {
+    radiiRow.style.display = '';
+    document.getElementById('info-radii').textContent = def.ionicRadii;
+  } else {
+    radiiRow.style.display = 'none';
+  }
 }
 
 // ── Buttons ───────────────────────────────────────────────────────────────
