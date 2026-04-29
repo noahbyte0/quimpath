@@ -238,6 +238,7 @@
     .m-label { font-family: 'Space Mono', monospace; font-size: .5rem; text-transform: uppercase; letter-spacing: 1px; color: var(--tm); }
     .m-val   { font-size: .82rem; font-weight: 600; color: var(--tx); }
     .m-val.mono { font-family: 'Space Mono', monospace; font-size: .72rem; }
+    .m-val.mono sup { font-size: .7em; vertical-align: super; line-height: 0; }
 
     .m-ox { display: flex; gap: 4px; flex-wrap: wrap; }
     .m-ox span {
@@ -668,6 +669,11 @@ function buildLegend() {
 // ── Modal ──
 let modalOpen = false;
 
+const SUPER_MAP = {'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+function fmtCfg(cfg) {
+  return cfg.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, m => `<sup>${[...m].map(c => SUPER_MAP[c]).join('')}</sup>`);
+}
+
 function openMod(e) {
   const c = CAT[e.cat];
   const mbg = document.getElementById('mbg');
@@ -709,7 +715,7 @@ function openMod(e) {
     </div>
     <div class="m-field" style="grid-column:1/-1">
       <span class="m-label">Configuración electrónica</span>
-      <span class="m-val mono" style="font-size:.68rem;word-break:break-all">${e.cfg}</span>
+      <span class="m-val mono" style="font-size:.82rem;word-break:break-all">${fmtCfg(e.cfg)}</span>
     </div>
     <div class="m-field">
       <span class="m-label">Estados de oxidación</span>
