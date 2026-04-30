@@ -85,9 +85,20 @@
     .s-btn:hover  { color: var(--tx); border-color: var(--tm); }
     .s-btn.active { color: var(--ac); border-color: var(--ac); background: rgba(42,157,143,.1); }
 
+    /* ── LEFT PANEL STACK ── */
+    #left-panel-stack {
+      position: fixed; bottom: 28px; left: 24px; z-index: 10;
+      display: flex; flex-direction: column; gap: 8px; align-items: stretch;
+    }
+    #count-card {
+      background: rgba(22,27,34,.88);
+      border: 1px solid var(--bd); border-radius: 14px;
+      padding: 10px 16px; backdrop-filter: blur(12px);
+      min-width: 220px; max-width: 280px;
+    }
+
     /* ── INFO PANEL ── */
     #info-panel {
-      position: fixed; bottom: 28px; left: 24px; z-index: 10;
       background: rgba(22,27,34,.88);
       border: 1px solid var(--bd);
       border-radius: 14px;
@@ -123,7 +134,7 @@
 
     /* ── HINTS ── */
     #hints {
-      position: fixed; bottom: 28px; right: 24px; z-index: 10;
+      position: fixed; top: 64px; right: 20px; z-index: 10;
       font-family: 'Space Mono', monospace; font-size: .52rem;
       color: var(--tm); text-align: right; line-height: 2;
       pointer-events: none;
@@ -580,7 +591,7 @@ const PLANES = {
   cubic: [
     { label: '(100)', normal: [1, 0, 0],                   color: '#ff6b6b' },
     { label: '(110)', normal: [1, 1, 0],                   color: '#51cf66' },
-    { label: '(111)', normal: [1, 1, 1],                   color: '#74c0fc' },
+    { label: '(111)', normal: [1, 1, 1],                   color: '#74c0fc', cellOffset: [-1/6, -1/6, -1/6] },
   ],
   hcp: [
     { label: '(0001)',  normal: [0, 1, 0],                 color: '#f9c74f' },
@@ -823,6 +834,14 @@ function stopCountAnim() {
   animActive = false;
   animPaused = false;
   if (animMats.length) restoreAtomMaterials();
+  // Reset any residual glow on all atom meshes
+  atomMeshes.forEach(mesh => {
+    if (mesh.material) {
+      mesh.material.emissiveIntensity = 0.08;
+      mesh.material.transparent = false;
+      mesh.material.opacity = 1.0;
+    }
+  });
   showAnimOverlay(false);
   updateInfo(current, STRUCTS[current]);
 }
@@ -839,28 +858,50 @@ function applyPlane() {
     planeMesh.material.dispose();
     planeMesh = null;
   }
-  if (!currentPlane || !planeVisible || !pivot) return;
+  if (!currentPlane || !pivot) return;
 
   const N         = currentN;
   const centerVec = getSupercellCenter(current, N);
-  const normal    = new THREE.Vector3(...currentPlane.normal).normalize();
-  // Size = bounding-sphere diameter of the active supercell (+ 5 % margin)
-  const size = current === 'hcp'
-    ? SCALE * 2 * Math.sqrt(1 + (N * Math.sqrt(8/3) / 2) ** 2) * 1.05
-    : N * SCALE * Math.sqrt(3) * 1.05;
 
-  const geo = new THREE.PlaneGeometry(size, size);
   const mat = new THREE.MeshBasicMaterial({
     color: new THREE.Color(currentPlane.color),
     transparent: true, opacity: 0.22,
     side: THREE.DoubleSide, depthWrite: false,
   });
-  planeMesh = new THREE.Mesh(geo, mat);
-  planeMesh.renderOrder = 1;
 
-  const defNorm = new THREE.Vector3(0, 0, 1);
-  if (normal.dot(defNorm) < 0.9999) planeMesh.quaternion.setFromUnitVectors(defNorm, normal);
-  planeMesh.position.copy(centerVec.clone().multiplyScalar(SCALE));
+  let geo;
+
+  // (111) cubic N=1: render as triangle connecting the 3 corners at x+y+z = -0.5
+  if (currentPlane.label === '(111)' && current !== 'hcp' && N === 1) {
+    const s = SCALE * 0.5;
+    const verts = new Float32Array([
+      -s, -s,  s,   // corner (-0.5, -0.5,  0.5)
+      -s,  s, -s,   // corner (-0.5,  0.5, -0.5)
+       s, -s, -s,   // corner ( 0.5, -0.5, -0.5)
+    ]);
+    geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    geo.setIndex([0, 1, 2, 2, 1, 0]); // both faces for DoubleSide
+    geo.computeVertexNormals();
+    planeMesh = new THREE.Mesh(geo, mat);
+    planeMesh.position.set(0, 0, 0);
+  } else {
+    const normal = new THREE.Vector3(...currentPlane.normal).normalize();
+    const size = current === 'hcp'
+      ? SCALE * 2 * Math.sqrt(1 + (N * Math.sqrt(8/3) / 2) ** 2) * 1.05
+      : N * SCALE * Math.sqrt(3) * 1.05;
+    geo = new THREE.PlaneGeometry(size, size);
+    planeMesh = new THREE.Mesh(geo, mat);
+    const defNorm = new THREE.Vector3(0, 0, 1);
+    if (normal.dot(defNorm) < 0.9999) planeMesh.quaternion.setFromUnitVectors(defNorm, normal);
+    const cellOff = (currentPlane.cellOffset && N === 1)
+      ? new THREE.Vector3(...currentPlane.cellOffset).multiplyScalar(SCALE)
+      : new THREE.Vector3();
+    planeMesh.position.copy(centerVec.clone().multiplyScalar(SCALE).add(cellOff));
+  }
+
+  planeMesh.renderOrder = 1;
+  planeMesh.visible = planeVisible;
   pivot.add(planeMesh);
 }
 
@@ -880,6 +921,7 @@ function updatePlaneButtons(key) {
     if (currentPlane && currentPlane.label === plane.label) btn.classList.add('active');
 
     btn.addEventListener('click', () => {
+      stopCountAnim();
       if (currentPlane && currentPlane.label === plane.label) {
         currentPlane = null;
         btn.classList.remove('active');
@@ -950,9 +992,11 @@ document.getElementById('anim-stop-btn').addEventListener('click', stopCountAnim
 
 // ── Plane toggle ──────────────────────────────────────────────────────────
 document.getElementById('plane-toggle').addEventListener('click', () => {
+  stopCountAnim();
   planeVisible = !planeVisible;
   document.getElementById('plane-toggle').textContent = planeVisible ? 'Ocultar' : 'Mostrar';
-  applyPlane();
+  // Toggle visibility directly — no mesh removal, avoids rendering state artifacts
+  if (planeMesh) planeMesh.visible = planeVisible;
 });
 
 // ── Resize ────────────────────────────────────────────────────────────────
