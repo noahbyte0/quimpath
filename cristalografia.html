@@ -174,6 +174,9 @@
     }
     .anim-btn:hover { color: var(--tx); border-color: var(--tm); }
 
+    /* ── SUPERSCRIPTS ── */
+    sup { font-size: 0.78em; vertical-align: 0.45em; line-height: 0; }
+
     /* ── LEGEND DOT ── */
     .legend-dot {
       display: inline-block; width: 8px; height: 8px;
@@ -387,7 +390,7 @@ const STRUCTS = {
       const pts = [];
       for (let i=0;i<=1;i++) for (let j=0;j<=1;j++) for (let k=0;k<=1;k++)
         pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
-      // face centers: ±½ on each axis pair
+      // face centers: ±1/2 on each axis pair
       [[0,-.5,0],[0,.5,0],[-.5,0,0],[.5,0,0],[0,0,-.5],[0,0,.5]]
         .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x,y,z)));
       return pts;
@@ -452,7 +455,7 @@ const STRUCTS = {
         pts.push(new THREE.Vector3(i-.5, j-.5, k-.5));
       [[0,-.5,0],[0,.5,0],[-.5,0,0],[.5,0,0],[0,0,-.5],[0,0,.5]]
         .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x,y,z)));
-      // tetrahedral sites (at ¼,¼,¼ type positions)
+      // tetrahedral sites (at 1/4,1/4,1/4 type positions)
       [[-1,-1,-1],[1,1,-1],[1,-1,1],[-1,1,1]]
         .forEach(([x,y,z]) => pts.push(new THREE.Vector3(x*.25, y*.25, z*.25)));
       return pts;
@@ -464,9 +467,9 @@ const STRUCTS = {
 
   nacl: {
     badge: 'NaCl', name: 'Cloruro de Sodio',
-    system: 'Cúbico (Fm3̄m)', atoms: '4 Na⁺ + 4 Cl⁻', packing: 65.3, coord: '6 / 6',
+    system: 'Cúbico (Fm3̄m)', atoms: '4 Na<sup>+</sup> + 4 Cl<sup>−</sup>', packing: 65.3, coord: '6 / 6',
     color: '#4ea8de', bondType: 'Iónico',
-    ionicRadii: 'Na⁺ = 102 pm  /  Cl⁻ = 181 pm',
+    ionicRadii: 'Na<sup>+</sup> = 102 pm  /  Cl<sup>−</sup> = 181 pm',
     examples: 'NaCl, KCl, MgO, FeO',
     cam: [4.5, 2.8, 4.5],
     colors: { na: '#4ea8de', cl: '#3fb950' },
@@ -484,9 +487,9 @@ const STRUCTS = {
 
   cscl: {
     badge: 'CsCl', name: 'Cloruro de Cesio',
-    system: 'Cúbico (Pm3̄m)', atoms: '1 Cs⁺ + 1 Cl⁻', packing: 66.9, coord: '8 / 8',
+    system: 'Cúbico (Pm3̄m)', atoms: '1 Cs<sup>+</sup> + 1 Cl<sup>−</sup>', packing: 66.9, coord: '8 / 8',
     color: '#a78bfa', bondType: 'Iónico',
-    ionicRadii: 'Cs⁺ = 174 pm  /  Cl⁻ = 181 pm',
+    ionicRadii: 'Cs<sup>+</sup> = 174 pm  /  Cl<sup>−</sup> = 181 pm',
     examples: 'CsCl, CsBr, CsI, TlCl',
     colors: { cs: '#a78bfa', cl: '#3fb950' },
     sizes:  { cs: 0.16,      cl: 0.15      },
@@ -502,9 +505,9 @@ const STRUCTS = {
 
   zns: {
     badge: 'ZnS', name: 'Zinc Blenda (Esfalerita)',
-    system: 'Cúbico (F4̄3m)', atoms: '4 Zn²⁺ + 4 S²⁻', packing: 70.2, coord: '4 / 4',
+    system: 'Cúbico (F4̄3m)', atoms: '4 Zn<sup>2+</sup> + 4 S<sup>2−</sup>', packing: 70.2, coord: '4 / 4',
     color: '#26d4f0', bondType: 'Covalente / Iónico',
-    ionicRadii: 'Zn²⁺ = 74 pm  /  S²⁻ = 184 pm',
+    ionicRadii: 'Zn<sup>2+</sup> = 74 pm  /  S<sup>2−</sup> = 184 pm',
     examples: 'ZnS, GaAs, InP, SiC, CdTe',
     colors: { zn: '#26d4f0', s: '#fbbf24' },
     sizes:  { zn: 0.10,      s: 0.15      },
@@ -600,8 +603,8 @@ const PLANES = {
     { label: '(111)', normal: [1, 1, 1],                   color: '#74c0fc', cellOffset: [-1/6, -1/6, -1/6] },
   ],
   hcp: [
-    { label: '(0001)',  normal: [0, 1, 0],                 color: '#f9c74f' },
-    { label: '(10-10)', normal: [Math.sqrt(3)/2, 0, 0.5],  color: '#f8961e' },
+    { id: '0001', label: '(0001)',  normal: [0, 1, 0],                color: '#f9c74f' },
+    { id: '1010', label: '(101\u03050)', normal: [Math.sqrt(3)/2, 0, 0.5], color: '#f8961e' },
   ],
 };
 
@@ -709,7 +712,7 @@ function updateInfo(key, def) {
   panel.style.setProperty('--info-color', def.color);
   document.getElementById('info-badge').textContent    = def.badge;
   document.getElementById('info-name').textContent     = def.name;
-  document.getElementById('info-atoms').textContent    = def.atoms;
+  document.getElementById('info-atoms').innerHTML    = def.atoms;
   document.getElementById('info-packing').textContent  =
     (typeof def.packing === 'number' ? def.packing.toFixed(2) : def.packing) + ' %';
   document.getElementById('info-coord').textContent    = def.coord;
@@ -719,7 +722,7 @@ function updateInfo(key, def) {
   const radiiRow = document.getElementById('info-radii-row');
   if (def.ionicRadii) {
     radiiRow.style.display = '';
-    document.getElementById('info-radii').textContent = def.ionicRadii;
+    document.getElementById('info-radii').innerHTML = def.ionicRadii;
   } else {
     radiiRow.style.display = 'none';
   }
@@ -728,31 +731,31 @@ function updateInfo(key, def) {
 // ── Atom-count animation data ─────────────────────────────────────────────
 const COUNT_ANIM = {
   sc: [
-    { text: '1 átomo de esquina comparte 8 celdas → vale <b>⅛</b>', hi: [0], dur: 2400 },
-    { text: '8 esquinas × ⅛ = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 2400 },
-    { text: 'Total: <b>1 átomo por celda unitaria ✓</b>', hi: [0,1,2,3,4,5,6,7], dur: 0 },
+    { text: '1 átomo de esquina comparte 8 celdas → vale <b>1/8</b>', hi: [0], dur: 2400 },
+    { text: '8 esquinas × 1/8 = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 2400 },
+    { text: 'Total: <b>1 átomo por celda unitaria</b>', hi: [0,1,2,3,4,5,6,7], dur: 0 },
   ],
   bcc: [
-    { text: '1 átomo de esquina comparte 8 celdas → vale <b>⅛</b>', hi: [0], dur: 2200 },
-    { text: '8 esquinas × ⅛ = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 2200 },
+    { text: '1 átomo de esquina comparte 8 celdas → vale <b>1/8</b>', hi: [0], dur: 2200 },
+    { text: '8 esquinas × 1/8 = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 2200 },
     { text: 'Átomo del cuerpo, no compartido → vale <b>1</b>', hi: [8], dur: 2200 },
-    { text: 'Esquinas + cuerpo: 1 + 1 = <b>2 átomos por celda ✓</b>', hi: [0,1,2,3,4,5,6,7,8], dur: 0 },
+    { text: 'Esquinas + cuerpo: 1 + 1 = <b>2 átomos por celda</b>', hi: [0,1,2,3,4,5,6,7,8], dur: 0 },
   ],
   fcc: [
-    { text: '1 átomo de esquina comparte 8 celdas → vale <b>⅛</b>', hi: [0], dur: 1800 },
-    { text: '8 esquinas × ⅛ = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 1800 },
-    { text: '1 átomo de cara comparte 2 celdas → vale <b>½</b>', hi: [8], dur: 1800 },
-    { text: '6 caras × ½ = <b>3 átomos</b>', hi: [8,9,10,11,12,13], dur: 1800 },
-    { text: 'Esquinas + caras: 1 + 3 = <b>4 átomos por celda ✓</b>', hi: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], dur: 0 },
+    { text: '1 átomo de esquina comparte 8 celdas → vale <b>1/8</b>', hi: [0], dur: 1800 },
+    { text: '8 esquinas × 1/8 = <b>1 átomo</b>', hi: [0,1,2,3,4,5,6,7], dur: 1800 },
+    { text: '1 átomo de cara comparte 2 celdas → vale <b>1/2</b>', hi: [8], dur: 1800 },
+    { text: '6 caras × 1/2 = <b>3 átomos</b>', hi: [8,9,10,11,12,13], dur: 1800 },
+    { text: 'Esquinas + caras: 1 + 3 = <b>4 átomos por celda</b>', hi: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], dur: 0 },
   ],
 };
 
 const COUNT_STATIC = {
-  hcp:     'La celda hexagonal compacta contiene <b>6 átomos</b>:<br>12 vértices × ⅙ = 2<br>2 centros de cara × ½ = 1<br>3 átomos interiores × 1 = 3<br>Total: 2 + 1 + 3 = <b>6 átomos ✓</b>',
-  diamond: 'La celda del diamante contiene <b>8 átomos</b>:<br>8 esquinas × ⅛ = 1<br>6 caras × ½ = 3<br>4 huecos tetraédricos × 1 = 4<br>Total: 1 + 3 + 4 = <b>8 átomos ✓</b>',
-  nacl:    'La celda de NaCl contiene <b>4 Na⁺ + 4 Cl⁻</b>:<br>Cada ion forma una subred FCC → 4 por subred<br>Total: <b>4 pares de iones ✓</b>',
-  cscl:    'La celda de CsCl contiene <b>1 Cs⁺ + 1 Cl⁻</b>:<br>8 Cl⁻ en esquinas × ⅛ = 1<br>1 Cs⁺ en el centro × 1 = 1<br>Total: <b>1 par de iones ✓</b>',
-  zns:     'La celda de ZnS (Zinc Blenda) contiene <b>4 Zn²⁺ + 4 S²⁻</b>:<br>S²⁻ en subred FCC → 4<br>4 Zn²⁺ en huecos tetraédricos → 4<br>Total: <b>4 pares de iones ✓</b>',
+  hcp:     'La celda hexagonal compacta contiene <b>6 átomos</b>:<br>12 vértices × 1/6 = 2<br>2 centros de cara × 1/2 = 1<br>3 átomos interiores × 1 = 3<br>Total: 2 + 1 + 3 = <b>6 átomos</b>',
+  diamond: 'La celda del diamante contiene <b>8 átomos</b>:<br>8 esquinas × 1/8 = 1<br>6 caras × 1/2 = 3<br>4 huecos tetraédricos × 1 = 4<br>Total: 1 + 3 + 4 = <b>8 átomos</b>',
+  nacl:    'La celda de NaCl contiene <b>4 Na<sup>+</sup> + 4 Cl<sup>−</sup></b>:<br>Cada ion forma una subred FCC → 4 por subred<br>Total: <b>4 pares de iones</b>',
+  cscl:    'La celda de CsCl contiene <b>1 Cs<sup>+</sup> + 1 Cl<sup>−</sup></b>:<br>8 Cl<sup>−</sup> en esquinas × 1/8 = 1<br>1 Cs<sup>+</sup> en el centro × 1 = 1<br>Total: <b>1 par de iones</b>',
+  zns:     'La celda de ZnS (Zinc Blenda) contiene <b>4 Zn<sup>2+</sup> + 4 S<sup>2−</sup></b>:<br>S<sup>2−</sup> en subred FCC → 4<br>4 Zn<sup>2+</sup> en huecos tetraédricos → 4<br>Total: <b>4 pares de iones</b>',
 };
 
 // ── Atom-count animation state + functions ────────────────────────────────
@@ -787,6 +790,7 @@ function highlightAtoms(indices) {
       clone.opacity = 0.10;
       clone.emissiveIntensity = 0.0;
     }
+    clone.needsUpdate = true;
   });
 }
 
@@ -817,6 +821,8 @@ function startCountAnim() {
   const isAnimated = !!COUNT_ANIM[current] && currentN === 1;
   showAnimOverlay(true);
   document.getElementById('anim-pause-btn').style.display = isAnimated ? '' : 'none';
+  document.getElementById('anim-prev-btn').style.display  = isAnimated ? '' : 'none';
+  document.getElementById('anim-next-btn').style.display  = isAnimated ? '' : 'none';
 
   if (currentN > 1) {
     document.getElementById('anim-step-lbl').textContent = 'Nota';
@@ -886,18 +892,63 @@ function applyPlane() {
     planeMesh = new THREE.Mesh(geo, mat);
     planeMesh.position.set(0, 0, 0);
   } else {
-    const normal = new THREE.Vector3(...currentPlane.normal).normalize();
-    const size = current === 'hcp'
-      ? SCALE * 2 * Math.sqrt(1 + (N * Math.sqrt(8/3) / 2) ** 2) * 1.05
-      : N * SCALE * Math.sqrt(3) * 1.05;
-    geo = new THREE.PlaneGeometry(size, size);
-    planeMesh = new THREE.Mesh(geo, mat);
-    const defNorm = new THREE.Vector3(0, 0, 1);
-    if (normal.dot(defNorm) < 0.9999) planeMesh.quaternion.setFromUnitVectors(defNorm, normal);
+    const normal  = new THREE.Vector3(...currentPlane.normal).normalize();
+    const h       = N * 0.5 * SCALE;
     const cellOff = (currentPlane.cellOffset && N === 1)
       ? new THREE.Vector3(...currentPlane.cellOffset).multiplyScalar(SCALE)
       : new THREE.Vector3();
-    planeMesh.position.copy(centerVec.clone().multiplyScalar(SCALE).add(cellOff));
+    const meshPos = centerVec.clone().multiplyScalar(SCALE).add(cellOff);
+
+    let polyVerts = null;
+
+    if (current !== 'hcp') {
+      if (currentPlane.label === '(100)') {
+        polyVerts = [
+           0,-h,-h,   0, h,-h,   0, h, h,
+           0, h, h,   0,-h, h,   0,-h,-h,
+        ];
+      } else if (currentPlane.label === '(110)') {
+        polyVerts = [
+           h,-h,-h,   h,-h, h,  -h, h, h,
+          -h, h, h,  -h, h,-h,   h,-h,-h,
+        ];
+      }
+    } else if (currentPlane.id === '0001') {
+      const R = SCALE * 1.01;
+      const verts = [];
+      for (let i = 0; i < 6; i++) {
+        const t0 = i * Math.PI / 3, t1 = (i + 1) * Math.PI / 3;
+        verts.push(0, 0, 0, R*Math.cos(t0), 0, R*Math.sin(t0), R*Math.cos(t1), 0, R*Math.sin(t1));
+      }
+      polyVerts = verts;
+    } else if (currentPlane.id === '1010') {
+      // Rectangle through hex-prism corners 2 and 5: (-0.5,y,√3/2) and (0.5,y,-√3/2)
+      const a  = SCALE;
+      const hc = Math.sqrt(8 / 3) * N / 2 * SCALE; // half-height of N-cell prism
+      const x0 = -0.5 * a, z0 =  (Math.sqrt(3) / 2) * a;
+      const x1 =  0.5 * a, z1 = -(Math.sqrt(3) / 2) * a;
+      polyVerts = [
+        x0, -hc, z0,   x1, -hc, z1,   x1,  hc, z1,
+        x1,  hc, z1,   x0,  hc, z0,   x0, -hc, z0,
+      ];
+    }
+
+    if (polyVerts) {
+      geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(polyVerts), 3));
+      geo.computeVertexNormals();
+      planeMesh = new THREE.Mesh(geo, mat);
+      planeMesh.position.copy(meshPos);
+    } else {
+      const size = current === 'hcp'
+        ? SCALE * 2 * Math.sqrt(1 + (N * Math.sqrt(8/3) / 2) ** 2) * 1.05
+        : N * SCALE * Math.sqrt(3) * 1.05;
+      geo = new THREE.PlaneGeometry(size, size);
+      planeMesh = new THREE.Mesh(geo, mat);
+      if (normal.dot(new THREE.Vector3(0,0,1)) < 0.9999)
+        planeMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), normal);
+      planeMesh.position.copy(meshPos);
+    }
   }
 
   planeMesh.renderOrder = 1;
