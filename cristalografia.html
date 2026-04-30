@@ -136,17 +136,59 @@
       background: var(--info-color, var(--ac));
     }
 
-    /* ── SUPERCELL CONTROL ── */
-    #supercell-ctrl {
+    /* ── BOTTOM-CENTER CONTROLS ── */
+    #bottom-center-ctrl {
       position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
       z-index: 10;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+
+    /* plane selector */
+    #plane-ctrl {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(22,27,34,.88);
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      padding: 10px 16px;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+    }
+    #plane-btns { display: flex; gap: 5px; align-items: center; }
+    .p-lbl {
+      font-family: 'Space Mono', monospace; font-size: .52rem;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--tm);
+      white-space: nowrap;
+    }
+    .p-btn {
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      padding: 4px 10px; border-radius: 100px; cursor: pointer;
+      border: 1px solid var(--bd); background: var(--sf2); color: var(--tm);
+      transition: color .15s, border-color .15s, background .15s;
+      white-space: nowrap;
+    }
+    .p-btn:hover  { color: var(--tx); border-color: var(--tm); }
+    .p-btn.active {
+      color: var(--plane-color, var(--ac));
+      border-color: var(--plane-color, var(--ac));
+      background: color-mix(in srgb, var(--plane-color, var(--ac)) 12%, transparent);
+    }
+    .p-sep { width: 1px; height: 16px; background: var(--bd); flex-shrink: 0; }
+    #plane-toggle {
+      font-family: 'Space Mono', monospace; font-size: .52rem;
+      padding: 3px 10px; border-radius: 100px; cursor: pointer;
+      border: 1px solid var(--bd); background: transparent; color: var(--tm);
+      transition: color .15s, border-color .15s;
+    }
+    #plane-toggle:hover { color: var(--tx); border-color: var(--tm); }
+
+    /* supercell slider */
+    #supercell-ctrl {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
       background: rgba(22,27,34,.88);
       border: 1px solid var(--bd);
       border-radius: 14px;
       padding: 12px 24px;
       backdrop-filter: blur(12px);
-      pointer-events: all;
     }
     #supercell-lbl {
       font-family: 'Space Mono', monospace; font-size: .58rem;
@@ -223,9 +265,17 @@
   Click derecho → Desplazar
 </div>
 
-<div id="supercell-ctrl">
-  <span id="supercell-lbl">Supercélda: 1×1×1</span>
-  <input type="range" id="supercell-slider" min="1" max="3" step="1" value="1">
+<div id="bottom-center-ctrl">
+  <div id="plane-ctrl">
+    <span class="p-lbl">Plano</span>
+    <div id="plane-btns"></div>
+    <div class="p-sep" id="plane-sep" style="display:none"></div>
+    <button id="plane-toggle" style="display:none">Ocultar</button>
+  </div>
+  <div id="supercell-ctrl">
+    <span id="supercell-lbl">Supercélda: 1×1×1</span>
+    <input type="range" id="supercell-slider" min="1" max="3" step="1" value="1">
+  </div>
 </div>
 
 <script type="module">
@@ -479,6 +529,28 @@ function supercellEdges(key, N) {
   return pts;
 }
 
+// ── Crystallographic planes ───────────────────────────────────────────────
+const PLANES = {
+  cubic: [
+    { label: '(100)', normal: [1, 0, 0],                   color: '#ff6b6b' },
+    { label: '(110)', normal: [1, 1, 0],                   color: '#51cf66' },
+    { label: '(111)', normal: [1, 1, 1],                   color: '#74c0fc' },
+  ],
+  hcp: [
+    { label: '(0001)',  normal: [0, 1, 0],                 color: '#f9c74f' },
+    { label: '(10-10)', normal: [Math.sqrt(3)/2, 0, 0.5],  color: '#f8961e' },
+  ],
+};
+
+function getPlaneGroup(key) { return key === 'hcp' ? 'hcp' : 'cubic'; }
+
+function getSupercellCenter(key, N) {
+  const def = STRUCTS[key];
+  if (key === 'hcp') return new THREE.Vector3(0, Math.sqrt(8/3) * N / 2, 0);
+  if (N > 1)         return new THREE.Vector3((N-1)/2, (N-1)/2, (N-1)/2);
+  return def.center ? def.center() : new THREE.Vector3();
+}
+
 // ── Three.js setup ────────────────────────────────────────────────────────
 const canvas   = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -510,21 +582,19 @@ const SCALE = 2.2; // world-space size of one lattice unit
 
 function buildScene(key) {
   const N = currentN;
+  planeMesh = null; // will be disposed below with its parent pivot
   if (pivot) { scene.remove(pivot); pivot.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); }); }
 
   const def = STRUCTS[key];
   pivot = new THREE.Group();
 
-  // Normalize base atoms to [{pos, type}]
   const rawAtoms = def.getAtoms();
   const baseAtoms = rawAtoms[0] instanceof THREE.Vector3
     ? rawAtoms.map(p => ({ pos: p, type: 'default' }))
     : rawAtoms;
 
-  // Expand for supercell
   const atoms = expandAtoms(baseAtoms, key, N);
 
-  // Build per-type geometry + material (cached by type)
   const geoCache = {}, matCache = {};
   atoms.forEach(({ pos, type }) => {
     if (!geoCache[type]) {
@@ -542,41 +612,30 @@ function buildScene(key) {
     pivot.add(m);
   });
 
-  // Cell edges (supercell grid)
   const edgePts = supercellEdges(key, N).map(p => p.clone().multiplyScalar(SCALE));
   const edgeGeo = new THREE.BufferGeometry().setFromPoints(edgePts);
   const edgeMat = new THREE.LineBasicMaterial({ color: 0x4a5568, transparent: true, opacity: 0.85 });
   pivot.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
-  // Extra lines (e.g. covalent bonds) — only on single unit cell
   if (N === 1 && def.getExtraLines) {
     const { pts, color } = def.getExtraLines();
     const xGeo = new THREE.BufferGeometry().setFromPoints(pts.map(p => p.clone().multiplyScalar(SCALE)));
     pivot.add(new THREE.LineSegments(xGeo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.65 })));
   }
 
-  // Center pivot around the supercell
-  let centerVec;
-  if (key === 'hcp') {
-    centerVec = new THREE.Vector3(0, Math.sqrt(8/3) * N / 2, 0);
-  } else if (N > 1) {
-    centerVec = new THREE.Vector3((N-1)/2, (N-1)/2, (N-1)/2);
-  } else {
-    centerVec = def.center ? def.center() : new THREE.Vector3();
-  }
-  pivot.position.copy(centerVec.multiplyScalar(SCALE).negate());
+  const centerVec = getSupercellCenter(key, N);
+  pivot.position.copy(centerVec.clone().multiplyScalar(SCALE).negate());
 
   scene.add(pivot);
 
-  // Camera scales with N so the full supercell stays in view
   const [cx, cy, cz] = def.cam || [3.8, 2.4, 3.8];
   camera.position.set(cx * N, cy * N, cz * N);
   controls.target.set(0, 0, 0);
   controls.maxDistance = Math.max(14, camera.position.length() * 2);
   controls.saveState();
 
-  // Update info panel
   updateInfo(key, def);
+  applyPlane();
 }
 
 function updateInfo(key, def) {
@@ -600,6 +659,76 @@ function updateInfo(key, def) {
   }
 }
 
+// ── Plane state + rendering ───────────────────────────────────────────────
+let currentPlane = null;
+let planeVisible  = true;
+let planeMesh     = null;
+
+function applyPlane() {
+  if (planeMesh) {
+    if (planeMesh.parent) planeMesh.parent.remove(planeMesh);
+    planeMesh.geometry.dispose();
+    planeMesh.material.dispose();
+    planeMesh = null;
+  }
+  if (!currentPlane || !planeVisible || !pivot) return;
+
+  const N         = currentN;
+  const centerVec = getSupercellCenter(current, N);
+  const normal    = new THREE.Vector3(...currentPlane.normal).normalize();
+  const size      = Math.max(8, N * SCALE * 3);
+
+  const geo = new THREE.PlaneGeometry(size, size);
+  const mat = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(currentPlane.color),
+    transparent: true, opacity: 0.22,
+    side: THREE.DoubleSide, depthWrite: false,
+  });
+  planeMesh = new THREE.Mesh(geo, mat);
+  planeMesh.renderOrder = 1;
+
+  const defNorm = new THREE.Vector3(0, 0, 1);
+  if (normal.dot(defNorm) < 0.9999) planeMesh.quaternion.setFromUnitVectors(defNorm, normal);
+  planeMesh.position.copy(centerVec.clone().multiplyScalar(SCALE));
+  pivot.add(planeMesh);
+}
+
+function updatePlaneButtons(key) {
+  const group  = getPlaneGroup(key);
+  const planes = PLANES[group];
+  const btns   = document.getElementById('plane-btns');
+  const toggle = document.getElementById('plane-toggle');
+  const sep    = document.getElementById('plane-sep');
+  btns.innerHTML = '';
+
+  planes.forEach(plane => {
+    const btn = document.createElement('button');
+    btn.className = 'p-btn';
+    btn.textContent = plane.label;
+    btn.style.setProperty('--plane-color', plane.color);
+    if (currentPlane && currentPlane.label === plane.label) btn.classList.add('active');
+
+    btn.addEventListener('click', () => {
+      if (currentPlane && currentPlane.label === plane.label) {
+        currentPlane = null;
+        btn.classList.remove('active');
+        toggle.style.display = sep.style.display = 'none';
+      } else {
+        currentPlane = plane;
+        planeVisible = true;
+        toggle.textContent = 'Ocultar';
+        toggle.style.display = sep.style.display = '';
+        btns.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      applyPlane();
+    });
+    btns.appendChild(btn);
+  });
+
+  if (!currentPlane) { toggle.style.display = sep.style.display = 'none'; }
+}
+
 // ── Buttons ───────────────────────────────────────────────────────────────
 let current = 'bcc';
 let currentN = 1;
@@ -608,7 +737,10 @@ document.querySelectorAll('.s-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    const prevGroup = getPlaneGroup(current);
     current = btn.dataset.s;
+    if (getPlaneGroup(current) !== prevGroup) currentPlane = null;
+    updatePlaneButtons(current);
     buildScene(current);
     controls.reset();
   });
@@ -622,6 +754,13 @@ supercellSlider.addEventListener('input', () => {
   supercellLbl.textContent = `Supercélda: ${currentN}×${currentN}×${currentN}`;
   buildScene(current);
   controls.reset();
+});
+
+// ── Plane toggle ──────────────────────────────────────────────────────────
+document.getElementById('plane-toggle').addEventListener('click', () => {
+  planeVisible = !planeVisible;
+  document.getElementById('plane-toggle').textContent = planeVisible ? 'Ocultar' : 'Mostrar';
+  applyPlane();
 });
 
 // ── Resize ────────────────────────────────────────────────────────────────
@@ -642,6 +781,7 @@ function animate() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
+updatePlaneButtons('bcc');
 buildScene('bcc');
 animate();
 </script>
