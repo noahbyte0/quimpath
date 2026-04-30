@@ -676,7 +676,10 @@ function applyPlane() {
   const N         = currentN;
   const centerVec = getSupercellCenter(current, N);
   const normal    = new THREE.Vector3(...currentPlane.normal).normalize();
-  const size      = Math.max(8, N * SCALE * 3);
+  // Size = bounding-sphere diameter of the active supercell (+ 5 % margin)
+  const size = current === 'hcp'
+    ? SCALE * 2 * Math.sqrt(1 + (N * Math.sqrt(8/3) / 2) ** 2) * 1.05
+    : N * SCALE * Math.sqrt(3) * 1.05;
 
   const geo = new THREE.PlaneGeometry(size, size);
   const mat = new THREE.MeshBasicMaterial({
