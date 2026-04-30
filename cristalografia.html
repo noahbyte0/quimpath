@@ -151,11 +151,9 @@
       transition: color .15s, border-color .15s, background .15s;
     }
     #atom-count-btn:hover { color: var(--ac); border-color: var(--ac); background: rgba(42,157,143,.07); }
-    #info-panel.anim-active .info-name,
-    #info-panel.anim-active .info-row,
-    #info-panel.anim-active #atom-count-btn { display: none !important; }
+    #count-card.anim-active #atom-count-btn { display: none !important; }
     #anim-overlay { display: none; }
-    #info-panel.anim-active #anim-overlay { display: block; }
+    #count-card.anim-active #anim-overlay { display: block; }
     #anim-step-lbl {
       font-family: 'Space Mono', monospace; font-size: .46rem;
       text-transform: uppercase; letter-spacing: 1.5px;
@@ -183,11 +181,11 @@
       background: var(--info-color, var(--ac));
     }
 
-    /* ── BOTTOM-CENTER CONTROLS ── */
+    /* ── BOTTOM-RIGHT CONTROLS ── */
     #bottom-center-ctrl {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      position: fixed; bottom: 28px; right: 24px;
       z-index: 10;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
     }
 
     /* plane selector */
@@ -273,6 +271,22 @@
   </div>
 </nav>
 
+<div id="left-panel-stack">
+
+<div id="count-card">
+  <button id="atom-count-btn">¿Cómo se cuentan los átomos?</button>
+  <div id="anim-overlay">
+    <div id="anim-step-lbl"></div>
+    <div id="anim-text"></div>
+    <div id="anim-ctrls">
+      <button class="anim-btn" id="anim-prev-btn">←</button>
+      <button class="anim-btn" id="anim-pause-btn">Pausar</button>
+      <button class="anim-btn" id="anim-next-btn">→</button>
+      <button class="anim-btn" id="anim-stop-btn">✕</button>
+    </div>
+  </div>
+</div>
+
 <div id="info-panel">
   <div class="info-badge" id="info-badge">BCC</div>
   <div class="info-name" id="info-name">Cúbica centrada en el cuerpo</div>
@@ -304,16 +318,8 @@
     <span class="info-lbl">Ejemplos</span><br>
     <span class="info-examples" id="info-examples">Fe, W, Cr, Na, K</span>
   </div>
-  <button id="atom-count-btn">¿Cómo se cuentan los átomos?</button>
-  <div id="anim-overlay">
-    <div id="anim-step-lbl"></div>
-    <div id="anim-text"></div>
-    <div id="anim-ctrls">
-      <button class="anim-btn" id="anim-pause-btn">Pausar</button>
-      <button class="anim-btn" id="anim-skip-btn">Final</button>
-      <button class="anim-btn" id="anim-stop-btn">✕</button>
-    </div>
-  </div>
+</div>
+
 </div>
 
 <div id="hints">
@@ -785,7 +791,7 @@ function highlightAtoms(indices) {
 }
 
 function showAnimOverlay(show) {
-  document.getElementById('info-panel').classList.toggle('anim-active', show);
+  document.getElementById('count-card').classList.toggle('anim-active', show);
 }
 
 function runAnimStep(idx) {
@@ -794,10 +800,12 @@ function runAnimStep(idx) {
   animStepIdx  = idx;
   const step   = steps[idx];
   const isLast = idx === steps.length - 1;
+  const isFirst = idx === 0;
   document.getElementById('anim-step-lbl').textContent = `Paso ${idx + 1} / ${steps.length}`;
   document.getElementById('anim-text').innerHTML       = step.text;
+  document.getElementById('anim-prev-btn').disabled    = isFirst;
+  document.getElementById('anim-next-btn').disabled    = isLast;
   document.getElementById('anim-pause-btn').style.display = isLast ? 'none' : '';
-  document.getElementById('anim-skip-btn').style.display  = isLast ? 'none' : '';
   document.getElementById('anim-pause-btn').textContent   = animPaused ? 'Continuar' : 'Pausar';
   highlightAtoms(step.hi);
   if (step.dur > 0 && !animPaused) {
@@ -809,7 +817,6 @@ function startCountAnim() {
   const isAnimated = !!COUNT_ANIM[current] && currentN === 1;
   showAnimOverlay(true);
   document.getElementById('anim-pause-btn').style.display = isAnimated ? '' : 'none';
-  document.getElementById('anim-skip-btn').style.display  = isAnimated ? '' : 'none';
 
   if (currentN > 1) {
     document.getElementById('anim-step-lbl').textContent = 'Nota';
@@ -982,10 +989,21 @@ document.getElementById('anim-pause-btn').addEventListener('click', () => {
   else { clearTimeout(animTimer); animTimer = null; }
 });
 
-document.getElementById('anim-skip-btn').addEventListener('click', () => {
+document.getElementById('anim-prev-btn').addEventListener('click', () => {
   if (!animActive) return;
-  animPaused = false;
-  runAnimStep(COUNT_ANIM[current].length - 1);
+  animPaused = true;
+  clearTimeout(animTimer); animTimer = null;
+  document.getElementById('anim-pause-btn').textContent = 'Continuar';
+  runAnimStep(Math.max(0, animStepIdx - 1));
+});
+
+document.getElementById('anim-next-btn').addEventListener('click', () => {
+  if (!animActive) return;
+  animPaused = true;
+  clearTimeout(animTimer); animTimer = null;
+  document.getElementById('anim-pause-btn').textContent = 'Continuar';
+  const steps = COUNT_ANIM[current];
+  runAnimStep(Math.min(steps.length - 1, animStepIdx + 1));
 });
 
 document.getElementById('anim-stop-btn').addEventListener('click', stopCountAnim);
