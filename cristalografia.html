@@ -841,16 +841,9 @@ function stopCountAnim() {
   animActive = false;
   animPaused = false;
   if (animMats.length) restoreAtomMaterials();
-  // Reset any residual glow on all atom meshes
-  atomMeshes.forEach(mesh => {
-    if (mesh.material) {
-      mesh.material.emissiveIntensity = 0.08;
-      mesh.material.transparent = false;
-      mesh.material.opacity = 1.0;
-    }
-  });
   showAnimOverlay(false);
-  updateInfo(current, STRUCTS[current]);
+  // Rebuild scene to guarantee no ghost atom state
+  buildScene(current);
 }
 
 // ── Plane state + rendering ───────────────────────────────────────────────
