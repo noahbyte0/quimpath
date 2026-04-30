@@ -135,6 +135,27 @@
       border-radius: 50%; margin-right: 5px; vertical-align: middle;
       background: var(--info-color, var(--ac));
     }
+
+    /* ── SUPERCELL CONTROL ── */
+    #supercell-ctrl {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      z-index: 10;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      background: rgba(22,27,34,.88);
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      padding: 12px 24px;
+      backdrop-filter: blur(12px);
+      pointer-events: all;
+    }
+    #supercell-lbl {
+      font-family: 'Space Mono', monospace; font-size: .58rem;
+      color: var(--ac); text-transform: uppercase; letter-spacing: 1.5px;
+      white-space: nowrap;
+    }
+    #supercell-slider {
+      width: 150px; accent-color: var(--ac); cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -200,6 +221,11 @@
   Arrastrar → Rotar<br>
   Rueda → Zoom<br>
   Click derecho → Desplazar
+</div>
+
+<div id="supercell-ctrl">
+  <span id="supercell-lbl">Supercélda: 1×1×1</span>
+  <input type="range" id="supercell-slider" min="1" max="3" step="1" value="1">
 </div>
 
 <script type="module">
@@ -401,6 +427,58 @@ function cuboidPts(wx, wy, wz) {
   return pts;
 }
 
+// ── Supercell helpers ─────────────────────────────────────────────────────
+function expandAtoms(baseAtoms, key, N) {
+  if (N === 1) return baseAtoms;
+  if (key === 'hcp') {
+    const c = Math.sqrt(8/3);
+    const all = [];
+    for (let n = 0; n < N; n++)
+      baseAtoms.forEach(({ pos, type }) =>
+        all.push({ pos: new THREE.Vector3(pos.x, pos.y + n * c, pos.z), type }));
+    return all;
+  }
+  const all = [];
+  for (let ox = 0; ox < N; ox++)
+    for (let oy = 0; oy < N; oy++)
+      for (let oz = 0; oz < N; oz++)
+        baseAtoms.forEach(({ pos, type }) =>
+          all.push({ pos: new THREE.Vector3(pos.x + ox, pos.y + oy, pos.z + oz), type }));
+  return all;
+}
+
+function supercellEdges(key, N) {
+  if (key === 'hcp') {
+    const a = 1, c = Math.sqrt(8/3);
+    const pts = [];
+    for (let n = 0; n <= N; n++) {
+      const y = n * c;
+      for (let i = 0; i < 6; i++) {
+        const θ1 = i * Math.PI/3, θ2 = (i+1) * Math.PI/3;
+        pts.push(new THREE.Vector3(a*Math.cos(θ1), y, a*Math.sin(θ1)));
+        pts.push(new THREE.Vector3(a*Math.cos(θ2), y, a*Math.sin(θ2)));
+      }
+    }
+    for (let i = 0; i < 6; i++) {
+      const θ = i * Math.PI/3;
+      pts.push(new THREE.Vector3(a*Math.cos(θ), 0, a*Math.sin(θ)));
+      pts.push(new THREE.Vector3(a*Math.cos(θ), N*c, a*Math.sin(θ)));
+    }
+    return pts;
+  }
+  const pts = [];
+  for (let j = 0; j <= N; j++) for (let k = 0; k <= N; k++) {
+    pts.push(new THREE.Vector3(-0.5, j-0.5, k-0.5), new THREE.Vector3(N-0.5, j-0.5, k-0.5));
+  }
+  for (let i = 0; i <= N; i++) for (let k = 0; k <= N; k++) {
+    pts.push(new THREE.Vector3(i-0.5, -0.5, k-0.5), new THREE.Vector3(i-0.5, N-0.5, k-0.5));
+  }
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    pts.push(new THREE.Vector3(i-0.5, j-0.5, -0.5), new THREE.Vector3(i-0.5, j-0.5, N-0.5));
+  }
+  return pts;
+}
+
 // ── Three.js setup ────────────────────────────────────────────────────────
 const canvas   = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -431,16 +509,20 @@ let pivot = null;
 const SCALE = 2.2; // world-space size of one lattice unit
 
 function buildScene(key) {
+  const N = currentN;
   if (pivot) { scene.remove(pivot); pivot.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); }); }
 
   const def = STRUCTS[key];
   pivot = new THREE.Group();
 
-  // Normalize atoms to [{pos, type}]
+  // Normalize base atoms to [{pos, type}]
   const rawAtoms = def.getAtoms();
-  const atoms = rawAtoms[0] instanceof THREE.Vector3
+  const baseAtoms = rawAtoms[0] instanceof THREE.Vector3
     ? rawAtoms.map(p => ({ pos: p, type: 'default' }))
     : rawAtoms;
+
+  // Expand for supercell
+  const atoms = expandAtoms(baseAtoms, key, N);
 
   // Build per-type geometry + material (cached by type)
   const geoCache = {}, matCache = {};
@@ -460,29 +542,37 @@ function buildScene(key) {
     pivot.add(m);
   });
 
-  // Cell edges
-  const edgePts = def.getEdges().map(p => p.clone().multiplyScalar(SCALE));
+  // Cell edges (supercell grid)
+  const edgePts = supercellEdges(key, N).map(p => p.clone().multiplyScalar(SCALE));
   const edgeGeo = new THREE.BufferGeometry().setFromPoints(edgePts);
   const edgeMat = new THREE.LineBasicMaterial({ color: 0x4a5568, transparent: true, opacity: 0.85 });
   pivot.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
-  // Extra lines (e.g. graphite covalent bonds)
-  if (def.getExtraLines) {
+  // Extra lines (e.g. covalent bonds) — only on single unit cell
+  if (N === 1 && def.getExtraLines) {
     const { pts, color } = def.getExtraLines();
     const xGeo = new THREE.BufferGeometry().setFromPoints(pts.map(p => p.clone().multiplyScalar(SCALE)));
     pivot.add(new THREE.LineSegments(xGeo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.65 })));
   }
 
-  // Center pivot around structure
-  const center = def.center ? def.center().multiplyScalar(SCALE) : new THREE.Vector3();
-  pivot.position.copy(center.negate());
+  // Center pivot around the supercell
+  let centerVec;
+  if (key === 'hcp') {
+    centerVec = new THREE.Vector3(0, Math.sqrt(8/3) * N / 2, 0);
+  } else if (N > 1) {
+    centerVec = new THREE.Vector3((N-1)/2, (N-1)/2, (N-1)/2);
+  } else {
+    centerVec = def.center ? def.center() : new THREE.Vector3();
+  }
+  pivot.position.copy(centerVec.multiplyScalar(SCALE).negate());
 
   scene.add(pivot);
 
-  // Set camera for this structure and save as reset point
+  // Camera scales with N so the full supercell stays in view
   const [cx, cy, cz] = def.cam || [3.8, 2.4, 3.8];
-  camera.position.set(cx, cy, cz);
+  camera.position.set(cx * N, cy * N, cz * N);
   controls.target.set(0, 0, 0);
+  controls.maxDistance = Math.max(14, camera.position.length() * 2);
   controls.saveState();
 
   // Update info panel
@@ -512,6 +602,8 @@ function updateInfo(key, def) {
 
 // ── Buttons ───────────────────────────────────────────────────────────────
 let current = 'bcc';
+let currentN = 1;
+
 document.querySelectorAll('.s-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
@@ -520,6 +612,16 @@ document.querySelectorAll('.s-btn').forEach(btn => {
     buildScene(current);
     controls.reset();
   });
+});
+
+// ── Supercell slider ──────────────────────────────────────────────────────
+const supercellSlider = document.getElementById('supercell-slider');
+const supercellLbl    = document.getElementById('supercell-lbl');
+supercellSlider.addEventListener('input', () => {
+  currentN = parseInt(supercellSlider.value);
+  supercellLbl.textContent = `Supercélda: ${currentN}×${currentN}×${currentN}`;
+  buildScene(current);
+  controls.reset();
 });
 
 // ── Resize ────────────────────────────────────────────────────────────────
